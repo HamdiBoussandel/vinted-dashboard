@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "nom": "Mid Ticket",
+    "prix_max": 20,
+    "marques": ["Octobre Editions", "BonneGueule"]
+  },
+  {
+    "id": 2,
+    "nom": "Low Ticket",
+    "prix_max": 20,
+    "marques": ["Octobre Editions", "BonneGueule"]
+  }
+]

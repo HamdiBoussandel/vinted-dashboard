@@ -1,0 +1,14 @@
+2026/05/11-14:15:32.942 62e4 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\vinted_pro_v2\backend\vinted_session\Default\IndexedDB\https_www.vinted.fr_0.indexeddb.leveldb/MANIFEST-000327
+2026/05/11-14:15:32.942 62e4 Recovering log #323
+2026/05/11-14:15:32.942 62e4 Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\vinted_pro_v2\backend\vinted_session\Default\IndexedDB\https_www.vinted.fr_0.indexeddb.leveldb/000323.log 
+2026/05/11-14:15:33.485 88d4 Level-0 table #330: started
+2026/05/11-14:15:33.488 88d4 Level-0 table #330: 41697 bytes OK
+2026/05/11-14:15:33.490 88d4 Delete type=0 #323
+2026/05/11-14:15:33.491 62e4 Manual compaction at level-0 from '\x00J\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00K\x00\x00\x00' @ 0 : 0; will stop at '\x00J\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 24753 : 1
+2026/05/11-14:15:33.491 62e4 Compacting 1@0 + 2@1 files
+2026/05/11-14:15:33.533 62e4 Generated table #331@0: 359 keys, 4485368 bytes
+2026/05/11-14:15:33.542 62e4 Generated table #332@0: 29 keys, 612361 bytes
+2026/05/11-14:15:33.542 62e4 Compacted 1@0 + 2@1 files => 5097729 bytes
+2026/05/11-14:15:33.546 62e4 compacted to: files[ 0 2 3 0 0 0 0 ]
+2026/05/11-14:15:33.546 62e4 Delete type=2 #330
+2026/05/11-14:15:33.548 62e4 Manual compaction at level-0 from '\x00J\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 24753 : 1 .. '\x00K\x00\x00\x00' @ 0 : 0; will stop at (end)

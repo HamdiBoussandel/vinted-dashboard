@@ -1,0 +1,172 @@
+@import "tailwindcss";
+
+/* Regular */
+@font-face {
+  font-family: 'GoogleSans';
+  src: url('./fonts/GoogleSans-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Medium (pour vos classes font-medium) */
+@font-face {
+  font-family: 'GoogleSans';
+  src: url('./fonts/GoogleSans-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+/* SemiBold (pour vos classes font-semibold) */
+@font-face {
+  font-family: 'GoogleSans';
+  src: url('./fonts/GoogleSans-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+/* Bold (pour vos titres) */
+@font-face {
+  font-family: 'GoogleSans';
+  src: url('./fonts/GoogleSans-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Applique la police à tout le projet */
+@layer base {
+  body {
+  font-family: 'GoogleSans', sans-serif;
+  letter-spacing: -0.02em;
+  /*background-color: #f4f3f8;*/
+  /*color:"#484840";*/
+  background-color: #DBEBF8;
+  color: #352b38;
+  }
+}
+
+/* On s'assure que le body prend toute la hauteur */
+html, body, aside, #root {
+  font-family: 'GoogleSans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  /*color:"#484840";*/
+  /*color: yellow;*/
+}
+
+aside, nav {
+  background-color: white;
+  border: 1px;
+}
+
+input, button, select, textarea {
+  font-family: 'GoogleSans', sans-serif;
+}
+
+/* Optionnel : Rendre les chiffres plus lisibles (alignement vertical parfait) */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.custom-progress-bar {
+  /* Création du motif avec linear-gradient à 45 degrés */
+  /* Les pourcentages (ici 20%) déterminent l'épaisseur des bandes */
+  background-image: linear-gradient(
+    135deg, 
+    var(--pattern-color) 20%, 
+    transparent 20%, 
+    transparent 50%, 
+    var(--pattern-color) 50%, 
+    var(--pattern-color) 70%, 
+    transparent 70%, 
+    transparent
+  );
+  
+  /* Taille d'un carré de motif : plus c'est petit, plus les bandes sont serrées */
+  background-size: 10px 10px;
+  width: 100%;
+}
+
+main::-webkit-scrollbar {
+  width: 6px; /* Barre très fine */
+}
+
+main::-webkit-scrollbar-track {
+  background: transparent; /* Fond invisible pour ne pas voir de rail blanc */
+}
+
+main::-webkit-scrollbar-thumb {
+  background-color: rgba(112, 225, 245, 0.4); /* Couleur Cyan translucide */
+  border-radius: 20px; /* Bords bien arrondis */
+}
+
+main::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(112, 225, 245, 0.7); /* Plus visible au survol */
+}
+
+/* Optionnel : Masquer totalement la barre sur Firefox et IE */
+main {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(112, 225, 245, 0.4) transparent;
+}
+
+/* Conteneur plein écran pour le chargement initial */
+.main-loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #DBEBF8;
+}
+
+.loader {
+  width: 64px; 
+  overflow: visible;
+  transform-origin: center;
+  
+  /* COULEURS PAR DÉFAUT DU JOLLY PIG */
+  --active: #7627a3;
+  --track: #f2d4fe;
+  
+  --duration: 8s;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(-90deg); }
+  100% { transform: rotate(270deg); }
+}
+
+.active {
+  stroke: var(--active);
+  stroke-linecap: round;
+  stroke-dashoffset: 360;
+  animation: active-animation var(--duration) ease-in-out infinite;
+  /* Optionnel : un léger glow violet pour le style */
+  filter: drop-shadow(0 0 5px rgba(118, 39, 163, 0.3));
+}
+
+.track {
+  stroke: var(--track);
+  stroke-linecap: round;
+  stroke-dashoffset: 360;
+  stroke-width: 4;
+}
+
+/* Les keyframes de l'animation complexe restent inchangées */
+@keyframes active-animation {
+  0% { stroke-dasharray: 0 0 0 360 0 360; }
+  12.5% { stroke-dasharray: 0 0 270 90 270 90; }
+  25% { stroke-dasharray: 0 270 0 360 0 360; }
+  37.5% { stroke-dasharray: 0 270 270 90 270 90; }
+  50% { stroke-dasharray: 0 540 0 360 0 360; }
+  50.001% { stroke-dasharray: 0 180 0 360 0 360; }
+  62.5% { stroke-dasharray: 0 180 270 90 270 90; }
+  75% { stroke-dasharray: 0 450 0 360 0 360; }
+  87.5% { stroke-dasharray: 0 450 270 90 270 90; }
+  87.501% { stroke-dasharray: 0 90 270 90 270 90; }
+  100% { stroke-dasharray: 0 360 1 360 0 360; }
+}

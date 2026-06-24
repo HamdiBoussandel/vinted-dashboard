@@ -1,0 +1,47 @@
+2026/05/11-14:09:17.413 8418 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\vinted_pro_v2\backend\clemz_session_chrome\Default\IndexedDB\https_www.vinted.fr_0.indexeddb.leveldb/MANIFEST-000001
+2026/05/11-14:09:17.414 8418 Recovering log #16
+2026/05/11-14:09:17.414 8418 Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\vinted_pro_v2\backend\clemz_session_chrome\Default\IndexedDB\https_www.vinted.fr_0.indexeddb.leveldb/000016.log 
+2026/05/11-14:09:17.414 8418 Delete type=2 #15
+2026/05/11-14:09:17.819 2ba8 Level-0 table #21: started
+2026/05/11-14:09:17.822 2ba8 Level-0 table #21: 13330 bytes OK
+2026/05/11-14:09:17.823 2ba8 Delete type=0 #16
+2026/05/11-14:09:17.825 2ba8 Manual compaction at level-0 from '\x00\x07\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x08\x00\x00\x00' @ 0 : 0; will stop at '\x00\x07\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 891 : 1
+2026/05/11-14:09:17.825 2ba8 Compacting 1@0 + 1@1 files
+2026/05/11-14:09:17.827 2ba8 Generated table #22@0: 168 keys, 14633 bytes
+2026/05/11-14:09:17.827 2ba8 Compacted 1@0 + 1@1 files => 14633 bytes
+2026/05/11-14:09:17.828 2ba8 compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/05/11-14:09:17.828 2ba8 Delete type=2 #21
+2026/05/11-14:09:17.829 2ba8 Manual compaction at level-0 from '\x00\x07\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 891 : 1 .. '\x00\x08\x00\x00\x00' @ 0 : 0; will stop at (end)
+2026/05/11-14:09:44.478 d468 Level-0 table #24: started
+2026/05/11-14:09:44.481 d468 Level-0 table #24: 13716 bytes OK
+2026/05/11-14:09:44.482 d468 Delete type=2 #18
+2026/05/11-14:09:44.482 d468 Delete type=0 #20
+2026/05/11-14:09:44.485 8418 Manual compaction at level-0 from '\x00\x08\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x09\x00\x00\x00' @ 0 : 0; will stop at '\x00\x08\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 1041 : 1
+2026/05/11-14:09:44.485 8418 Compacting 1@0 + 1@1 files
+2026/05/11-14:09:44.487 8418 Generated table #25@0: 211 keys, 18544 bytes
+2026/05/11-14:09:44.487 8418 Compacted 1@0 + 1@1 files => 18544 bytes
+2026/05/11-14:09:44.488 8418 compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/05/11-14:09:44.489 8418 Delete type=2 #24
+2026/05/11-14:09:44.490 8418 Manual compaction at level-0 from '\x00\x08\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 1041 : 1 .. '\x00\x09\x00\x00\x00' @ 0 : 0; will stop at (end)
+2026/05/11-14:09:45.984 d468 Level-0 table #27: started
+2026/05/11-14:09:45.988 d468 Level-0 table #27: 136744 bytes OK
+2026/05/11-14:09:45.989 d468 Delete type=2 #22
+2026/05/11-14:09:45.989 d468 Delete type=0 #23
+2026/05/11-14:09:45.991 8418 Manual compaction at level-0 from '\x00\x0b\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x0c\x00\x00\x00' @ 0 : 0; will stop at '\x00\x0b\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 1461 : 1
+2026/05/11-14:09:45.991 8418 Compacting 1@0 + 1@1 files
+2026/05/11-14:09:45.994 8418 Generated table #28@0: 417 keys, 94735 bytes
+2026/05/11-14:09:45.994 8418 Compacted 1@0 + 1@1 files => 94735 bytes
+2026/05/11-14:09:45.995 8418 compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/05/11-14:09:45.996 8418 Delete type=2 #27
+2026/05/11-14:09:45.997 8418 Manual compaction at level-0 from '\x00\x0b\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 1461 : 1 .. '\x00\x0c\x00\x00\x00' @ 0 : 0; will stop at (end)
+2026/05/11-14:10:13.269 d468 Level-0 table #30: started
+2026/05/11-14:10:13.273 d468 Level-0 table #30: 12231 bytes OK
+2026/05/11-14:10:13.274 d468 Delete type=2 #25
+2026/05/11-14:10:13.274 d468 Delete type=0 #26
+2026/05/11-14:10:13.277 d468 Manual compaction at level-0 from '\x00\x0c\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x0d\x00\x00\x00' @ 0 : 0; will stop at '\x00\x0c\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 1620 : 1
+2026/05/11-14:10:13.277 d468 Compacting 1@0 + 1@1 files
+2026/05/11-14:10:13.280 d468 Generated table #31@0: 467 keys, 98647 bytes
+2026/05/11-14:10:13.280 d468 Compacted 1@0 + 1@1 files => 98647 bytes
+2026/05/11-14:10:13.281 d468 compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/05/11-14:10:13.281 d468 Delete type=2 #30
+2026/05/11-14:10:13.282 51d0 Manual compaction at level-0 from '\x00\x0c\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 1620 : 1 .. '\x00\x0d\x00\x00\x00' @ 0 : 0; will stop at (end)
