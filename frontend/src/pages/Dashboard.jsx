@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react'; // Retrait du 'use' inutile
+import React, { useState, useEffect } from 'react';
 import { inventoryService, salesService } from '../services/api';
 import toast, { Toaster } from 'react-hot-toast';
 import { motion } from 'framer-motion';
 
-// Tes composants isolés
 import StatsOverview from '../components/StatsOverview';
 import NavigationFilters from '../components/NavigationFilters';
 import ProductCard from '../components/ProductCard';
 import SystemControlBar from '../components/SystemControlBar';
 import AutomationCart from '../components/AutomationCart';
+import RepublishCart from '../components/RepublishCart'; // NOUVEAU
 
 // Variable persistante qui survit au changement d'onglet mais pas au F5
 let isInitialLoad = true;
@@ -18,7 +18,7 @@ let cachedStats = null;
 let cachedSales = null;
 
 const extrairePrixSuggere = (label) => {
-    const match = label?.match(/\((\d+(\.\d+)?)/); 
+    const match = label?.match(/\((\d+(\.\d+)?)/);
     return match ? parseFloat(match[1]) : 0;
 };
 
@@ -38,7 +38,7 @@ export default function Dashboard() {
     const [processingIds, setProcessingIds] = useState(new Set());
     const [searchTerm, setSearchTerm] = useState('');
     const [isAutomating, setIsAutomating] = useState(false);
-    const [selectedForAutomation, setSelectedForAutomation] = useState([]);
+
 
     const [sysState, setSysState] = useState({
         last_cron_14h: "---",
@@ -49,16 +49,13 @@ export default function Dashboard() {
         status_TEST: "En attente"
     });
 
-    useEffect(() => {
-        if (selectedForAutomation.length > 0) {
-            console.log("🛒 PANIER AUTOMATION MIS À JOUR :");
-            console.log(`Nombre d'articles : ${selectedForAutomation.length}`);
-            // Affiche la liste des noms pour vérification rapide
-            console.log("Articles :", selectedForAutomation.map(a => a.nom).join(' | '));
-        } else {
-            console.log("🗑️ Panier vidé.");
-        }
-    }, [selectedForAutomation]);
+    const [isTreating, setIsTreating] = useState(false);
+
+    const [selectedForBaisse, setSelectedForBaisse] = useState([]);
+
+    const [selectedForRepublish, setSelectedForRepublish] = useState([]);
+    const [isScheduling, setIsScheduling] = useState(false);
+    const [scheduledTask, setScheduledTask] = useState(null);
 
     // Initialisation
     useEffect(() => {
@@ -73,6 +70,51 @@ export default function Dashboard() {
             isInitialLoad = false;
         }
     }, [isScraping]);
+
+    const fetchScheduledTask = async () => {
+        try {
+            const res = await fetch('http://localhost:8000/api/automation/scheduled');
+            const data = await res.json();
+            if (data.task) setScheduledTask(data.task);
+        } catch (err) {
+            console.error("Erreur récupération tâche programmée :", err);
+        }
+    };
+
+    const handleScheduleRepublish = async () => {
+        if (selectedForRepublish.length === 0) return;
+        setIsScheduling(true);
+        try {
+            const response = await fetch('http://localhost:8000/api/automation/schedule-republish', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    items: selectedForRepublish.map(p => ({
+                        id: p.id,
+                        nom: p.nom,
+                        dressing: p.dressing,
+                    }))
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setScheduledTask(data.task);
+                setSelectedForRepublish([]);
+                toast.success(
+                    `${data.task.items.length} article(s) programmé(s) pour ce soir !`,
+                    { style: { background: '#10B981', color: '#fff', fontWeight: 'bold' } }
+                );
+            } else {
+                const data = await response.json();
+                throw new Error(data.detail || 'Erreur lors de la programmation');
+            }
+        } catch (err) {
+            toast.error(`Échec : ${err.message}`);
+        } finally {
+            setIsScheduling(false);
+        }
+    };
 
     // FETCH SYSTEM STATE (Modifiée pour retourner la donnée)
     const fetchSystemState = async () => {
@@ -141,17 +183,8 @@ export default function Dashboard() {
     const handleLaunchPilotage = async () => {
         if (selectedForAutomation.length === 0) return;
 
-        // 📊 AFFICHAGE DU TABLEAU DANS LA CONSOLE DU NAVIGATEUR
-        console.log("🚀 ENVOI DES DONNÉES À L'AUTOMATION :");
-        console.table(selectedForAutomation.map(p => ({
-            ID: p.id,
-            Nom: p.nom,
-            Prix: p.prix_vente,
-            Dressing: p.dressing,
-            Action: p.action_label
-        })));
-
         setIsAutomating(true);
+
         try {
             // Remplacer axios par un fetch cohérent avec le reste
             const response = await fetch('http://localhost:8000/api/automation/baisse-prix', {
@@ -159,6 +192,7 @@ export default function Dashboard() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     produits: selectedForAutomation.map(p => ({
+                        id: p.id,
                         nom: p.nom,
                         dressing: p.dressing
                     }))
@@ -238,10 +272,10 @@ export default function Dashboard() {
 
         // 2. Onglet "Tous" : On affiche tout sans exception
         if (activeSegment === 'Tous') return true;
-    
+
         if (activeSegment === 'Liquidation') {
-            return art.action_label?.includes("LIQUIDATION") || 
-                art.action_label?.includes("SORTIE") || 
+            return art.action_label?.includes("LIQUIDATION") ||
+                art.action_label?.includes("SORTIE") ||
                 art.is_very_old;
         }
 
@@ -314,47 +348,6 @@ export default function Dashboard() {
                 success: { duration: 4000 },
             }
         );
-    };
-
-    const handleBulkRepublish = async (articlesToRepublish) => {
-        const ids = articlesToRepublish.map(a => a.id);
-        if (ids.length === 0) return;
-
-        try {
-            await inventoryService.markMultipleAsRepublished(ids);
-
-            // On retire les articles de la vue (car ils n'ont plus à être republiés aujourd'hui)
-            setInventory(prev => prev.filter(art => !ids.includes(art.id)));
-            toast.success(`${ids.length} articles marqués comme republiés !`);
-        } catch (err) {
-            console.error("Erreur lors de la republication groupée:", err);
-            toast.error("Erreur lors de la mise à jour");
-        }
-    };
-
-    const handleSelectAllVisible = () => {
-        // 1. On récupère les IDs de tous les articles actuellement affichés dans l'onglet
-        const visibleIds = filteredArticles.map(art => art.id);
-
-        // 2. On vérifie si TOUS ces articles sont déjà présents dans ta sélection
-        const areAllSelected = visibleIds.every(id =>
-            selectedForAutomation.some(item => item.id === id)
-        );
-
-        if (areAllSelected) {
-            // 🔄 DÉCOCHER TOUT : On retire de la sélection tous les articles visibles
-            setSelectedForAutomation(prev =>
-                prev.filter(item => !visibleIds.includes(item.id))
-            );
-        } else {
-            // ✅ COCHER TOUT : On ajoute ceux qui ne sont pas encore dans la liste
-            setSelectedForAutomation(prev => {
-                const toAdd = filteredArticles.filter(art =>
-                    !prev.some(p => p.id === art.id)
-                );
-                return [...prev, ...toAdd];
-            });
-        }
     };
 
     const toggleArticleSelection = (article) => {
@@ -440,9 +433,7 @@ export default function Dashboard() {
                     setSearchTerm={setSearchTerm}
                     inventory={inventory}
                     filteredArticles={filteredArticles}
-                    onStageSection={(items) => setSelectedForAutomation(prev => [...prev, ...items.filter(i => !prev.some(p => p.id === i.id))])}
                     onBulkTreat={handleBulkTraitement}
-                    onBulkRepublish={handleBulkRepublish}
                 />
             </header>
 
@@ -461,8 +452,8 @@ export default function Dashboard() {
                             key={tag.id}
                             onClick={() => setRepublishFilter(tag.id)}
                             className={`px-4 py-2 rounded-xl text-[11px] font-black border transition-all active:scale-95 ${republishFilter === tag.id
-                                    ? `${tag.color} ring-2 ring-offset-2 ring-slate-200 shadow-sm`
-                                    : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                                ? `${tag.color} ring-2 ring-offset-2 ring-slate-200 shadow-sm`
+                                : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                                 }`}
                         >
                             {tag.label}
@@ -473,25 +464,6 @@ export default function Dashboard() {
 
             {/* Liste des produits */}
             <div className="space-y-1">
-                <div className="flex justify-start mb-3">
-                    <button
-                        onClick={handleSelectAllVisible}
-                        className="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg font-bold text-xs hover:bg-indigo-600 hover:text-white transition-all border border-indigo-100 shadow-sm active:scale-95"
-                    >
-                        {/* Changement d'icône si tout est déjà sélectionné */}
-                        {filteredArticles.length > 0 && filteredArticles.every(art => selectedForAutomation.some(s => s.id === art.id)) ? (
-                            <>
-                                <span className="text-sm">✕</span>
-                                DÉCOCHER LA SECTION ({filteredArticles.length})
-                            </>
-                        ) : (
-                            <>
-                                <span className="text-lg">+</span>
-                                PRÉPARER LA SECTION ({filteredArticles.length})
-                            </>
-                        )}
-                    </button>
-                </div>
                 {filteredArticles.map((art) => (
                     <ProductCard
                         key={art.id}
