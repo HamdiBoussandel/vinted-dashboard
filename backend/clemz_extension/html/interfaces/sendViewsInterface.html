@@ -1,0 +1,54 @@
+<div id="currentInterface" data-interface-name="sendViews">
+  <!-- Title bar with spinner and minimize button -->
+  <div class="upperButtons" id="upperButtons">
+    <div class="tabBox" id="tabBox">
+      <h6 class="progressTitle d-flex justify-content-center align-items-center">
+        <img class="vinz-image" data-image-name="bot_smiling.png" src=""><span class="ml-2 mr-3" data-i18n="sendViewsInterface_title"></span>
+      </h6>
+    </div>
+    <div class="upperRightButtons">
+      <div id="minimizeButton" class="minimizeButton"></div>
+    </div>
+  </div>
+
+  <div class="d-flex flex-column justify-content-between tabContent">
+    <div class="d-flex flex-column lh-100">
+
+      <!-- Status row -->
+      <div class="d-flex align-items-center justify-content-center mb-2 mt-1">
+        <p class="h6 text-center font-weight-bolder my-0 lh-100" data-i18n="sendViewsInterface_sendingInProgress"></p>
+      </div>
+
+      <!-- Progress bar section -->
+      <div class="d-flex justify-content-around align-items-center text-sm-md border rounded py-2 mb-2">
+        <span class="spinner-border text-primary ml-2" role="status" style="max-height: 40px; max-width: 40px;" id="sendViewsProgressSpinner"></span>
+        <div class="progressInfo flex-column justify-content-center mb-0">
+          <div class="progress-wrapper pt-3">
+            <span class="progress-tooltip" style="left: 0%;">0 %</span>
+            <div class="progress" style="height: 10px;">
+              <div class="progress-bar-vinz bg-primary" role="progressbar" style="width: 0%;"></div>
+            </div>
+          </div>
+          <div id="progressMessage" class="d-flex flex-column align-items-center text-dark">
+            <span class="font-weight-bold articleTitle" data-i18n="requestViewsInfo_sendViews"></span>
+            <span id="sendViewsTimeLeft" class="text-center" data-i18n="requestViewsInfo_timeLeft"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Create request when finished checkbox -->
+      <div id="createRequestWhenFinishedControl" class="custom-control custom-switch ml-n4 text-center my-4">
+        <input type="checkbox" class="custom-control-input" id="createRequestWhenFinished">
+        <label class="custom-control-label align-middle text-sm text-dark lh-90" for="createRequestWhenFinished" data-i18n="requestViewsInfo_createRequestAfterSend"></label>
+      </div>
+
+      <!-- Attention warning -->
+      <div class="mt-1 text-sm-md text-center flex-column align-items-center px-2 text-center lh-120 border border-md border-warning" data-i18n="requestViewsInfo_attention"></div>
+
+      <!-- Stop button -->
+      <div class="d-flex justify-content-center mt-3 mb-2">
+        <span role="button" class="btn btn-sm btn-danger" id="stopSendViewsButton" data-i18n="stopButton"></span>
+      </div>
+    </div>
+  </div>
+</div>

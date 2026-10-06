@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="fr-FR" dir="ltr">
+<head>
+	<meta charset="UTF-8">
+	<title>Del-arte - Plat du jour</title>
+	<meta name="ad.size" content="width=300,height=250">
+	<meta name="viewport"
+	      content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
+	<link rel="icon" href="data:,">
+	<link rel="preconnect" href="https://cdn.acotedemoi.com/">
+	<link rel="preconnect" href="https://cdn.acotedemoi.com">
+	<link rel="preconnect" href="https://cdn.jsdelivr.net">
+	<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+	<link rel="dns-prefetch" href="//cdn.acotedemoi.com">
+	<link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+	<link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide-core.min.css">
+	<link rel="stylesheet" href="https://cdn.acotedemoi.com/del-arte/plat-du-jour/ttd/css/styles_delarteoffer_300x250.css">
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.8/handlebars.min.js"
+	        integrity="sha512-E1dSFxg+wsfJ4HKjutk/WaCzK7S2wv1POn1RRPGh8ZK+ag9l244Vqxji3r6wgz9YBf6+vhQEYJZpSjqWFPg9gg=="
+	        crossorigin="anonymous"
+	        referrerpolicy="no-referrer"></script>
+	<script defer src="https://cdn.acotedemoi.com/public/tc-string-parse.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"
+	        integrity="sha512-NcZdtrT77bJr4STcmsGAESr06BYGE8woZdSdEgqnpyqac7sugNO+Tr4bGwGF3MsnEkGKhU2KL2xh6Ec+BqsaHA=="
+	        crossorigin="anonymous"
+	        referrerpolicy="no-referrer"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+	<script src="https://cdn.acotedemoi.com/del-arte/plat-du-jour/ttd/shop_del-arte_plat-du-jour.js"></script>
+	<script src="https://cdn.acotedemoi.com/del-arte/plat-du-jour/ttd/js/animation_delarteoffer_300x250.js"></script>
+<script>document.addEventListener('error',function(e){var t=e.target;if(t&&t.tagName==='IMG'){t.style.display='none';}},true);</script></head>
+<body class="bloc_body">
+<main id="output" class="format-300x250" data-language="fr-FR" data-adtype="auchan_2026"></main>
+<script id="bannerhtml" type="text/x-handlebars-template">
+	<div class="banner">
+		<a href="{{url urls.operation}}" target="_blank" rel="noopener noreferrer" class="operation-link"
+		   aria-label="Découvrir l’offre Del Arte — ouverture dans un nouvel onglet"></a>
+		<!-- HEADER -->
+		<div class="header">
+			<svg class="pin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 24" aria-hidden="true"
+			     focusable="false">
+				<path fill="#d50032"
+				      d="M8.66 0a8.75 8.75 0 0 1 6.122 2.485 8.4 8.4 0 0 1 2.536 6c0 1.1-.431 2.437-1.02 3.779-.599 1.366-1.407 2.838-2.252 4.241-1.691 2.807-3.57 5.402-4.335 6.434l-.003.003c-.12.162-.278.293-.46.384a1.32 1.32 0 0 1-1.638-.384l-.003-.003c-.764-1.032-2.643-3.627-4.335-6.434-.845-1.403-1.653-2.875-2.252-4.241C.43 10.922 0 9.584 0 8.484c0-2.25.912-4.408 2.536-5.999A8.75 8.75 0 0 1 8.66 0"/>
+				<circle cx="8.659" cy="8.1" r="5.866" fill="#fff"/>
+				<circle cx="8.659" cy="8.1" r="3.073" fill="#228848"/>
+			</svg>
+			<img class="logo"
+			     src="https://cdn.acotedemoi.com/del-arte/public-img/logo.webp"
+			     alt="Restaurant Del Arte"/>
+			<address>
+				<span class="shop-name">{{shop.shopAddress.city}}</span>
+			</address>
+		</div>
+
+		<!-- PROMO -->
+		<img
+			src="https://cdn.acotedemoi.com/del-arte/plat-du-jour/assets/op_claim.webp"
+			alt="{{operation.operationDetails.ad_info.operation_media}}" class="promo" fetchpriority="high"/>
+
+		<!-- CAROUSEL -->
+		<div class="container-carousel rel">
+			<div class="rdv abs">
+				<div class="rdv-tagline-container">
+						<span class="rdv-tagline">
+							Rendez-vous dans votre restaurant
+						</span>
+				</div>
+				<address>
+					<span class="shop-name">{{shop.shopAddress.city}}</span>
+					<span class="shop-street">{{shop.shopAddress.street}}</span>
+				</address>
+			</div>
+			<div class="price abs">
+				<img class="max-wh"
+				     src="https://cdn.acotedemoi.com/del-arte/plat-du-jour/assets/prix.webp"
+				     alt="" fetchpriority="high"/>
+			</div>
+			<div class="splide carousel rel" role="region" aria-roledescription="carousel"
+			     aria-label="Produits contenus dans l’offre">
+				<div class="splide__track">
+					<ul class="splide__list carousel__track" aria-live="off" aria-atomic="true">
+						<li class="splide__slide slide">
+							<img class="max-wh"
+							     src="https://cdn.acotedemoi.com/del-arte/plat-du-jour/assets/picture_1.webp"
+							     alt="" fetchpriority="high"/>
+						</li>
+						<li class="splide__slide slide">
+							<img class="max-wh"
+							     src="https://cdn.acotedemoi.com/del-arte/plat-du-jour/assets/picture_2.webp"
+							     alt=""/>
+						</li>
+						<li class="splide__slide slide">
+							<img class="max-wh"
+							     src="https://cdn.acotedemoi.com/del-arte/plat-du-jour/assets/picture_3.webp"
+							     alt=""/>
+						</li>
+						<li class="splide__slide slide">
+							<img class="max-wh"
+							     src="https://cdn.acotedemoi.com/del-arte/plat-du-jour/assets/picture_4.webp"
+							     alt=""/>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!-- FOOTER -->
+		<div class="footer rel">
+			<div class="cta" aria-hidden="true">
+				{{operation.account.accountDetails.media.cta_display}}
+			</div>
+			{{#if operation.operationDetails.ad_info.operation_legal_notice}}
+				<small class="legal-notice">
+					{{operation.operationDetails.ad_info.operation_legal_notice}}
+				</small>
+			{{/if}}
+		</div>
+	</div>
+
+</script>
+<script type="text/javascript">
+    /**
+ * Incrémente la valeur reçue de 1.
+ *
+ * Exemple :
+ * - si `value` vaut 2, le helper retourne 3
+ *
+ * @param {number|string} value - La valeur à incrémenter.
+ * @param {object} options - Objet fourni automatiquement par Handlebars.
+ * @returns {number} La valeur convertie en entier puis augmentée de 1.
+ */
+
+Handlebars.registerHelper("inc", function (value, options) {
+    return parseInt(value) + 1;
+});
+
+/**
+ * Formate une date de type "YYYY-MM-DD" en "DD/MM/YY".
+ *
+ * Exemple :
+ * - "2026-03-12" devient "12/03/26"
+ *
+ * Si la valeur est absente ou mal formatée, retourne une chaîne vide.
+ *
+ * @param {string} value - La date à formater.
+ * @param {object} options - Objet fourni automatiquement par Handlebars.
+ * @returns {string} La date formatée en "DD/MM/YY" ou une chaîne vide en cas d'erreur.
+ */
+Handlebars.registerHelper("formatDate", function (value, options) {
+    try {
+        date_list = value.split("-");
+        return date_list[2] + "/" + date_list[1] + "/" + date_list[0].slice(-2);
+    } catch (error) {
+        return "";
+    }
+});
+
+/**
+ * Détermine si l'affichage spécifique doit être activé.
+ *
+ * Le helper normalise les valeurs booléennes pouvant être reçues
+ * soit en vrai booléen, soit sous forme de chaîne.
+ *
+ * Conditions :
+ * - `isSpecific` doit valoir `true` ou `"True"`
+ * - `hasCatalog` doit valoir `false` ou `"False"`
+ *
+ * @param {boolean|string} isSpecific - Indique si le mode spécifique est activé.
+ * @param {boolean|string} hasCatalog - Indique si un catalogue est présent.
+ * @returns {boolean} `true` si l'affichage spécifique doit être montré, sinon `false`.
+ */
+Handlebars.registerHelper('shouldShowSpecific', function(isSpecific, hasCatalog) {
+	const isSpecificNormalized = (isSpecific === "True" || isSpecific === true);
+	const hasCatalogNormalized = (hasCatalog === false || hasCatalog === "False");
+	return isSpecificNormalized && hasCatalogNormalized;
+});
+
+/**
+ * Génère une URL finale de tracking à partir d’un template Handlebars
+ * et du contexte courant, puis applique les macros publicitaires selon
+ * la plateforme de diffusion.
+ *
+ * Le helper :
+ * - récupère le produit courant depuis `context.product`
+ * - construit un contexte de compilation enrichi
+ * - compile l’URL principale une première puis une seconde fois
+ * - compile les paramètres UTM
+ * - assemble l’URL finale avec le tracking Armis
+ * - adapte l’encodage et les macros selon la plateforme (`xandr`, `dv360`, `ttd`, etc.)
+ *
+ * @param {string} value - Template Handlebars représentant l’URL principale à transformer.
+ * @param {object} context - Contexte local transmis au helper, pouvant contenir `product`.
+ * @param {object} options - Objet fourni automatiquement par Handlebars.
+ * @returns {string} L’URL finale encodée avec tracking et macros publicitaires.
+ */
+Handlebars.registerHelper('url', function (value, context, options) {
+    const product = context?.product || (Array.isArray(products) ? products[0] : {});
+    const compiledContext = {
+        shop,
+        operation,
+        product,
+        ...(typeof client_data !== "undefined" && client_data.cospirit_format_start_date
+            ? { cospirit_format_start_date: client_data.cospirit_format_start_date }
+            : {}),
+        ...(typeof final_impression_tracking !== "undefined" && final_impression_tracking
+            ? { final_impression_tracking }
+            : {})
+    };
+
+    let first_transform_main_url = Handlebars.compile(value)(compiledContext);
+    let final_transform_main_url = Handlebars.compile(first_transform_main_url)(compiledContext);
+
+    let transform_utm = Handlebars.compile(utm)({
+        ...compiledContext,
+        ...(typeof utm_banner_size !== "undefined" ? { banner_size: utm_banner_size } : {})
+    });
+
+    let url_and_utm = build_url(final_transform_main_url, transform_utm);
+    let transform_armis_tracking = Handlebars.compile(armis_tracking)({ product });
+
+    if (platform === 'xandr') {
+        if (click_tracking_url && click_tracking_url !== "") {
+            return transform_armis_tracking + "${CLICK_URL_ENC}" +
+                encodeURIComponent(encodeURIComponent(click_tracking_url)) +
+                encodeURIComponent(encodeURIComponent(encodeURIComponent(url_and_utm)));
+        } else {
+            return transform_armis_tracking + "${CLICK_URL_ENC}" +
+                encodeURIComponent(encodeURIComponent(url_and_utm));
+        }
+    } else if (platform === 'dv360') {
+        try {
+            if (final_click_tracking && final_click_tracking !== "") {
+                return transform_armis_tracking + macro_google_tracking_enc +
+                    encodeURIComponent(encodeURIComponent(final_click_tracking)) +
+                    encodeURIComponent(encodeURIComponent(encodeURIComponent(url_and_utm)));
+            } else {
+                    return transform_armis_tracking + macro_google_tracking_enc +
+                    encodeURIComponent(encodeURIComponent(url_and_utm));
+                }
+        } catch {
+            return transform_armis_tracking + encodeURIComponent(url_and_utm);
+        }
+    } else if (platform === 'ttd') {
+        try {
+            if (click_tracking_url && click_tracking_url !== "") {
+                return transform_armis_tracking + macro_click_tracking +
+                  encodeURIComponent(encodeURIComponent(final_click_tracking)) +
+                  encodeURIComponent(encodeURIComponent(encodeURIComponent(url_and_utm)));
+            } else {
+                return transform_armis_tracking + macro_click_tracking +
+                encodeURIComponent(encodeURIComponent(url_and_utm));
+            }
+        } catch {
+            if (click_tracking_url && click_tracking_url !== "") {
+                return transform_armis_tracking +
+                encodeURIComponent(click_tracking_url) +
+                encodeURIComponent(encodeURIComponent(url_and_utm));
+            } else {
+                return transform_armis_tracking +
+                encodeURIComponent(url_and_utm);
+            }
+        }
+    }
+    else {
+        return transform_armis_tracking + encodeURIComponent(url_and_utm);
+    }
+});
+
+/**
+ * Vérifie si deux valeurs sont égales dans un bloc Handlebars.
+ *
+ * Ce helper :
+ * - n'affiche pas le bloc principal si l'un des deux arguments est vide ou `undefined`
+ * - compare ensuite `arg1` et `arg2` avec une égalité non stricte (`==`)
+ *
+ * Usage :
+ * {{#eq value1 value2}}
+ *   ... contenu si égalité ...
+ * {{else}}
+ *   ... contenu sinon ...
+ * {{/eq}}
+ *
+ * @param {*} arg1 - Première valeur à comparer.
+ * @param {*} arg2 - Deuxième valeur à comparer.
+ * @param {object} options - Objet fourni automatiquement par Handlebars pour gérer les blocs.
+ * @returns {*} Le rendu du bloc principal ou du bloc inverse selon le résultat du test.
+ */
+Handlebars.registerHelper("eq", function (arg1, arg2, options) {
+    if (arg1 == "" || arg2 == "" || arg1 == undefined || arg2 == undefined) {
+        return options.inverse(this);
+    } else {
+        return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+    }
+});
+
+/**
+ * Vérifie si deux valeurs sont différentes dans un bloc Handlebars.
+ *
+ * Ce helper :
+ * - n'affiche pas le bloc principal si l'un des deux arguments est vide ou `undefined`
+ * - compare ensuite `arg1` et `arg2` avec une inégalité non stricte (`!=`)
+ *
+ * Usage :
+ * {{#neq value1 value2}}
+ *   ... contenu si les valeurs sont différentes ...
+ * {{else}}
+ *   ... contenu sinon ...
+ * {{/neq}}
+ *
+ * @param {*} arg1 - Première valeur à comparer.
+ * @param {*} arg2 - Deuxième valeur à comparer.
+ * @param {object} options - Objet fourni automatiquement par Handlebars pour gérer les blocs.
+ * @returns {*} Le rendu du bloc principal ou du bloc inverse selon le résultat du test.
+ */
+Handlebars.registerHelper("neq", function (arg1, arg2, options) {
+    if (arg1 == "" || arg2 == "" || arg1 == undefined || arg2 == undefined) {
+        return options.inverse(this);
+    } else {
+        return (arg1 != arg2) ? options.fn(this) : options.inverse(this);
+    }
+});
+
+/**
+ * Vérifie si au moins un des arguments fournis est défini et non vide.
+ *
+ * Ce helper de bloc :
+ * - récupère tous les arguments sauf `options`
+ * - teste si au moins une valeur n'est ni une chaîne vide, ni `undefined`, ni `null`
+ * - affiche le bloc principal si c'est le cas, sinon le bloc `else`
+ *
+ * Usage :
+ * {{#or value1 value2 value3}}
+ *   ... contenu affiché si au moins une valeur est présente ...
+ * {{else}}
+ *   ... contenu affiché sinon ...
+ * {{/or}}
+ *
+ * @returns {*} Le rendu du bloc principal ou du bloc inverse selon le résultat du test.
+ */
+Handlebars.registerHelper('or', function () {
+  const options = arguments[arguments.length - 1];
+  const args = Array.prototype.slice.call(arguments, 0, -1);
+
+  const anyTruthy = args.some(v => v !== "" && v !== undefined && v !== null);
+
+  return anyTruthy ? options.fn(this) : options.inverse(this);
+});
+
+/**
+ * Formate une valeur numérique en montant avec le symbole euro.
+ *
+ * Règles :
+ * - si la valeur est un entier, elle est affichée sans décimales
+ * - si la valeur contient des décimales, elle est affichée avec 2 chiffres après la virgule
+ * - le séparateur décimal est remplacé par une virgule
+ *
+ * Exemples :
+ * - 12 devient "12€"
+ * - 12.5 devient "12,50€"
+ * - "12" devient "12€"
+ * - "12.5" devient "12,50€"
+ *
+ * @param {number|string} arg1 - La valeur à formater.
+ * @param {object} options - Objet fourni automatiquement par Handlebars.
+ * @returns {string} La valeur formatée en euro, ou une chaîne vide si le type n'est pas géré.
+ */
+Handlebars.registerHelper("formatCurrency", function (arg1, options) {
+    if (typeof arg1 == "number") {
+        return Number.isInteger(arg1) ? (arg1.toString() + "€") : (arg1.toFixed(2).replace('.', ',') + "€");
+    } else if (typeof arg1 == "string") {
+        return parseInt(arg1) == arg1 ? (arg1 + "€") : (parseFloat(arg1).toFixed(2).replace('.', ',') + "€");
+    } else {
+        return "";
+    }
+});
+
+/**
+ * Compare la longueur d'une valeur avec un seuil donné.
+ *
+ * Ce helper de bloc :
+ * - lit la propriété `length` de `arg1`
+ * - convertit `arg2` en entier
+ * - affiche le bloc principal si `arg1.length` est strictement supérieur à `arg2`
+ * - sinon affiche le bloc `else`
+ *
+ * Usage :
+ * {{#lengthCompare value 10}}
+ *   ... contenu si la longueur est supérieure à 10 ...
+ * {{else}}
+ *   ... contenu sinon ...
+ * {{/lengthCompare}}
+ *
+ * @param {string|Array} arg1 - Valeur possédant une propriété `length`.
+ * @param {number|string} arg2 - Longueur minimale à comparer.
+ * @param {object} options - Objet fourni automatiquement par Handlebars pour gérer les blocs.
+ * @returns {*} Le rendu du bloc principal ou du bloc inverse selon le résultat du test.
+ */
+Handlebars.registerHelper("lengthCompare", function (arg1, arg2, options) {
+    if (arg1.length > parseInt(arg2)) {
+        return options.fn(this);
+    } else {
+        return options.inverse(this);
+    }
+});
+
+/**
+ * Vérifie si deux valeurs sont égales dans un bloc Handlebars.
+ *
+ * Ce helper compare `arg1` et `arg2` avec une égalité non stricte (`==`).
+ *
+ * Usage :
+ * {{#ifEquals value1 value2}}
+ *   ... contenu si les deux valeurs sont égales ...
+ * {{else}}
+ *   ... contenu sinon ...
+ * {{/ifEquals}}
+ *
+ * @param {*} arg1 - Première valeur à comparer.
+ * @param {*} arg2 - Deuxième valeur à comparer.
+ * @param {object} options - Objet fourni automatiquement par Handlebars pour gérer les blocs.
+ * @returns {*} Le rendu du bloc principal ou du bloc inverse selon le résultat de la comparaison.
+ */
+Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
+    return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+});
+
+/**
+ * Affiche le bloc uniquement si `arg` est différent de `value`.
+ *
+ * Contrairement à un helper de bloc classique avec `else`,
+ * celui-ci ne retourne rien lorsque la condition n'est pas remplie.
+ *
+ * Usage :
+ * {{#notDisplayedIf value1 value2}}
+ *   ... contenu affiché seulement si value1 !== value2 ...
+ * {{/notDisplayedIf}}
+ *
+ * @param {*} arg - Valeur à tester.
+ * @param {*} value - Valeur de comparaison.
+ * @param {object} options - Objet fourni automatiquement par Handlebars pour gérer le rendu du bloc.
+ * @returns {*} Le rendu du bloc principal si les valeurs sont différentes, sinon une chaîne vide.
+ */
+Handlebars.registerHelper('notDisplayedIf', function(arg, value, options) {
+    return (arg !== value) ? options.fn(this) : '';
+});
+
+/**
+ * Récupère un élément traduit en fonction de la langue utilisateur.
+ *
+ * Le helper :
+ * - utilise `user_language` si elle est définie
+ * - sinon utilise `"en-US"` comme langue par défaut
+ * - retourne la traduction correspondant à la clé `element_to_translate`
+ *
+ * Exemple :
+ * - si `user_language` vaut `"fr-FR"`, le helper retourne
+ *   `operation_translated_text_elements["fr-FR"][element_to_translate]`
+ *
+ * @param {string} user_language - Langue courante de l'utilisateur.
+ * @param {object} operation_translated_text_elements - Objet contenant les traductions par langue.
+ * @param {string} element_to_translate - Clé de l'élément à traduire.
+ * @returns {*} La valeur traduite correspondant à la langue et à la clé demandée.
+ */
+Handlebars.registerHelper('translate_elements_in_user_language', function(user_language, operation_translated_text_elements, element_to_translate) {
+    let translated_element = user_language ?
+        operation_translated_text_elements[user_language][element_to_translate] :
+        operation_translated_text_elements["en-US"][element_to_translate];
+
+    return translated_element;
+});
+
+/**
+ * Supprime la partie décimale d'une valeur numérique.
+ *
+ * Le helper :
+ * - convertit d'abord la valeur en nombre
+ * - retourne la valeur telle quelle si la conversion échoue
+ * - retourne le nombre tel quel s'il est déjà entier
+ * - sinon retourne sa partie entière inférieure avec `Math.floor()`
+ *
+ * Exemples :
+ * - "12" devient 12
+ * - "12.9" devient 12
+ * - 8 devient 8
+ * - "abc" retourne NaN
+ *
+ * @param {number|string} value - Valeur à convertir et tronquer.
+ * @returns {number} Le nombre entier obtenu, ou `NaN` si la conversion échoue.
+ */
+Handlebars.registerHelper('roundUpToInt', function(value) {
+  value = Number(value);
+
+  if (isNaN(value)) {
+    return value;
+  }
+
+  return value % 1 === 0 ? value : Math.ceil(value);
+});
+
+/**
+ * Vérifie si une valeur contient au moins un des éléments d'une liste.
+ *
+ * Le helper :
+ * - convertit `value` en majuscules
+ * - découpe `list` sur les virgules
+ * - nettoie chaque élément avec `trim()`
+ * - compare sans tenir compte de la casse
+ * - retourne `true` si `value` contient au moins un élément de la liste
+ *
+ * Exemples :
+ * - value = "FR-FR", list = "fr,en" → true
+ * - value = "DE-DE", list = "fr,en" → false
+ *
+ * @param {string} value - Valeur à tester.
+ * @param {string} list - Liste de valeurs séparées par des virgules.
+ * @returns {boolean} `true` si au moins un élément de la liste est contenu dans `value`, sinon `false`.
+ */
+Handlebars.registerHelper('inArray', function(value, list) {
+      const target = (value || '').toUpperCase();
+      const items = list.split(',').map(item => item.trim().toUpperCase());
+      return items.some(item => target.includes(item));
+    });
+
+/**
+ * Formate une plage de dates personnalisée selon la locale,
+ * et retourne un HTML sécurisé avec des balises `<time>`.
+ *
+ * Cas gérés :
+ * - uniquement une date de fin → "Jusqu'au ..."
+ * - uniquement une date de début → "Le ..."
+ * - une date de début et une date de fin valides → plage de dates
+ * - date invalide → message d'erreur HTML
+ *
+ * Le rendu varie selon la langue :
+ * - `fr-FR`
+ * - `de-DE`
+ * - `en-US`
+ *
+ * En français, le 1er jour du mois est affiché sous la forme `1er`.
+ *
+ * @param {string} start - Date de début au format `YYYY-MM-DD`.
+ * @param {string} end - Date de fin au format `YYYY-MM-DD`.
+ * @param {string} locale - Locale utilisée pour le formatage (`fr-FR`, `de-DE`, `en-US`, etc.).
+ * @returns {Handlebars.SafeString} Une chaîne HTML sécurisée contenant une ou deux balises `<time>`.
+ */
+Handlebars.registerHelper('formatCustomDateRange', function(start, end, locale, hideYear, prefixOverride) {
+
+    const shouldHideYear = hideYear === true;
+
+    // Préfixe personnalisé optionnel (ex: "À partir du", ou "" pour aucun préfixe).
+    // Handlebars passe son objet `options` en dernier argument : on ne le retient
+    // que si c'est réellement une chaîne fournie à l'appel.
+    const customPrefix = typeof prefixOverride === 'string' ? prefixOverride : null;
+
+    /**
+     * Convertit une chaîne `YYYY-MM-DD` en objet Date.
+     *
+     * @param {string} str - Date au format `YYYY-MM-DD`.
+     * @returns {Date|null} Un objet Date valide, ou `null` si la valeur est invalide.
+     */
+    function parseDate(str) {
+        if (!str || typeof str !== 'string' || !str.includes('-')) return null;
+        const [year, month, day] = str.split('-').map(Number);
+        return new Date(year, month - 1, day);
+    }
+
+    /**
+     * Formate une date pour l'attribut HTML `datetime`.
+     *
+     * @param {Date} date - Date à convertir.
+     * @returns {string} Date au format `YYYY-MM-DD`.
+     */
+    function formatDateAttr(date) {
+        return date.toISOString().split('T')[0];
+    }
+
+    // Détermine si la locale est française.
+    const isFrenchLocale = (locale || '').toLowerCase().startsWith('fr');
+
+    // Utilise la locale fournie si elle n'est pas française,
+    // sinon applique `fr-FR` par défaut.
+    const lang = (typeof locale === 'string' && !isFrenchLocale)
+        ? locale
+        : 'fr-FR';
+
+    // Libellés traduits selon la langue.
+    const translations = {
+        'fr-FR': { from: 'Du', to: 'au', single: 'Le', until: "Jusqu'au" },
+        'de-DE': { from: 'Vom', to: 'bis', single: 'Am', until: 'Bis zum' },
+        'en-US': { from: 'From', to: 'to', single: 'On', until: 'Until' }
+    };
+
+    const labels = translations[lang] || translations['fr-FR'];
+
+    // Conversion des dates d'entrée.
+    const startDate = parseDate(start);
+    const endDate = parseDate(end);
+
+    /**
+     * Formate le jour du mois.
+     * En français, le premier jour devient `1er`.
+     *
+     * @param {Date} date - Date à formater.
+     * @returns {string} Jour formaté.
+     */
+    const formatDay = (date) => {
+        const day = date.getDate();
+        if (isFrenchLocale && day === 1) {
+            return '1er';
+        }
+        return day.toString();
+    };
+
+    // Cas : seule la date de fin est valide.
+    if (!startDate && endDate && !isNaN(endDate.getTime())) {
+        const dayText = formatDay(endDate);
+        const monthText = endDate.toLocaleDateString(lang, { month: 'long' });
+        const year = endDate.getFullYear();
+
+        const displayDate = (isFrenchLocale)
+            ? `${dayText} ${monthText}${shouldHideYear ? '' : ` ${year}`}`
+            : endDate.toLocaleDateString(lang, { day: 'numeric', month: 'long', year: shouldHideYear ? undefined : 'numeric' });
+
+        const datetime = formatDateAttr(endDate);
+        const prefix = customPrefix !== null ? customPrefix : labels.until;
+        const label = prefix ? `${prefix} ` : '';
+        const html = `<time datetime="${datetime}">${label}${displayDate}</time>`;
+
+        return new Handlebars.SafeString(html.trim());
+    }
+
+    // Cas : seule la date de début est valide.
+    if (startDate && (!endDate || isNaN(endDate.getTime()))) {
+        const dayText = formatDay(startDate);
+        const monthText = startDate.toLocaleDateString(lang, { month: 'long' });
+        const year = startDate.getFullYear();
+
+        const displayDate = (isFrenchLocale)
+            ? `${dayText} ${monthText}${shouldHideYear ? '' : ` ${year}`}`
+            : startDate.toLocaleDateString(lang, { day: 'numeric', month: 'long', year: shouldHideYear ? undefined : 'numeric' });
+
+        const datetime = formatDateAttr(startDate);
+        const prefix = customPrefix !== null ? customPrefix : labels.single;
+        const label = prefix ? `${prefix} ` : '';
+        const html = `<time datetime="${datetime}">${label}${displayDate}</time>`;
+
+        return new Handlebars.SafeString(html.trim());
+    }
+
+    // Cas : aucune date valide exploitable.
+    if (!startDate || !endDate || isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        return new Handlebars.SafeString('<span class="date-error">Date invalide</span>');
+    }
+
+    // Prépare les différentes parties de texte pour la plage.
+    const startDay = formatDay(startDate);
+    const endDay = formatDay(endDate);
+
+    const startMonth = startDate.toLocaleDateString(lang, { month: 'long' });
+    const endMonth = endDate.toLocaleDateString(lang, { month: 'long' });
+    const startYear = startDate.getFullYear();
+    const endYear = endDate.getFullYear();
+
+    let startText, endText;
+
+    const yearSuffix = shouldHideYear ? '' : ` ${endYear}`;
+    // Si les deux dates sont dans le même mois et la même année,
+    // on allège l'affichage de la date de début.
+    if (startYear === endYear && startDate.getMonth() === endDate.getMonth()) {
+        startText = `${labels.from} ${startDay}`;
+        endText = `${labels.to} ${endDay} ${endMonth}${yearSuffix}`;
+
+    // Si les deux dates sont dans la même année mais pas dans le même mois.
+    } else if (startYear === endYear) {
+        startText = `${labels.from} ${startDay} ${startMonth}`;
+        endText = `${labels.to} ${endDay} ${endMonth}${yearSuffix}`;
+
+    // Si les deux dates sont sur des années différentes.
+    } else {
+        const startYearSuffix = shouldHideYear ? '' : ` ${startYear}`;
+        startText = `${labels.from} ${startDay} ${startMonth}${startYearSuffix}`;
+        endText = `${labels.to} ${endDay} ${endMonth}${yearSuffix}`;
+    }
+
+    const startDatetime = formatDateAttr(startDate);
+    const endDatetime = formatDateAttr(endDate);
+
+    const html = `
+        <time datetime="${startDatetime}">${startText}</time>
+        <time datetime="${endDatetime}">${endText}</time>
+    `;
+
+    return new Handlebars.SafeString(html.trim());
+});
+
+/**
+ * Affiche le bloc principal si `cond1` est vraie
+ * et que `str` ne contient pas `substring`.
+ *
+ * Ce helper :
+ * - vérifie d'abord que `cond1` est truthy
+ * - autorise aussi le cas où `str` est vide ou absente
+ * - sinon teste que `substring` n'est pas incluse dans `str`
+ * - retourne le bloc `else` en cas d'erreur
+ *
+ * Usage :
+ * {{#andNotContains cond1 text "promo"}}
+ *   ... contenu affiché si cond1 est vraie et que text ne contient pas "promo" ...
+ * {{else}}
+ *   ... contenu sinon ...
+ * {{/andNotContains}}
+ *
+ * @param {*} cond1 - Condition principale à valider.
+ * @param {string} str - Chaîne dans laquelle chercher.
+ * @param {string} substring - Sous-chaîne à exclure.
+ * @param {object} options - Objet fourni automatiquement par Handlebars pour gérer les blocs.
+ * @returns {*} Le rendu du bloc principal ou du bloc inverse selon le résultat du test.
+ */
+Handlebars.registerHelper('andNotContains', function (cond1, str, substring, options) {
+    try {
+        if (cond1 && (!str || !str.includes(substring))) {
+            return options.fn(this);
+        }
+        return options.inverse(this);
+    } catch (e) {
+        return options.inverse(this);
+    }
+});
+
+/**
+ * Vérifie si une valeur est supérieure ou égale à une autre.
+ *
+ * Ce helper :
+ * - convertit `a` et `b` en nombres
+ * - retourne le bloc `else` si l'une des deux valeurs n'est pas un nombre valide
+ * - affiche le bloc principal si `a` est supérieur ou égal à `b`
+ *
+ * Usage :
+ * {{#supEqual a b}}
+ *   ... contenu si a >= b ...
+ * {{else}}
+ *   ... contenu sinon ...
+ * {{/supEqual}}
+ *
+ * @param {number|string} a - Première valeur à comparer.
+ * @param {number|string} b - Deuxième valeur à comparer.
+ * @param {object} options - Objet fourni automatiquement par Handlebars pour gérer les blocs.
+ * @returns {*} Le rendu du bloc principal ou du bloc inverse selon le résultat de la comparaison.
+ */
+Handlebars.registerHelper('supEqual', function (a, b, options) {
+  const valA = Number(a);
+  const valB = Number(b);
+
+  if (Number.isNaN(valA) || Number.isNaN(valB)) {
+    return options.inverse(this);
+  }
+
+  return valA >= valB ? options.fn(this) : options.inverse(this);
+});
+
+/**
+ * Convertit un contenu en texte brut et peut le tronquer à une longueur maximale.
+ *
+ * Le helper :
+ * - retourne une chaîne vide si `input` est `null` ou `undefined`
+ * - supprime les balises HTML
+ * - remplace certaines entités HTML courantes
+ * - normalise les espaces
+ * - tronque éventuellement le texte avec une ellipse si `maxLen` est fourni
+ *
+ * Exemples :
+ * - "<p>Hello&nbsp;world</p>" devient "Hello world"
+ * - avec `maxLen = 5`, "Bonjour" devient "Bonj…"
+ *
+ * @param {*} input - Contenu à convertir en texte brut.
+ * @param {number|string} maxLen - Longueur maximale du texte final.
+ * @returns {string} Le texte nettoyé, éventuellement tronqué.
+ */
+Handlebars.registerHelper("toPlainText", function (input, maxLen) {
+  if (input == null) return "";
+
+  const hasMax = typeof maxLen === "number" || (typeof maxLen === "string" && maxLen.trim() !== "");
+  const limit = hasMax ? Number(maxLen) : null;
+
+  const text = String(input)
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!limit || Number.isNaN(limit) || limit <= 0) return text;
+  return text.length > limit ? text.slice(0, limit - 1).trimEnd() + "…" : text;
+});
+
+/**
+ * Découpe une chaîne en trois parties :
+ * - le signe éventuel (`+` ou `-`)
+ * - la partie numérique
+ * - l’unité ou le texte restant
+ *
+ * Le helper retourne un HTML sécurisé contenant :
+ * - `.part-1` pour le signe
+ * - `.part-2` pour le nombre
+ * - `.part-3` pour l’unité
+ *
+ * Exemples :
+ * - "+12,5kg" → sign: "+", num: "12,5", unit: "kg"
+ * - "- 30 %" → sign: "-", num: "30", unit: "%"
+ * - "99€" → sign: "", num: "99", unit: "€"
+ *
+ * @param {*} value - Valeur à analyser et découper.
+ * @returns {string|Handlebars.SafeString} La chaîne d'origine si aucun découpage n'est possible,
+ * sinon un HTML sécurisé contenant les trois parties.
+ */
+Handlebars.registerHelper("splitparts", function (value) {
+  const str = String(value ?? "").trim();
+
+  const m = str.match(/^([+-])?\s*([\d.,]+)\s*(.*)$/);
+
+  if (!m) return str;
+
+  const sign = m[1] ?? "";
+  const num  = m[2] ?? "";
+  const unit = (m[3] ?? "").trim();
+
+  return new Handlebars.SafeString(
+    `<span class="part-1">${Handlebars.escapeExpression(sign)}</span>` +
+    `<span class="part-2">${Handlebars.escapeExpression(num)}</span>` +
+    `<span class="part-3">${Handlebars.escapeExpression(unit)}</span>`
+  );
+});
+
+/**
+ * Ajoute une classe CSS si l'objet contient au moins une propriété
+ * dont le nom commence par un préfixe suivi uniquement de chiffres,
+ * et dont la valeur n'est ni vide, ni `null`, ni `undefined`.
+ *
+ * Exemples :
+ * - avec `prefix = "shopGroup"`, les clés valides sont `shopGroup1`, `shopGroup2`, etc.
+ * - si au moins une de ces clés contient une valeur exploitable, le helper retourne ` className`
+ *
+ * @param {object} obj - Objet contenant les propriétés à analyser.
+ * @param {string} prefix - Préfixe attendu au début des clés.
+ * @param {string} className - Classe CSS à retourner si une correspondance valide est trouvée.
+ * @returns {string} La classe précédée d'un espace si une clé correspondante est trouvée, sinon une chaîne vide.
+ */
+Handlebars.registerHelper("classIfPrefix", function (obj, prefix, className) {
+  if (!obj) return "";
+
+  // Construit une expression régulière sécurisée pour matcher :
+  // - le préfixe exact
+  // - suivi uniquement d'un ou plusieurs chiffres
+  const re = new RegExp("^" + prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\d+$");
+
+  // Vérifie s'il existe au moins une clé correspondante
+  // avec une valeur non vide.
+  const hasMatch = Object.keys(obj).some((k) => {
+    if (!re.test(k)) return false;
+    const v = obj[k];
+    return v !== undefined && v !== null && String(v).trim() !== "";
+  });
+
+  return hasMatch ? ` ${className}` : "";
+});
+
+/**
+ * Détermine si le logo de transition d'enseigne doit être affiché.
+ *
+ * Le helper normalise les drapeaux de transition pouvant être reçus soit en
+ * vrai booléen, soit sous forme de chaîne avec une casse variable selon la
+ * source ("True" côté Python, "TRUE" côté API référence).
+ *
+ * Conditions (l'une ou l'autre) :
+ * - `isTransitionFid` est vrai et l'opération n'a pas de catalogue
+ * - `isTransitionCom` est vrai et l'opération a un catalogue
+ *
+ * Usage :
+ * {{#if (shouldShowTransition shop.shopDetails.isTransitionFid
+ *                             shop.shopDetails.isTransitionCom
+ *                             operation.hasCatalog)}}
+ *   ... logo de transition ...
+ * {{else}}
+ *   ... logo standard ...
+ * {{/if}}
+ *
+ * @param {boolean|string} isTransitionFid - Drapeau de transition fidélité.
+ * @param {boolean|string} isTransitionCom - Drapeau de transition commerce.
+ * @param {boolean|string} hasCatalog - Indique si un catalogue est présent.
+ * @returns {boolean} `true` si le logo de transition doit être montré, sinon `false`.
+ */
+Handlebars.registerHelper('shouldShowTransition', function(isTransitionFid, isTransitionCom, hasCatalog) {
+	const isTruthy = (value) => String(value).trim().toLowerCase() === "true";
+	const isTransitionFidNormalized = isTruthy(isTransitionFid);
+	const isTransitionComNormalized = isTruthy(isTransitionCom);
+	const hasCatalogNormalized = isTruthy(hasCatalog);
+	return (isTransitionFidNormalized && !hasCatalogNormalized) || (isTransitionComNormalized && hasCatalogNormalized);
+});
+
+    let platform = "ttd";
+    try {
+        var ad_group_id = macro_ad_group_id;
+    } catch {
+        var ad_group_id = 0;
+    };
+    try {
+        var creative_id = macro_creative_id;
+    } catch {
+        var creative_id = 0;
+    };
+    try {
+        var gdpr_consent = macro_gdpr_consent;
+    } catch {
+        var gdpr_consent = 0;
+    };
+    try {
+        var gdpr_applies = macro_gdpr_applies;
+    } catch {
+        var gdpr_applies = 0;
+    };
+    try {
+        var device_id = macro_device_id;
+    } catch {
+        var device_id = 0;
+    };
+
+
+    try {
+        /* consent string is not replaced in preview and audit mode, therefore we replace it by an empty string */
+        var consent_string = macro_consent_string == "%%TTD_GDPR_APPLIES%%" ? "" : macro_consent_string;
+        var consent_string_okube = macro_consent_string_okube == "%%TTD_GDPR_CONSENT_STRING%%" ? "" : macro_consent_string_okube;
+    } catch {
+        var consent_string = "";
+    };
+
+    var websiteId = get_website_id(ad_group_id);
+    var shop = shops[websiteId];
+    var products = drawnproducts(websiteId, 4);
+    var armclid = uuidv4();
+    var operationId = operation["id"];
+    var adsCampaignId = getelementfromlineitem(ad_group_id, 'acid');
+    let adsCampaignOptimisation = getelementfromlineitem(ad_group_id, 'strategy_optimisation_type');
+    var armis_tracking = "https://act.acotedemoi.com/tag/event?tid=150&srxob=dv360&wid=" + websiteId + "&oid=" + operationId + "&pid={{product.id}}&acid=" + adsCampaignId + "&armclid=" + armclid + "&constr=" + consent_string + "&redir=";
+
+    var supplyType = (window.mraid && typeof window.mraid.getState === "function" && typeof window.mraid.getPlacementType === "function") ? 2 : 1;
+
+    var clickTrackingInApp = "https://audience-api.wts-okube.com/redirect?lever=display-in-app&module=dclic&brand_slug=mesure-okube-cm&campaign_id=%%TTD_ADGROUPID%%-%%TTD_CREATIVEID%%&gdpr_consent=%%TTD_GDPR_CONSENT_STRING%%&gdpr=%%TTD_GDPR_APPLIES%%&redirect_url=";
+    var impressionTrackingInApp = '<img src="https://audience-api.wts-okube.com/pixel.png?lever=display-in-app&module=dprint&brand_slug=mesure-okube-cm&campaign_id=%%TTD_ADGROUPID%%-%%TTD_CREATIVEID%%&ifa=%%TTD_DEVICEID%%&gdpr_consent=%%TTD_GDPR_CONSENT_STRING%%&gdpr=%%TTD_GDPR_APPLIES%%" style="width:1px;height:1px;margin:0;padding:0;border:0;position:absolute;z-index:-1;visibility:hidden;"/>';
+    var clickTrackingClassic = "https://audience-api.wts-okube.com/redirect?lever=display&module=dclic&brand_slug=mesure-okube-cm&campaign_id=%%TTD_ADGROUPID%%-%%TTD_CREATIVEID%%&gdpr_consent=%%TTD_GDPR_CONSENT_STRING%%&gdpr=%%TTD_GDPR_APPLIES%%&redirect_url=";
+    var impressionTrackingClassic = '<img src="https://audience-api.wts-okube.com/pixel.png?lever=display&module=dprint&brand_slug=mesure-okube-cm&campaign_id=%%TTD_ADGROUPID%%-%%TTD_CREATIVEID%%&gdpr_consent=%%TTD_GDPR_CONSENT_STRING%%&gdpr=%%TTD_GDPR_APPLIES%%" style="width:1px;height:1px;margin:0;padding:0;border:0;position:absolute;z-index:-1;visibility:hidden;"/>';
+
+    var click_tracking_url = (supplyType === 2 && clickTrackingInApp && clickTrackingInApp.trim() !== "")
+        ? clickTrackingInApp
+        : clickTrackingClassic;
+
+    var impression_tracking_url = (supplyType === 2 && impressionTrackingInApp && impressionTrackingInApp.trim() !== "")
+        ? impressionTrackingInApp
+        : impressionTrackingClassic;
+
+    impression_tracking_url = impression_tracking_url
+        .replace("%%TTD_CREATIVEID%%", creative_id)
+        .replace("%%TTD_ADGROUPID%%", ad_group_id)
+        .replace("%%TTD_GDPR_CONSENT_STRING%%", gdpr_consent)
+        .replace("%%TTD_GDPR_APPLIES%%", gdpr_applies)
+        .replace("${IO_ID}", campaign_id)
+        .replace("%%TTD_DEVICEID%%", device_id);
+
+    if (impression_tracking_url.includes('<img')) {
+        document.body.insertAdjacentHTML('beforeend', impression_tracking_url);
+    } else {
+        var img = document.createElement('img');
+        img.src = impression_tracking_url;
+        img.width = 1;
+        img.height = 1;
+        img.style.cssText = "margin:0;padding:0;border:0;position:absolute;z-index:-1;visibility:hidden;";
+        document.body.appendChild(img);
+    }
+
+    var product_url = "{{{product.data.product_redirection_client}}}";
+    var operation_url = "{{{operation.operationDetails.ad_info.operation_redirection_client}}}";
+    var utm = "utm_source=armis";
+    var banner_size = "width=300,height=250";
+    let width = banner_size.match(/width=(\d+)/)[1];
+    let height = banner_size.match(/height=(\d+)/)[1];
+    var utm_banner_size = `${width}x${height}`;
+    let client_data = {
+        "strategy_optimisation_type": transformStrategyOptimisationInUtmsCRF(adsCampaignOptimisation),
+        "cospirit_format_start_date": customDateFormat(operation.operationDetails.start_date, "DDMM")
+    };
+    var impression_tracking_url = drawnTrackingImpression();
+    var final_impression_tracking = impression_tracking_url ?
+            impression_tracking_url
+                    .replace("%%TTD_ADGROUPID%%", ad_group_id)
+                    .replace("%%TTD_CREATIVEID%%",campaign_id)
+                    .replace("%%TTD_GDPR_CONSENT_STRING%", consent_string_okube) :
+            false;
+    var final_click_tracking = click_tracking_url ?
+            click_tracking_url
+                    .replace("%%TTD_ADGROUPID%%", ad_group_id)
+                    .replace("%%TTD_CREATIVEID%%",campaign_id)
+                    .replace("%%TTD_GDPR_CONSENT_STRING%", consent_string_okube) :
+            false;
+    var urls = {
+        "product": product_url,
+        "operation": operation_url
+    };
+    var bannerHTML = document.getElementById('bannerhtml').innerHTML;
+    var iconicProducts = bannerHTML.includes('iconicProducts') ? drawnIconicProducts(websiteId) : false;
+    var compiledData = Handlebars.compile(bannerHTML)({
+        "shop": shop,
+        "iconicProducts": iconicProducts,
+        "products": products,
+        "operation": operation,
+        "urls": urls,
+        "final_impression_tracking": final_impression_tracking,
+		"websiteId": websiteId
+    });
+    document.getElementById("output").innerHTML = compiledData;
+</script>
+
+<script type="text/javascript">
+    var product_ids = [];
+    products.forEach(function (product) {
+        product_ids.push(product["id"]);
+    });
+
+    var impression_tag = {
+        wId: websiteId,
+        oId: operationId,
+        acId: adsCampaignId,
+        srxob: 'ttd',
+        tagId: 100,
+        armclid: armclid,
+        pId: product_ids,
+        constr: consent_string
+    };
+
+    (function (d, s) {
+        var find = d.getElementsByTagName.bind(d),
+                tag = d.createElement(s);
+        tag.async = true;
+        (find('head')[0] || find('body')[0] || find(s)[0].parentNode).appendChild(tag);
+        tag.onload = function () {
+            Armis.sendEvent(impression_tag);
+        };
+        tag.src = 'https://content.acotedemoi.com/bundle.js';
+    })(window.document, 'script');
+
+    const main = document.querySelector('main');
+    const adChoicesHTML = `
+        <!-- Privacy Icon (AdChoices) -->
+        <a href="https://armis.tech/mentions-legales/" target="_blank" rel="noopener noreferrer"
+        style="position:absolute; top:0px; right:0px; width:15px; height:15px; z-index:9999;">
+            <img src="https://cdn.acotedemoi.com/armis/public-img/AdChoices.webp"
+                alt="AdChoices"
+                style="width:100%; height:100%;">
+        </a>
+    `;
+    main.insertAdjacentHTML('beforeend', adChoicesHTML);
+</script>
+
+</body>
+</html>

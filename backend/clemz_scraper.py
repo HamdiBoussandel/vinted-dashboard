@@ -5,6 +5,7 @@ import re
 import httpx
 from datetime import datetime
 from playwright.async_api import async_playwright
+from database import NOTION_TOKEN, DATABASE_ID
 
 logging.basicConfig(
     level=logging.INFO,
@@ -19,8 +20,8 @@ class ClemzScraper:
         self.base_url = "https://www.clemz.app/dashboard/activities"
         
         # Configuration Notion (Directe)
-        self.notion_token = "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"
-        self.database_id = "2f54e1655c2280bb8bc4f70cf28c0eac"
+        self.notion_token = NOTION_TOKEN
+        self.database_id = DATABASE_ID
         self.notion_headers = {
             "Authorization": f"Bearer {self.notion_token}",
             "Content-Type": "application/json",

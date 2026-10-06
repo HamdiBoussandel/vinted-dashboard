@@ -1,0 +1,5 @@
+Shadow roots ouverts :
+{"tag": "NEXT-ROUTE-ANNOUNCER", "id": "", "cls": "", "mode": "open"}
+
+Balises custom (potentiels hôtes de shadow DOM fermé) :
+<next-route-announcer>

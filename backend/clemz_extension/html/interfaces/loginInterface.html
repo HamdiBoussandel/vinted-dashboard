@@ -1,0 +1,83 @@
+<div id="currentInterface" data-interface-name="login">
+  <div class="upperButtons" id="upperButtons">
+    <div class="tabBox" id="tabBox">
+      <div id="loginTabLink" data-open-tab="loginTabLink" data-open-tab-container="currentInterface" class="tabLinks active">
+        <img class="font-icon align-middle pb-1 vinz-image" data-image-name="Clemz_logo_short_128x128.png" src=""> <b>Clemz</b>
+      </div>
+      <div id="helpTabLink" data-open-tab="helpTabLink" data-open-tab-container="currentInterface" class="tabLinks">
+        <img class="font-icon text-white align-middle pb-1 vinz-image" data-image-name="question-solid.svg" src="">
+      </div>
+    </div>
+    <div class="upperRightButtons">
+      <div id="minimizeButton" class="minimizeButton"></div>
+    </div>
+  </div>
+  <div aria-labelledby="loginTabLink" class="tabContent show" style="display: block;">
+    <div class="d-flex justify-content-end font-weight-bolder"><span data-i18n="version_number"></span><span id='versionNumber' class='ml-1'>???</span></span></div>
+    <form id="loginForm" class="d-flex flex-column align-items-center">
+      <div class="w-80">
+        <label class="font-weight-bolder" data-i18n="loginInterface_email"></label>
+        <input class="formControl" id="v-email" type="email" placeholder="vincent@email.com">
+      </div>
+      <div class="w-80 mt-3">
+        <label class="font-weight-bolder" data-i18n="loginInterface_passwordLabel"></label>
+        <div>
+          <input class="formControl" id="v-password" type="password" data-i18n-placeholder="loginInterface_passwordPlaceholder">
+        </div>
+        <div class="d-flex mb-4">
+          <input type="checkbox" id="showPassword" class="m-1">
+          <label class="text-sm" for="showPassword" data-i18n="loginInterface_showPasswordLabel"></label>
+        </div>
+      </div>
+      <div class="d-flex  align-items-center justify-content-around w-100 ">
+        <div class="">
+          <a href="https://www.clemz.app/users/sign_up" target="_blank" class="btn btn-xs px-1 btn-primary text-decoration-none" style="width:84px; color: white !important;" data-i18n="loginInterface_signUpButton"></a>
+        </div>
+        <div class="">
+          <button type="submit" class="btn btn-outline-primary font-weight-500 position-relative can-be-disabled" id="loginButton" >
+            <span data-i18n="loginInterface_loginButton"></span>
+            <div class="spinner-border text-primary" role="status" style="position: absolute; right: -20px; display: none;"></div>
+          </button>
+        </div>
+      </div>
+    </form>
+    <div class="d-flex justify-content-end mr-3">
+      <a href="https://www.clemz.app/users/password/new" target="_blank" class="text-sm text-primary" data-i18n="loginInterface_forgotPasswordLink"></a>
+    </div>
+    <div class="d-flex flex-column align-items-center justify-content-center mt-2">
+      <p class="text-sm-md" data-i18n="loginInterface_problemQuestion"></p>
+      <p class="text-sm-md mt-0"><span data-i18n="loginInterface_writeTo"></span><span class="text-danger font-weight-bold text-lg cursor-pointer click-to-copy"><u>bonjour@clemz.app</u></span>
+      </p>
+    </div>
+  </div>
+
+  <div aria-labelledby="helpTabLink" class="tabContent" style="display: none;">
+    <p class="h4 text-center font-weight-bolder text-info mb-4" data-i18n="loginInterface_helpTitle"></p>
+    <div class="d-flex flex-column">
+      <p class="font-weight-bold text-center" data-i18n="loginInterface_problemBug"></p>
+      <p class="font-weight-bold text-center mt-0" data-i18n="loginInterface_sendEmailTo"></p>
+      <div class="text-center">
+        <a class="h3 font-weight-bold text-info click-to-copy">bonjour@clemz.app</a>
+      </div>
+      <a class="d-flex align-items-center justify-content-center text-sm text-info" href="https://www.clemz.app/about" target="_blank">
+        (<span class="" data-i18n="loginInterface_aboutClemz"></span>)
+      </a>
+    </div>
+
+    <p class="text-center mt-4 text-sm text-dark" data-i18n="loginInterface_quickPages"></p>
+    <div class="d-flex justify-content-around mt-2">
+      <a class="btn btn-info d-flex flex-column align-items-center" href="https://www.clemz.app/documentation/resoudre-un-bug" target="_blank">
+        <img class="font-icon text-white vinz-image" data-image-name="readme.svg" src="">
+        <span class="mt-1 text-white" data-i18n="loginInterface_readDocButton"></span>
+      </a>
+      <a class="btn btn-info d-flex flex-column align-items-center" href="https://www.clemz.app/documentation/faq" target="_blank">
+        <img class="font-icon text-white vinz-image" data-image-name="question-solid.svg" src="">
+        <span class="mt-1 text-white" data-i18n="loginInterface_viewFaqButton"></span>
+      </a>
+    </div>
+
+    <div class="d-flex align-items-center justify-content-end" style="position: absolute; bottom: 1px; width: 300px;">
+      <span class="btn btn-xs btn-danger mr-3" id="clearLocalStorage" role="button" data-i18n="loginInterface_clearStorageButton"></span>
+    </div>
+  </div>
+</div>

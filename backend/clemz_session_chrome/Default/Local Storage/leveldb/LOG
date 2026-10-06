@@ -1,11 +1,17 @@
-2026/05/11-14:08:23.090 be18 Creating DB C:\Users\hamdi\Documents\vinted-dashboard\vinted_pro_v2\backend\clemz_session_chrome\Default\Local Storage\leveldb since it was missing.
-2026/05/11-14:08:23.107 be18 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\vinted_pro_v2\backend\clemz_session_chrome\Default\Local Storage\leveldb/MANIFEST-000001
-2026/05/11-14:09:16.516 ac30 Level-0 table #5: started
-2026/05/11-14:09:16.520 ac30 Level-0 table #5: 66021 bytes OK
-2026/05/11-14:09:16.523 ac30 Delete type=0 #3
-2026/05/11-14:09:58.442 ac30 Level-0 table #7: started
-2026/05/11-14:09:58.447 ac30 Level-0 table #7: 31712 bytes OK
-2026/05/11-14:09:58.450 ac30 Delete type=0 #4
-2026/05/11-14:10:03.663 ac30 Level-0 table #9: started
-2026/05/11-14:10:03.667 ac30 Level-0 table #9: 49038 bytes OK
-2026/05/11-14:10:03.669 ac30 Delete type=0 #6
+2026/09/08-13:58:24.189 11f30 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\clemz_session_chrome\Default\Local Storage\leveldb/MANIFEST-000001
+2026/09/08-13:58:24.198 11f30 Recovering log #205
+2026/09/08-13:58:24.198 11f30 Level-0 table #208: started
+2026/09/08-13:58:24.202 11f30 Level-0 table #208: 56127 bytes OK
+2026/09/08-13:58:24.208 11f30 Recovering log #208
+2026/09/08-13:58:24.210 11f30 Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\clemz_session_chrome\Default\Local Storage\leveldb/000208.log 
+2026/09/08-13:58:24.212 11f30 Delete type=0 #205
+2026/09/08-13:58:24.212 11f30 Delete type=2 #209
+2026/09/08-13:58:24.213 9a4 Compacting 4@0 + 1@1 files
+2026/09/08-13:58:24.224 9a4 Generated table #209@0: 98 keys, 39525 bytes
+2026/09/08-13:58:24.224 9a4 Compacted 4@0 + 1@1 files => 39525 bytes
+2026/09/08-13:58:24.226 9a4 compacted to: files[ 0 1 0 0 0 0 0 ]
+2026/09/08-13:58:24.227 9a4 Delete type=2 #198
+2026/09/08-13:58:24.227 9a4 Delete type=2 #201
+2026/09/08-13:58:24.227 9a4 Delete type=2 #203
+2026/09/08-13:58:24.227 9a4 Delete type=2 #206
+2026/09/08-13:58:24.227 9a4 Delete type=2 #208

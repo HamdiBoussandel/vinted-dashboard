@@ -1,0 +1,142 @@
+<div class="toolModal-content">
+  <div class="tabBox w-100">
+    <div data-i18n="offerParamsModal_title" class="frozenTabLinks flex-basis-auto text-lg font-weight-bolder"></div>
+    <span class="close-modal bg-primary-dark px-2" id="close-modal">&times;</span>
+  </div>
+  <div class="toolModal-tabContent px-0" style="display: block;">
+    <form class="p-1 mx-2" id="offerParamsForm">
+
+      <!-- Scope indicator (default vs custom) — shown as title -->
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <span id="offerParamsScopeIndicator" class="text-md font-weight-bolder text-dark"></span>
+        <a id="offerParamsDashboardLink" href="" target="_blank" class="text-sm text-primary"><u data-i18n="modify"></u></a>
+      </div>
+
+      <!-- OFFER PARAMETERS -->
+
+      <!-- Discount mode selector + inline simple/tiers content -->
+      <div class="d-flex align-items-center mt-1">
+        <label class="text-sm mb-0 d-flex align-items-center flex-wrap">
+          <img data-image-name="tags-solid.svg" class="vinz-image font-icon align-middle mr-3" src="" style="max-height: 10px;">
+          <select id="offerParamsDiscountMode" class="rounded border" style="height: 20px;">
+            <option value="simple" data-i18n="offerParamsModal_modeSimple"></option>
+            <option value="tiers" data-i18n="offerParamsModal_modeTiers"></option>
+          </select>
+          <!-- Simple mode: inline "de [input] %" -->
+          <span id="offerSimpleDiscountSection" class="d-inline-flex align-items-center ml-1">
+            <span class="text-muted mx-1" data-i18n="offerParamsModal_simplePrefix"></span>
+            <input type="number" id="offerParamsMaxDiscount" class="text-center rounded border" style="width: 45px; height: 20px;" value="" min="0" max="99" step="1">
+            <span class="ml-1">%</span>
+            <div class="tooltip tooltip-top text-sm ml-2 align-middle" data-i18n-tooltip="offerParamsModal_maxDiscountTooltip">
+              <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle" src="">
+            </div>
+          </span>
+          <!-- Tiers mode: badge-link to clemz.app -->
+          <span id="offerTiersDiscountSection" class="ml-1" style="display: none;">
+            <a id="offerTiersConfigureLink" href="" target="_blank" class="badge btn-outline-primary border cursor-pointer text-xs p-1">
+              ✏️ <span data-i18n="offerParamsModal_tiersLabel"></span>
+              <span id="offerTiersCountBadge" class="badge badge-light ml-1 text-xs"></span>
+            </a>
+          </span>
+        </label>
+      </div>
+      <div class="text-xs text-muted ml-1 mt-0"><span data-i18n="paramsModal_minPriceHint"></span> <a href="https://www.clemz.app/documentation/messages-auto#offers-parameters" target="_blank" class="text-xs text-muted">(<span data-i18n="paramsModal_minPriceReadLink"></span>)</a></div>
+
+      <!-- Rounding -->
+      <div class="d-flex align-items-center mt-1">
+        <label class="text-sm mb-0 d-flex align-items-center">
+          <img data-image-name="calculator-solid.svg" class="vinz-image font-icon align-middle mr-3" src="" style="max-height: 10px;">
+          <span data-i18n="offerParamsModal_rounding"></span>
+          <select id="offerParamsOfferRound" class="rounded ml-1 border" style="max-width: 90px; height: 20px;">
+            <option value="no_round" selected data-i18n="actionInterface_noRounding"></option>
+            <option value="no_decimal_round" data-i18n="actionInterface_roundingEuro"></option>
+            <option value="half_unit_round" data-i18n="actionInterface_roundingHalfUnit"></option>
+            <option value="one_decimal_round" data-i18n="actionInterface_roundingTenCents"></option>
+          </select>
+        </label>
+      </div>
+
+      <!-- Max counter-offers -->
+      <div class="d-flex align-items-center mt-1">
+        <label class="text-sm mb-0 d-flex align-items-center">
+          <img data-image-name="right-left-solid.svg" class="vinz-image font-icon align-middle mr-3" src="" style="max-height: 10px;">
+          <span data-i18n="offerParamsModal_maxCounterOffers"></span><span class="text-danger">*</span>
+          <select id="offerParamsMaxCounterOffers" class="text-center rounded ml-1 border" style="width: 45px; height: 20px;">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+        </label>
+        <div class="tooltip tooltip-left text-sm ml-3 align-middle" data-i18n-tooltip="offerParamsModal_maxCounterOffersTooltip">
+          <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle" src="">
+        </div>
+      </div>
+
+      <!-- Min counter step -->
+      <div class="d-flex align-items-center mt-1">
+        <label class="text-sm mb-0 d-flex align-items-center">
+          <img data-image-name="plus-minus-solid.svg" class="vinz-image font-icon align-middle mr-3" src="" style="max-height: 10px;">
+          <span data-i18n="offerParamsModal_minCounterStep"></span>
+          <input type="number" id="offerParamsMinCounterStep" class="text-center rounded ml-1 border" style="width: 45px; height: 20px;" value="" step="0.01">
+          <span class="ml-1" id="offerMinStepCurrencySymbol">€</span>
+        </label>
+        <div class="tooltip tooltip-top text-sm ml-3 align-middle" data-i18n-tooltip="offerParamsModal_minCounterStepTooltip">
+          <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle" src="">
+        </div>
+      </div>
+
+      <!-- OTHER OPTIONS -->
+      <div class="mt-3"></div>
+
+      <!-- Ignore bad ratings -->
+      <div class="d-flex align-items-center mt-1">
+        <div class="custom-control custom-switch ml-n4">
+          <input type="checkbox" class="custom-control-input" id="offerCheckUserFeedback">
+          <label class="custom-control-label align-middle text-sm" for="offerCheckUserFeedback" data-i18n="offerParamsModal_checkUserFeedback"></label>
+        </div>
+        <div class="tooltip tooltip-left text-sm ml-3" data-i18n-tooltip="offerParamsModal_checkUserFeedbackTooltip">
+          <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle" src="">
+        </div>
+      </div>
+
+      <!-- Read history -->
+      <div class="d-flex align-items-center mt-1">
+        <div class="custom-control custom-switch ml-n4">
+          <input type="checkbox" class="custom-control-input" id="offerMaxHoursInPastSwitch">
+          <label class="custom-control-label align-middle text-sm" for="offerMaxHoursInPastSwitch" data-i18n="offerParamsModal_maxHoursInPast"></label>
+        </div>
+        <div class="tooltip tooltip-left text-sm ml-3" data-i18n-tooltip="offerParamsModal_maxHoursInPastTooltip">
+          <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle" src="">
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center">
+        <!-- MESSAGES (links to VinzApp) -->
+        <div class="d-flex flex-column justify-content-around align-items-center mt-2">
+          <a id="offerParamsCounterOfferMessagesLink" href="" target="_blank" class="badge btn-outline-primary border cursor-pointer text-xs p-1 mb-1">
+            <span data-i18n="offerParamsModal_counterOfferMessages"></span>
+            <span id="offerParamsCounterOfferMessagesCount" class="badge badge-light ml-1 text-xs"></span>
+          </a>
+          <a id="offerParamsFinalOfferMessagesLink" href="" target="_blank" class="badge btn-outline-primary border cursor-pointer text-xs p-1 mb-1">
+            <span data-i18n="offerParamsModal_finalOfferMessages"></span>
+            <span id="offerParamsFinalOfferMessagesCount" class="badge badge-light ml-1 text-xs"></span>
+          </a>
+          <a id="offerParamsAcceptMessagesLink" href="" target="_blank" class="badge btn-outline-primary border cursor-pointer text-xs p-1">
+            <span data-i18n="offerParamsModal_acceptMessages"></span>
+            <span id="offerParamsAcceptMessagesCount" class="badge badge-light ml-1 text-xs"></span>
+          </a>
+        </div>
+
+        <!-- SAVE -->
+        <div class="d-flex justify-content-end mt-3">
+          <button type="submit" class="btn btn-success btn-sm font-weight-500 can-be-disabled position-relative">
+            <span data-i18n="save"></span>
+            <div class="spinner-border spinner-border-sm text-white" role="status" style="position: absolute; display: none;"></div>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,6 @@
+@Venom93290
+
+ocid1.user.oc1..aaaaaaaabsjprbazz4kdjdupnas23jxcx73dfdjh764jlnyzipbttnhs6n4a
+SUBNET OCID : ocid1.subnet.oc1.eu-paris-1.aaaaaaaaet26zpaqwi2vg3la7lu5wm73mdg2vrmtpzcwkyjpahnxg6fjl6aa
+
+ocid1.tenancy.oc1..aaaaaaaa23aiavctaqtlk4k4nkguu6sbrrjqhttfrncq2blbjf65fm4ax7hq

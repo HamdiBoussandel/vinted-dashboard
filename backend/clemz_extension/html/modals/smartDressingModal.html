@@ -1,0 +1,128 @@
+<div class="smart-dressing-header">
+  <div style="position: relative;">
+    <h2 class="mt-2" style="color: #0569c8; font-size: 3rem; font-weight:bold; width: 100%; text-align:center;">
+      <span data-i18n="smartDressingHeader_smartDressingTitle"></span>
+      <span style="display: none;" id="partialSmartDressing" class="text-danger" data-i18n="smartDressingHeader_partialSmartDressing"></span>
+    </h2>
+  </div>
+
+  <div class="vinzContainer d-flex flex-column justify-content-center align-items-center">
+    <div class="vinzRow mb-2 align-items-center justify-content-center w-100" style="max-width: 810px;">
+      <div class="col-6 col-md-3 mb-1 d-flex justify-content-center">
+        <form class="d-flex" id="searchWordForm">
+          <input type="text" placeholder="" data-i18n-placeholder="smartDressingHeader_filterByTitlePlaceholder" name="" class="rounded p-2 ml-3" style="max-width: 150px;">
+          <button type="submit" class="badge badge-success font-weight-500">ok</button>
+        </form>
+      </div>
+
+      <div class="col-6 col-md-3 d-flex justify-content-center pr-0 align-items-center">
+        <span class="font-weight-bolder h6 ml-2" data-i18n="smartDressingHeader_sort"></span>
+        <select id="orderBySelect" class="custom-select ml-1">
+          <option value="relevance_rank" data-i18n="smartDressingHeader_defaultOrder"></option>
+          <option value="view_count" data-i18n="smartDressingHeader_views"></option>
+          <option value="favourite_count" data-i18n="smartDressingHeader_favs"></option>
+          <option value="price" data-i18n="smartDressingHeader_price"></option>
+        </select>
+        <select id="orderSelect" class="custom-select">
+          <option value="desc">⬇️</option>
+          <option value="asc">⬆️</option>
+        </select>
+      </div>
+
+      <div class="col-6 col-md-3 d-flex justify-content-center cursor-pointer" id="toggleFiltersButton">
+        <div class="text-info" id="addFiltersButton" data-i18n="smartDressingHeader_addAdvancedFilters"></div>
+        <div class="text-info d-none" id="removeFiltersButton" data-i18n="smartDressingHeader_removeFilters"></div>
+      </div>
+    </div>
+
+    <div class="vinzRow mb-2 align-items-center justify-content-center w-100 d-none" id="additionnalFilters" style="max-width: 810px;">
+      <div class="col-6 col-md-3 d-flex justify-content-center">
+        <div class="d-flex dropdown-main flex-column">
+          <div class="d-flex align-items-center cursor-pointer">
+            <div class="d-flex font-weight-bolder align-items-center px-2">
+              <span data-i18n="smartDressingHeader_typesOfArticles"></span> (<span id="articleTypeCount">5</span>)
+              <div class="chevron-down"></div>
+            </div>
+          </div>
+          <div class="dropdown-content">
+            <div id="articleTypeForm" class="">
+              <div class="px-2 my-n1 d-flex align-items-center bg-gray-300 rounded">
+                <input checked type="checkbox" id="allArticlesTypesCheckbox">
+                <label class="text-dark font-weight-bolder w-100" for="allArticlesTypesCheckbox" data-i18n="smartDressingHeader_allArticles"></label>
+              </div>
+              <hr>
+              <div class="px-2 my-2 d-flex align-items-center">
+                <input checked type="checkbox" id="draftArticlesCheckbox" class="article-type-checkbox">
+                <label class="text-dark" for="draftArticlesCheckbox" data-i18n="smartDressingHeader_drafts"></label>
+              </div>
+              <div class="px-2 my-4 d-flex align-items-center">
+                <input checked type="checkbox" id="hiddenArticlesCheckbox" class="article-type-checkbox">
+                <label class="text-dark" for="hiddenArticlesCheckbox" data-i18n="smartDressingHeader_hidden"></label>
+              </div>
+              <div class="px-2 my-2 d-flex align-items-center">
+                <input checked type="checkbox" id="normalArticlesCheckbox" class="article-type-checkbox">
+                <label class="text-dark" for="normalArticlesCheckbox" data-i18n="smartDressingHeader_forSale"></label>
+              </div>
+              <div class="px-2 my-4 d-flex align-items-center">
+                <input checked type="checkbox" id="reservedArticlesCheckbox" class="article-type-checkbox">
+                <label class="text-dark" for="reservedArticlesCheckbox" data-i18n="smartDressingHeader_reserved"></label>
+              </div>
+              <div class="px-2 my-2 d-flex align-items-center">
+                <input checked type="checkbox" id="soldArticlesCheckbox" class="article-type-checkbox">
+                <label class="text-dark" for="soldArticlesCheckbox" data-i18n="smartDressingHeader_sold"></label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3 d-flex justify-content-center align-items-center">
+        <div class="d-flex dropdown-main flex-column">
+          <div class="d-flex align-items-center cursor-pointer">
+            <div class="d-flex font-weight-bolder align-items-center px-2">
+              <span id="specialFiltersButton"><span data-i18n="smartDressingHeader_specialFiltersButton"></span> <span id="specialFiltersCount"></span></span>
+              <div class="chevron-down"></div>
+            </div>
+          </div>
+          <div class="dropdown-content">
+            <div id="specialArticlesFiltersForm" class="px-0">
+              <div class="px-2 my-2 d-flex align-items-center">
+                <input checked name="specialArticlesFilters" value="all" type="radio" id="allArticlesRadio">
+                <label class="text-dark" for="allArticlesRadio" data-i18n="smartDressingHeader_specialAll"></label>
+              </div>
+              <div class="px-2 my-3 d-flex align-items-center">
+                <input name="specialArticlesFilters" value="invisible" type="radio" id="uploadedArticlesRadio">
+                <label class="text-dark" for="uploadedArticlesRadio" data-i18n="smartDressingHeader_uploaded"></label>
+              </div>
+              <div class="px-2 my-3 d-flex align-items-center">
+                <input name="specialArticlesFilters" value="invisible" type="radio" id="nonUploadedArticlesRadio">
+                <label class="text-dark" for="nonUploadedArticlesRadio" data-i18n="smartDressingHeader_nonUploaded"></label>
+              </div>
+              <div class="px-2 my-3 d-flex align-items-center">
+                <input name="specialArticlesFilters" value="duplicates" type="radio" id="duplicateArticlesRadio">
+                <label class="text-dark" for="duplicateArticlesRadio" data-i18n="smartDressingHeader_duplicates"></label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <img src="" id="question-mark-icon" class="ml-3 font-icon cursor-pointer vinz-image" data-image-name="question-circle-solid.svg">
+      </div>
+    </div>
+  </div>
+
+  <div class="vinzRow align-items-center justify-content-center mb-3">
+    <div class="">
+      <span id="articleCount" class="font-weight-bolder h5"></span>
+      <span data-i18n="smartDressingHeader_articlesText"></span>
+    </div>
+    <span id="resetFilters" class="badge badge-danger cursor-pointer mx-3" data-i18n="smartDressingHeader_resetFilters"></span>
+    <span id="legendButton" class="badge badge-info cursor-pointer" data-i18n="smartDressingHeader_viewLegend"></span>
+  </div>
+
+  <div class="vinzRow align-items-center justify-content-center d-none" id="emptyResultsMessage">
+    <div class="h6 mt-3 text-danger font-weight-bolder" data-i18n="smartDressingHeader_noResults"></div>
+  </div>
+</div>
+
+<!-- Item grid -->
+<div class="smart-dressing-grid" id="smartDressingGrid"></div>

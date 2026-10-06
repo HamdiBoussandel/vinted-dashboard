@@ -1,0 +1,25 @@
+<div id="progressWarning" class="alert alert-warning text-center text-sm text-dark py-1 px-2 mb-1 d-none"></div>
+<div class="d-flex justify-content-between align-items-center text-sm-md" id="progressContent">
+  <img class="progressImage rounded-img vinz-image" id="progressImage" src="" data-image-name="bot_sad.png">
+  <div class="progressInfo flex-column justify-content-center">
+    <div class="progress-wrapper">
+      <span class="progress-tooltip" style="left: 0%;">0 / 0</span>
+      <div class="progress" style="height: 10px;">
+        <div class="progress-bar-vinz bg-primary" role="progressbar" style="width: 0%;"></div>
+      </div>
+    </div>
+    <div id="progressMessage" class="d-flex flex-column align-items-center text-dark">
+      <span id="articleTitle" class="font-weight-bold articleTitle" data-i18n="progressInterface_errorTitle"></span>
+      <span id="processStage" class="text-center" data-i18n="progressInterface_refreshBrowser"></span>
+    </div>
+  </div>
+</div>
+
+<div class="d-flex justify-content-around align-items-center mb-2" id="progressButtons">
+  <span role="button" class="btn btn-sm btn-dark mb-2" id="progressStopButton" data-i18n="stopButton">🛑</span>
+  <span role="button" class="btn btn-sm btn-success px-3" id="progressCloseButton" style="display: none;" data-i18n="progressInterface_closeButton">❌</span>
+  <span role="button" class="btn btn-sm btn-success px-3" id="progressMinimizeButton" style="display: none;" data-i18n="progressInterface_minimizeButton">🔽</span>
+  <span role="button" class="btn btn-sm btn-success px-3" id="progressRefreshButton" style="display: none;" data-i18n="progressInterface_refreshButton">♻️</span>
+  <span role="button" class="btn btn-sm btn-success px-3" id="progressDressingButton" style="display: none;" data-i18n="progressInterface_closetButton">👗</span>
+  <span role="button" class="btn btn-sm btn-success px-3" id="progressShowListsButton" style="display: none;" data-i18n="progressInterface_showListsButton">📋</span>
+</div>

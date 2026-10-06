@@ -1,0 +1,114 @@
+<div class="toolModal-content">
+  <div class="tabBox w-100">
+    <div id="mainListLink" data-open-tab="mainListLink" data-open-tab-container="listsModal" class="tabLinks flex-basis-auto active">
+      <span data-i18n="listsModal_mainList"></span>
+      <span class="itemCount"></span>
+    </div>
+    <div id="sideListLink" data-open-tab="sideListLink" data-open-tab-container="listsModal" class="tabLinks flex-basis-auto">
+      <span data-i18n="listsModal_sideList"></span>
+      <span class="itemCount"></span>
+    </div>
+    <div id="doneListLink" data-open-tab="doneListLink" data-open-tab-container="listsModal" class="tabLinks flex-basis-auto" data-i18n="listsModal_doneList"></div>
+    <span class="close-modal bg-primary-dark px-2" id="close-modal">&times;</span>
+  </div>
+
+  <div aria-labelledby="mainListLink" class="tabContent px-0" style="display: block;">
+    <div class="d-flex justify-content-around text-sm">
+      <div class="cursor-pointer border-radius bg-gray-200 p-1 list-modify-button" data-list-current="mainList" data-i18n="listsModal_editList"></div>
+      <div>
+        <input type="checkbox" class="d-none list-check-all-button" data-list-current="mainList">
+      </div>
+      <div class="cursor-pointer border-radius p-1 list-clemz-back-button d-none" data-list-current="mainList" data-i18n="listsModal_goBack"></div>
+      <div class="cursor-pointer border-radius bg-gray-600 text-white p-1 list-clemz-send-button d-none" data-list-current="mainList" data-i18n="clemzList_send"></div>
+      <div class="cursor-pointer border-radius p-1 list-back-button d-none" data-list-current="mainList" data-i18n="listsModal_goBack"></div>
+      <div class="cursor-pointer border-radius bg-gray-600 text-white p-1 list-delete-button d-none" data-list-current="mainList" data-i18n="listsModal_remove"></div>
+      <div class="cursor-pointer border-radius bg-gray-600 text-white p-1 list-changelist-button d-none" data-list-current="mainList" data-list-target="sideList" data-i18n="listsModal_toStock"></div>
+      <div class="cursor-pointer border-radius bg-gray-200 p-1 list-move-button" data-list-current="mainList" data-i18n="listsModal_organize"></div>
+      <div class="cursor-pointer border-radius bg-gray-200 p-1 list-clemz-button" data-list-current="mainList" data-i18n="clemzList_button"></div>
+      <div class="cursor-pointer border-radius bg-info text-white px-2 py-1 list-legend-button tooltip tooltip-left" data-list-current="mainList" data-i18n-tooltip="listsModal_legend">
+        <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon text-white align-middle mb-0" src="">
+      </div>
+    </div>
+    <div id="mainListContent" class="listContent pb-3" style="max-height: 245px; min-height: 50px;">
+      <div class="d-none flex-column manage-list-shortcut">
+        <div class="mt-4 pt-4 pb-2 font-weight-bold h5 text-center" data-i18n="listsModal_emptyList"></div>
+        <div class="mt-4 mb-2 font-weight-bold h5 text-center" data-i18n="listsModal_putArticlesToRepost"></div>
+        <div class="text-center">
+          <span class="mt-1 mx-2 btn btn-xs btn-primary" role="button" data-i18n="listsModal_fillLists">
+            <img class="font-icon text-white align-middle mr-2 vinz-image" data-image-name="list-solid.svg">
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="d-none justify-content-around" id="list-shortcuts">
+      <span class="mx-2 btn btn-xs p-2 btn-primary d-flex align-items-center" role="button" id="add-to-list-shortcut">
+        <img class="font-icon text-white align-middle mr-2 vinz-image" data-image-name="list-solid.svg">
+        <span data-i18n="listsModal_completeList"></span>
+      </span>
+      <span class="mx-2 btn btn-xs p-2 btn-primary d-flex align-items-center" role="button" id="repost-shortcut">
+        <img class="font-icon text-white align-middle mr-2 vinz-image" data-image-name="sync-alt-solid.svg">
+        <span data-i18n="listsModal_repost"></span>
+      </span>
+      <span class="mx-2 btn btn-xs p-2 btn-primary d-flex align-items-center" role="button" id="upload-shortcut">
+        <img class="font-icon text-white align-middle mr-2 vinz-image" data-image-name="tshirt-solid.svg">
+        <span data-i18n="listsModal_save"></span>
+      </span>
+    </div>
+
+    <div class="d-none justify-content-center" id="dressing-shortcut">
+      <a class="mx-2 btn btn-xs p-2 btn-primary d-flex align-items-center" role="button" style="color: white !important;" target="_blank" rel="noopener noreferrer">
+        <img class="font-icon text-white align-middle mr-2 vinz-image" data-image-name="tshirt-solid.svg">
+        <span data-i18n="listsModal_goToVinted"></span>
+      </a>
+    </div>
+  </div>
+
+  <div aria-labelledby="sideListLink" class="tabContent px-0" style="display: none;">
+    <div class="d-flex justify-content-around align-items-center text-sm">
+      <div>
+        <input type="checkbox" class="list-check-all-button" data-list-current="sideList">
+      </div>
+      <div class="cursor-pointer border-radius bg-gray-200 p-1 list-delete-button" data-list-current="sideList" data-i18n="listsModal_remove"></div>
+      <div class="cursor-pointer border-radius bg-gray-200 p-1 list-changelist-button" data-list-current="sideList" data-list-target="mainList" data-i18n="listsModal_toMain"></div>
+      <div class="cursor-pointer border-radius bg-gray-200 p-1 list-move-button" data-list-current="sideList" data-i18n="listsModal_organize"></div>
+    </div>
+    <div id="sideListContent" class="listContent">
+      <div class="d-none flex-column manage-list-shortcut">
+        <div class="mt-4 pt-4 pb-2 font-weight-bold h5 text-center" data-i18n="listsModal_emptyList"></div>
+        <div class="mt-4 mb-2 font-weight-bold h5 text-center" data-i18n="listsModal_putArticlesToLater"></div>
+        <div class="text-center">
+          <span class="mt-1 mx-2 btn btn-xs btn-primary" role="button" data-i18n="listsModal_fillLists">
+            <img class="font-icon text-white align-middle mr-2 vinz-image" data-image-name="list-solid.svg">
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div aria-labelledby="doneListLink" class="tabContent px-0" style="display: none;">
+    <div class="d-flex justify-content-around text-sm">
+      <div class="cursor-pointer border-radius p-1 list-back-button d-none" data-list-current="doneList" data-i18n="listsModal_goBack"></div>
+      <div class="cursor-pointer border-radius bg-gray-200 p-1 d-none" data-list-current="doneList" id="backToMainListButton" data-i18n="listsModal_toMain"></div>
+      <div class="cursor-pointer border-radius bg-gray-200 p-1 list-modify-button" data-list-current="doneList" data-i18n="listsModal_putBackInLists"></div>
+      <div class="cursor-pointer border-radius bg-gray-200 p-1 mr-3 list-empty-button" data-list-current="doneList" data-i18n="listsModal_empty"></div>
+    </div>
+    <div id="doneListContent" class="listContent">
+      <div class="d-none flex-column" id="empty-done-list">
+        <div class="mt-4 pt-4 pb-2 font-weight-bold h5 text-center" data-i18n="listsModal_emptyList"></div>
+        <div class="mt-4 font-weight-bold h5 text-center" data-i18n="listsModal_republishedAppearHere"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- item list template -->
+  <div style="display: none;">
+    <div id="itemTemplate" class="list-item align-middle bg-white">
+      <input type="number" class="d-none item-order text-sm" style="width: 27px">
+      <input type="checkbox" for="" class="d-none item-checkbox ">
+      <div class="image">
+        <img src="">
+      </div>
+      <a href="#" target="_blank" class="title"></a>
+    </div>
+  </div>
+</div>

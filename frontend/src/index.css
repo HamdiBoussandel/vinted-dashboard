@@ -1,68 +1,90 @@
 @import "tailwindcss";
 
-/* Regular */
+/* Palette d'accent indigo/lavande + ombres douces, réutilisables via les
+   utilitaires Tailwind générés (bg-brand-500, shadow-soft, etc.) plutôt que
+   des couleurs arbitraires en dur dispersées dans les composants. */
+@theme {
+  --color-brand-50: #EEF2FF;
+  --color-brand-100: #E0E7FF;
+  --color-brand-200: #C7D2FE;
+  --color-brand-300: #A5B4FC;
+  --color-brand-400: #818CF8;
+  --color-brand-500: #6366F1;
+  --color-brand-600: #4F46E5;
+  --color-brand-700: #4338CA;
+
+  --color-surface: #F5F4FC;
+
+  --shadow-soft: 0 2px 12px rgba(99, 102, 241, 0.07);
+  --shadow-soft-lg: 0 10px 30px rgba(99, 102, 241, 0.12);
+}
+
 @font-face {
-  font-family: 'GoogleSans';
-  src: url('./fonts/GoogleSans-Regular.ttf') format('truetype');
+  font-family: 'Satoshi';
+  src: url('./fonts/Satoshi-Regular.woff2') format('woff2'),
+       url('./fonts/Satoshi-Regular.woff') format('woff');
   font-weight: 400;
   font-style: normal;
 }
 
-/* Medium (pour vos classes font-medium) */
+/* Satoshi - Medium */
 @font-face {
-  font-family: 'GoogleSans';
-  src: url('./fonts/GoogleSans-Medium.ttf') format('truetype');
+  font-family: 'Satoshi';
+  src: url('./fonts/Satoshi-Medium.woff2') format('woff2'),
+       url('./fonts/Satoshi-Medium.woff') format('woff');
   font-weight: 500;
   font-style: normal;
 }
 
-/* SemiBold (pour vos classes font-semibold) */
+/* Satoshi - Bold */
 @font-face {
-  font-family: 'GoogleSans';
-  src: url('./fonts/GoogleSans-SemiBold.ttf') format('truetype');
-  font-weight: 600;
+  font-family: 'Satoshi';
+  src: url('./fonts/Satoshi-Bold.woff2') format('woff2'),
+       url('./fonts/Satoshi-Bold.woff') format('woff');
+  font-weight: 700;
   font-style: normal;
 }
 
-/* Bold (pour vos titres) */
+/* Satoshi - Black */
 @font-face {
-  font-family: 'GoogleSans';
-  src: url('./fonts/GoogleSans-Bold.ttf') format('truetype');
-  font-weight: 700;
+  font-family: 'Satoshi';
+  src: url('./fonts/Satoshi-Black.woff2') format('woff2'),
+       url('./fonts/Satoshi-Black.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+}
+
+/* Satoshi - Light */
+@font-face {
+  font-family: 'Satoshi';
+  src: url('./fonts/Satoshi-Light.woff2') format('woff2'),
+       url('./fonts/Satoshi-Light.woff') format('woff');
+  font-weight: 300;
   font-style: normal;
 }
 
 /* Applique la police à tout le projet */
 @layer base {
   body {
-  font-family: 'GoogleSans', sans-serif;
-  letter-spacing: -0.02em;
-  /*background-color: #f4f3f8;*/
-  /*color:"#484840";*/
-  background-color: #DBEBF8;
-  color: #352b38;
+    font-family: 'Satoshi', sans-serif;
+    letter-spacing: -0.02em;
+    background-color: #F5F4FC;
+    color: #352b38;
   }
 }
 
 /* On s'assure que le body prend toute la hauteur */
 html, body, aside, #root {
-  font-family: 'GoogleSans', sans-serif;
+  font-family: 'Satoshi', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   height: 100%;
   margin: 0;
   padding: 0;
-  /*color:"#484840";*/
-  /*color: yellow;*/
-}
-
-aside, nav {
-  background-color: white;
-  border: 1px;
 }
 
 input, button, select, textarea {
-  font-family: 'GoogleSans', sans-serif;
+  font-family: 'Satoshi', sans-serif;
 }
 
 /* Optionnel : Rendre les chiffres plus lisibles (alignement vertical parfait) */
@@ -98,18 +120,18 @@ main::-webkit-scrollbar-track {
 }
 
 main::-webkit-scrollbar-thumb {
-  background-color: rgba(112, 225, 245, 0.4); /* Couleur Cyan translucide */
+  background-color: rgba(99, 102, 241, 0.35); /* Indigo translucide */
   border-radius: 20px; /* Bords bien arrondis */
 }
 
 main::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(112, 225, 245, 0.7); /* Plus visible au survol */
+  background-color: rgba(99, 102, 241, 0.6); /* Plus visible au survol */
 }
 
 /* Optionnel : Masquer totalement la barre sur Firefox et IE */
 main {
   scrollbar-width: thin;
-  scrollbar-color: rgba(112, 225, 245, 0.4) transparent;
+  scrollbar-color: rgba(99, 102, 241, 0.35) transparent;
 }
 
 /* Conteneur plein écran pour le chargement initial */
@@ -119,7 +141,7 @@ main {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background-color: #DBEBF8;
+  background-color: #F5F4FC;
 }
 
 .loader {

@@ -1,0 +1,18 @@
+<div class="d-flex flex-column">
+  <h3 class="text-center font-weight-bold mb-3" data-i18n="clemzList_pickerTitle"></h3>
+  <a href="https://www.clemz.app/dashboard/item_lists" target="_blank" class="d-block text-left mb-3" data-i18n="clemzList_seeMyLists"></a>
+  <div id="clemzList-picker-loading" class="text-center my-3">
+    <span class="spinner-border text-primary" role="status"></span>
+  </div>
+  <div id="clemzList-picker-form" class="d-none">
+    <select id="clemzList-select" class="formControl-sm w-100 p-1"></select>
+    <input type="text" id="clemzList-new-title" class="formControl-sm w-100 p-1 mt-2 d-none" data-i18n-placeholder="clemzList_newListPlaceholder">
+  </div>
+  <div class="d-flex justify-content-between align-items-center w-100 mt-3">
+    <div class="btn btn-danger" id="clemzList-picker-cancel" role="button" data-i18n="cancel"></div>
+    <button type="button" class="btn btn-success d-none" id="clemzList-picker-confirm">
+      <span data-i18n="confirm"></span>
+      <span class="spinner-border spinner-border-sm text-white ml-2" role="status" style="display:none;"></span>
+    </button>
+  </div>
+</div>

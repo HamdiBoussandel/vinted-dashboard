@@ -1,0 +1,112 @@
+<div class="smart-inbox-header">
+  <div style="width: 375px;">
+    <h2 class="mb-2" style="color: #0569c8; font-size: 3rem; font-weight:bold; width: 100%; text-align:center;">
+      <span data-i18n="smartInboxHeader_smartInboxTitle"></span>
+    </h2>
+
+    <div class="vinzContainer d-flex flex-column justify-content-center align-items-center">
+
+      <div class="mb-2 d-flex align-items-center justify-content-between w-100">
+        <div class="mb-1 d-flex justify-content-center">
+          <form class="d-flex" id="searchWordForm">
+            <input type="text" placeholder="" data-i18n-placeholder="smartInboxHeader_msgTitlePlaceholder" name="" class="rounded p-2" style="max-width: 170px;">
+            <button type="submit" class="badge badge-success font-weight-500">ok</button>
+          </form>
+          <span class="text-sm ml-4 tooltip tooltip-left d-flex align-items-center" data-i18n-tooltip="smartInboxHeader_searchWordTooltip">
+            <img class="font-icon align-middle pb-1 vinz-image" data-image-name="question-circle-solid.svg" src="">
+          </span>
+        </div>
+
+        <div class="d-flex justify-content-center pr-0 align-items-center">
+          <span class="font-weight-bolder h6 mr-2" data-i18n="smartInboxHeader_sort"></span>
+          <select id="orderSelect" class="custom-select">
+            <option value="desc">⬇️</option>
+            <option value="asc">⬆️</option>
+          </select>
+        </div>
+
+        <div class="d-flex justify-content-center cursor-pointer" id="toggleFiltersButton">
+          <div class="text-info" id="addFiltersButton" data-i18n="smartInboxHeader_addAdvancedFilters"></div>
+          <div class="text-info d-none" id="removeFiltersButton" data-i18n="smartInboxHeader_removeFilters"></div>
+        </div>
+      </div>
+
+      <div class="align-items-center justify-content-between w-100 d-none mb-2" id="additionnalFilters">
+
+        <div class="d-flex justify-content-center align-items-center">
+          <div class="d-flex dropdown-main flex-column">
+            <div class="d-flex align-items-center cursor-pointer">
+              <div class="d-flex font-weight-bolder align-items-center px-2">
+                <span id="specialFiltersButton" class="text-center" data-i18n="smartInboxHeader_specialFilters"></span>
+                <span id="specialFiltersCount"></span>
+                <div class="chevron-down"></div>
+              </div>
+            </div>
+            <div class="dropdown-content">
+              <div id="specialMessagesFiltersForm" class="px-0">
+                <div class="px-2 my-2 d-flex align-items-center">
+                  <input checked name="specialMessagesFilters" value="all" type="radio" id="allMessagesRadio">
+                  <label class="text-dark cursor-pointer" for="allMessagesRadio" data-i18n="smartInboxHeader_noFilter"></label>
+                </div>
+                <div class="px-2 my-3 d-flex align-items-center">
+                  <input name="specialMessagesFilters" value="invisible" type="radio" id="unreadMessagesRadio">
+                  <label class="text-dark cursor-pointer" for="unreadMessagesRadio" data-i18n="smartInboxHeader_unread"></label>
+                </div>
+                <div class="px-2 my-3 d-flex align-items-center">
+                  <input name="specialMessagesFilters" value="invisible" type="radio" id="noArticleMessagesRadio">
+                  <label class="text-dark cursor-pointer" for="noArticleMessagesRadio" data-i18n="smartInboxHeader_noAd"></label>
+                </div>
+                <div class="px-2 my-3 d-flex align-items-center">
+                  <input name="specialMessagesFilters" value="identified" type="radio" id="noVintieMessagesRadio">
+                  <label class="text-dark cursor-pointer" for="noVintieMessagesRadio" data-i18n="smartInboxHeader_vintieGone"></label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <img src="" id="question-mark-icon" class="ml-2 font-icon cursor-pointer vinz-image" data-image-name="question-circle-solid.svg">
+        </div>
+
+        <form id="dateFilterForm" class="d-flex justify-content-center align-items-center mr-4 pr-2">
+          <span class="font-weight-bolder h6 mr-2" data-i18n="smartInboxHeader_dateLabel"></span>
+          <select id="dateComparisonSelect" class="custom-select px-0 py-1">
+            <option value="less" data-i18n="smartInboxHeader_dateLess"></option>
+            <option value="more" data-i18n="smartInboxHeader_dateMore"></option>
+          </select>
+          <input type="number" min="0" placeholder="X" class="text-center rounded no-arrow mx-1" style="width: 30px; height: 20px;" id="daysFilterInput">
+          <span class="mr-1" data-i18n="smartInboxHeader_days"></span>
+          <button type="submit" class="badge badge-success font-weight-500">ok</button>
+        </form>
+  
+      </div>
+      
+      <div class="d-flex align-items-center justify-content-between mb-3 w-100">
+        <div class="">
+          <span class="font-weight-bolder h6 mr-2" data-i18n="smartInboxHeader_brand"></span>
+          <select id="tagFilter" class="custom-select text-center px-0">
+            <option value="all" selected data-i18n="smartInboxHeader_all"></option>
+            <option value="none" data-i18n="smartInboxHeader_none"></option>
+            <option value="🟥">🟥</option>
+            <option value="🟢">🟢</option>
+            <option value="💛">💛</option>
+            <option value="🔷">🔷</option>
+          </select>
+        </div>
+        <div class="d-flex">
+          <div class="">
+            <span id="messageTotal" class="font-weight-bolder h5"></span>
+            <span data-i18n="smartInboxHeader_messagesText"></span>
+          </div>
+          <span id="resetFilters" class="badge badge-danger cursor-pointer ml-3" data-i18n="smartInboxHeader_resetFilters"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty results -->
+    <div class="vinzRow align-items-center justify-content-center d-none" id="emptyResultsMessage">
+      <div class="h6 mt-5 text-danger font-weight-bolder" data-i18n="smartInboxHeader_noResults"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Conversation list -->
+<div class="d-flex flex-column align-items-center justify-content-center" id="conversation-list"></div>

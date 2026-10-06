@@ -1,0 +1,69 @@
+<div class="toolModal-content">
+  <div class="tabBox w-100">
+    <div data-i18n="actionInterface_protectionModalTitle" class="frozenTabLinks flex-basis-auto text-lg font-weight-bolder"></div>
+    <span class="close-modal bg-primary-dark px-2">&times;</span>
+  </div>
+  <div class="toolModal-tabContent px-0" style="display: block;">
+    <div class="p-2 mx-2" id="protectionSettingsForm">
+
+      <!-- Pacing: label + select + sub-options in a flex column -->
+      <div class="d-flex align-items-start mt-2">
+        <span class="font-weight-bolder text-sm mr-2" style="line-height: 28px;" data-i18n="actionInterface_pacingLabel"></span>
+        <div class="d-flex flex-column">
+          <select id="pacingModeSelect" class="custom-select custom-select-sm text-sm" style="width: auto; max-width: 200px;">
+            <option value="off" data-i18n="actionInterface_pacingRadioOff"></option>
+            <option value="simple" data-i18n="actionInterface_pacingRadioSimple"></option>
+            <option value="humanLike" data-i18n="actionInterface_pacingRadioHuman"></option>
+          </select>
+
+          <!-- Simple spacing options -->
+          <div id="simplePacingOptions" class="mt-1 d-none">
+            <div class="d-flex align-items-center">
+              <input type="number" id="pacingSimpleValueInput" class="text-center text-sm rounded" style="width: 50px; height: 24px;" value="20" min="1"> <span class="ml-1 text-sm">sec</span>
+            </div>
+          </div>
+
+          <!-- Human-like options -->
+          <div id="humanLikePacingOptions" class="mt-1 d-none">
+            <div class="text-xs text-muted my-1 lh-110" data-i18n="actionInterface_pacingHumanInfo"></div>
+            <select id="pacingHumanPresetSelect" class="custom-select custom-select-sm text-sm" style="width: auto; max-width: 200px;">
+              <option value="medium" data-i18n="actionInterface_pacingPresetMedium"></option>
+              <option value="slow" data-i18n="actionInterface_pacingPresetSlow"></option>
+              <option value="slower" data-i18n="actionInterface_pacingPresetSlower"></option>
+              <option value="custom" data-i18n="actionInterface_pacingPresetCustom"></option>
+            </select>
+            <div id="pacingCustomValueContainer" class="mt-1 d-none">
+              <input type="number" id="pacingHumanCustomValueInput" class="text-center text-sm rounded" style="width: 50px; height: 24px;" value="45" min="20" max="600"> <span class="text-sm">sec</span>
+              <div id="pacingCustomWarning" class="text-xs text-warning mt-1 d-none" data-i18n="actionInterface_pacingCustomWarning"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Execution mode (repost only, hidden for modify) -->
+      <div id="executionModeSection" class="d-none">
+        <hr class="my-2">
+        <div class="custom-control custom-switch ml-n4">
+          <div class="d-flex justify-content-start align-items-start">
+            <input type="checkbox" class="custom-control-input mt-1" id="executionModeCheckbox">
+            <label class="d-flex flex-column custom-control-label align-middle text-sm" for="executionModeCheckbox">
+              <span class="align-middle" data-i18n="actionInterface_executionModeLabel"></span>
+              <div class="text-sm text-danger mt-1 lh-110" data-i18n="actionInterface_executionModeInfo"></div>
+            </label>
+            <span class="tooltip tooltip-left mb-1 text-sm ml-5" data-i18n-tooltip="actionInterface_executionModeTooltip">
+              <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle mb-0" src="">
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Save button -->
+      <hr class="my-2">
+
+      <div class="text-center mt-3 mb-1">
+        <button type="button" id="protectionSettingsSave" class="btn btn-sm btn-primary px-4" data-i18n="save"></button>
+      </div>
+
+    </div>
+  </div>
+</div>

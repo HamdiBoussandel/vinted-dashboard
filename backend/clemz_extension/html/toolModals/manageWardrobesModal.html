@@ -1,0 +1,35 @@
+<div class="toolModal-content">
+  <div class="tabBox w-100">
+    <div class="frozenTabLinks flex-basis-auto text-lg font-weight-bolder" data-i18n="manageWardrobesModal_title"></div>
+    <span class="close-modal bg-primary-dark px-2" id="close-modal">&times;</span>
+  </div>
+  <div class="toolModal-tabContent px-0" style="display: block;">
+    <div class="d-flex flex-column align-items-start justify-content-center mt-3 px-3">
+      <!-- List of linked wardrobes -->
+      <p class="mb-2">
+        <span data-i18n="manageWardrobesModal_linkedWardrobes"></span>
+        <br>
+        <span id="linkedWardrobesList"></span></p>
+      
+      <!-- Dashboard info -->
+      <div class="lh-100">
+      </div>
+
+      <hr class="w-100 my-4">
+      
+      <!-- Add current wardrobe Button -->
+      <div class="d-flex flex-column align-items-center justify-content-center w-100 mt-2">
+        <span id="wardrobeAlreadyLinkedWarning" class="text-dark text-sm mb-2" style="display: none;" data-i18n="manageWardrobesModal_wardrobeAlreadyLinkedWarning"></span>
+        <button id="addWardrobeButton" class="btn btn-primary can-be-disabled" style="position: relative;">
+          <span id="addWardrobeButtonText" data-i18n="manageWardrobesModal_addWardrobeButton"></span>
+          <div class="spinner-border text-white" role="status" style="position: absolute; top:30%; left: 10%; display:none;"></div>
+        </button>
+        <span class="text-muted text-sm mt-3" data-i18n="manageWardrobesModal_dashboardInfo"></span>
+        <span class="text-muted text-sm mt-2" data-i18n="manageWardrobesModal_documentationInfo"></span>
+
+      </div>
+    </div>
+  </div>
+</div>
+  
+  

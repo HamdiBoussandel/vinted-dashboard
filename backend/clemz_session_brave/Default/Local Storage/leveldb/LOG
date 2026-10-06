@@ -1,0 +1,6 @@
+2026/09/08-13:34:30.479 18830 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\clemz_session_brave\Default\Local Storage\leveldb/MANIFEST-000001
+2026/09/08-13:34:30.483 18830 Recovering log #121
+2026/09/08-13:34:30.484 18830 Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\clemz_session_brave\Default\Local Storage\leveldb/000121.log 
+2026/09/08-13:36:32.110 11e64 Level-0 table #126: started
+2026/09/08-13:36:32.117 11e64 Level-0 table #126: 74296 bytes OK
+2026/09/08-13:36:32.120 11e64 Delete type=0 #121

@@ -1,0 +1,354 @@
+<div class="alert invisible text-sm-md globalMessage bg-warning p-2 ml-3 w-90" id="toolModalMessage" role="alert">
+  <button type="button" class="close text-dark" id="toolModalMessage-close" style="width: 40px; margin-right: -14px ;">
+    <span class="h4">×</span>
+  </button>
+  <span id="toolModalMessageContent" class="text-dark"></span>
+</div>
+
+<div class="overflow-auto-y niceScrollbar overflow-hidden-x pl-2" style="">
+  <div class="text-sm text-center" data-i18n="modifyPhotosParams_howItWorks"></div>
+
+  <!-- Rotate and Crop global control -->
+  <div id="rotateAndCropControl" class="custom-control custom-switch ml-n2 d-flex align-items-center">
+    <input type="checkbox" class="custom-control-input" id="rotateAndCrop" data-toggle='collapse' data-target='#rotateAndCropParams'>
+    <label class="custom-control-label align-middle text-md font-weight-bold" for="rotateAndCrop" role="button" data-i18n="modifyPhotosParams_rotateOrCrop"></label>
+  </div>
+  <div id="rotateAndCropParams" class="collapse-clemz d-none ml-2">
+    <div class="text-sm d-flex justify-content-around align-items-center mt-2">
+      <div>
+        <span data-i18n="modifyPhotosParams_turn"></span>
+        <input type="text" id="rotateAngle" class="text-center rounded fake-disabled fake-enabled" style="width: 40px; height: 20px;" value="0">
+        <span data-i18n="modifyPhotosParams_degrees"></span>
+      </div>
+      <div class="">
+        <span data-i18n="modifyPhotosParams_crop"></span>
+        <select id="cropPercent" class="rounded fake-disabled fake-enabled text-sm" role="button">
+          <option value="none" selected>0%</option>
+          <option value="small">5%</option>
+          <option value="medium">10%</option>
+          <option value="large">15%</option>
+          <option value="large+">20%</option>
+          <option value="large++">25%</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <hr class="border-black border-sm mx-2 my-3">
+
+  <!-- Add FRAME global control -->
+  <div id="addFrameControl" class="custom-control custom-switch ml-n2 d-flex align-items-center">
+    <input type="checkbox" class="custom-control-input" id="addFrame" data-toggle='collapse' data-target='#frameParams'>
+    <label class="custom-control-label align-middle text-md font-weight-bold" for="addFrame" role="button" data-i18n="modifyPhotosParams_addFrame"></label>
+  </div>
+  <div id="frameParams" class="collapse-clemz d-none ml-2">
+    <div class="d-flex align-items-center justify-content-start  mt-2">
+      <div class="text-sm text-dark">
+        <img data-image-name="fill-drip-solid.svg" class="vinz-image font-icon align-middle mb-0 " src="">
+        <span data-i18n="modifyPhotosParams_frameColorToApply"></span>
+      </div>
+      <div class="d-flex align-items-center text-sm justify-content-center ">
+        <input type="color" id="frameColor" class="text-center rounded fake-disabled fake-enabled ml-2" style="width: 30px; height: 20px; padding: 0;"  value="#007782" role="button">
+      </div>
+    </div>
+    <div class="d-flex align-items-center justify-content-start mt-1">
+      <div class="text-sm text-dark">
+        <img data-image-name="rotate-right-solid.svg" class="vinz-image font-icon align-middle mb-0 " src="">
+        <span data-i18n="modifyPhotosParams_frameOrientation"></span>
+      </div>
+      <div class="text-sm ml-2">
+        <select id="frameOrientation" class="rounded text-sm" style="max-width: 180px" role="button">
+          <option value="portrait" selected data-i18n="modifyPhotosParams_alwaysPortrait"></option>
+          <option value="automatic" data-i18n="modifyPhotosParams_turnIfLandscape"></option>
+        </select>
+      </div>
+    </div>
+    <div class="d-flex align-items-center justify-content-start mt-1">
+      <div class="text-sm text-dark">
+        <img data-image-name="up-right-and-down-left-from-center-solid.svg" class="vinz-image font-icon align-middle mb-0 " src="">
+        <span data-i18n="modifyPhotosParams_addInFrame"></span>
+      </div>
+      <div class="text-sm ml-2">
+        <select id="framePhotoCrop" class="rounded text-sm" style="max-width: 180px" role="button">
+          <option value="fit" selected data-i18n="modifyPhotosParams_photoEntire"></option>
+          <option value="fill" data-i18n="modifyPhotosParams_fillSpace"></option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-check d-flex flex-column mt-3">
+
+      <!-- color frame type + choices -->
+      <div class="d-flex justify-content-start align-items-center">
+        <input class="form-check-input mt-0" type="radio" name="frameType" id="color-frame" role="button" checked>
+        <label class="form-check-label" for="color-frame" id="color-frame-label">
+          <div class="d-flex align-items-center justify-content-around">
+            <div class="text-sm font-weight-bolder" role="button" data-i18n="modifyPhotosParams_singleColorFrame"></div>
+            <div class="text-sm ml-2">
+              <span data-i18n="modifyPhotosParams_thickness"></span>
+              <select id="frameSize" class="rounded fake-disabled text-sm" role="button">
+                <option value="small" data-i18n="modifyPhotosParams_thin"></option>
+                <option value="medium" selected data-i18n="modifyPhotosParams_medium"></option>
+                <option value="large" data-i18n="modifyPhotosParams_thick"></option>
+                <option value="large+" data-i18n="modifyPhotosParams_thickPlus"></option>
+                <option value="large++" data-i18n="modifyPhotosParams_thickDoublePlus"></option>
+              </select>
+            </div>
+          </div>
+        </label>
+      </div>
+
+      <!-- template frame type + choices -->
+      <div class="d-flex align-items-start justify-content-start mt-2">
+        <input class="form-check-input" type="radio" name="frameType" id="template-frame" role="button">
+        <label class="form-check-label" for="template-frame" id="template-frame-label">
+          <div class="d-flex align-items-center justify-content-around">
+            <div class="text-sm font-weight-bolder" role="button" data-i18n="modifyPhotosParams_chooseModel"></div>
+            <div class="text-sm ml-2">
+              <select id="frameName" class="rounded fake-disabled text-sm" style="max-width: 100px" role="button">
+              </select>
+            </div>
+            <a href="https://www.clemz.app/documentation/modifier-les-photos#frame-models-list" target="_blank" class="text-sm ml-3 tooltip tooltip-left" data-i18n-tooltip="modifyPhotosParams_framesModelsTooltip">
+              <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle mb-0 " src="">
+              <span data-i18n="modifyPhotosParams_models"></span>
+            </a>
+          </div>
+        </label>
+      </div>
+
+      <div class="d-flex justify-content-start align-items-center mt-2">
+        <input class="form-check-input" type="radio" name="frameType" id="personal-frame" role="button">
+        <label class="form-check-label" for="personal-frame" id="personal-frame-label">
+          <div class="d-flex align-items-center justify-content-around">
+            <div class="text-sm font-weight-bolder" role="button" data-i18n="modifyPhotosParams_myFrames"></div>
+            <div class="d-flex flex-column">
+              <div class="text-sm ml-2">
+                <select id="framePersonal" class="rounded fake-disabled text-sm" style="min-width:60px; max-width: 80px" role="button">
+                  <option value="" selected>--aucun--</option>
+                </select>
+              </div>
+              <div class="text-sm ml-2">
+                <select id="framePersonalColor" class="rounded fake-disabled text-sm" style="max-width: 80px" role="button">
+                  <option value="original" selected data-i18n="modifyPhotosParams_originalColor"></option>
+                  <option value="chosen" data-i18n="modifyPhotosParams_chosenColor"></option>
+                </select>
+              </div>
+            </div>
+            <a href="https://www.clemz.app/dashboard/photo_modifications#custom-frame" target="_blank" class="text-sm ml-3 tooltip tooltip-left" data-i18n-tooltip="modifyPhotosParams_createFrameTooltip">
+              <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle mb-0 " src=""> 
+              <span data-i18n="modifyPhotosParams_createFrame"></span>
+            </a>
+          </div>
+        </label>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="border-black border-sm mx-2 my-3">
+
+  <!-- Add STICKER global control -->
+  <div id="addStickerControl" class="custom-control custom-switch ml-n2">
+    <input type="checkbox" class="custom-control-input" id="addSticker" data-toggle='collapse' data-target='#stickerParams'>
+    <label class="custom-control-label align-middle text-md font-weight-bold" for="addSticker" role="button" data-i18n="modifyPhotosParams_addSticker"></label>
+  </div>
+  <!-- Sticker Choices -->
+  <div id="stickerParams" class="collapse-clemz d-none ml-2">
+
+    <div class="form-check d-flex flex-column mt-2">
+
+      <div class="d-flex justify-content-start align-items-center mt-2">
+        <input class="form-check-input" type="radio" name="stickerType" id="sticker-emoji" role="button">
+        <label class="form-check-label" for="sticker-emoji" id="sticker-emoji-label">
+          <div class="d-flex align-items-center justify-content-around">
+            <div class="text-sm font-weight-bolder" role="button" data-i18n="modifyPhotosParams_oneEmoji"></div>
+            <input type="text" id="stickerEmoji" class="text-center rounded fake-disabled ml-2" style="width: 30px; height: 20px;" value="">
+            <a href="https://emojicopy.com/" target="_blank" class="text-sm ml-3 tooltip tooltip-top" data-i18n-tooltip="modifyPhotosParams_copyPasteEmojiTooltip">
+              <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle mb-0 " src=""> 
+              <span data-i18n="modifyPhotosParams_findEmoji"></span>
+            </a>
+          </div>
+        </label>
+      </div>
+
+      <div class="d-flex justify-content-start align-items-center mt-2">
+        <input class="form-check-input" type="radio" name="stickerType" id="sticker-personal" role="button">
+        <label class="form-check-label" for="sticker-personal" id="sticker-personal-label">
+          <div class="d-flex align-items-center justify-content-around">
+            <div class="text-sm font-weight-bolder" role="button" data-i18n="modifyPhotosParams_myStickers"></div>
+            <div class="text-sm ml-2">
+              <select id="stickerPersonal" class="rounded fake-disabled text-sm" style="min-width:60px; max-width: 80px" role="button">
+                <option value="" selected>--aucun--</option>
+              </select>
+            </div>
+            <a href="https://www.clemz.app/dashboard/photo_modifications#custom-sticker" target="_blank" class="text-sm ml-3 tooltip tooltip-left" data-i18n-tooltip="modifyPhotosParams_createStickersTooltip">
+              <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle mb-0 " src=""> 
+              <span data-i18n="modifyPhotosParams_createSticker"></span>
+            </a>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <div class="text-sm d-flex justify-content-start mt-4">
+      <div>
+        <span data-i18n="modifyPhotosParams_position"></span>
+        <select id="stickerPosition" class="rounded fake-disabled fake-enabled" role="button">
+          <option value="north_west" selected>↖️</option>
+          <option value="north">⬆️</option>
+          <option value="north_east">↗️</option>
+          <option value="east">➡️</option>
+          <option value="south_east">↘️</option>
+          <option value="south">⬇️</option>
+          <option value="south_west">↙️</option>
+          <option value="west">⬅️</option>
+          <option value="center">◾</option>
+        </select>
+      </div>
+      <div class="ml-4">
+        <span data-i18n="modifyPhotosParams_size"></span>
+        <select id="stickerSize" class="rounded fake-disabled fake-enabled text-sm" role="button">
+          <option value="small" data-i18n="modifyPhotosParams_sizeSmall"></option>
+          <option value="medium" selected data-i18n="modifyPhotosParams_sizeMedium"></option>
+          <option value="large" data-i18n="modifyPhotosParams_sizeLarge"></option>
+          <option value="large+" data-i18n="modifyPhotosParams_sizeLargePlus"></option>
+          <option value="large++" data-i18n="modifyPhotosParams_sizeLargeDoublePlus"></option>
+        </select>
+      </div>
+    </div>
+
+    <div class="text-sm d-flex justify-content-start mt-2">
+      <div>
+        <span data-i18n="modifyPhotosParams_turn"></span>
+        <input type="text" id="stickerAngle" class="text-center rounded fake-disabled fake-enabled" style="width: 40px; height: 20px;" value="0" role="button">
+        <span data-i18n="modifyPhotosParams_degrees"></span>
+      </div>
+    </div>
+
+  </div>
+
+  <hr class="border-black border-sm mx-2 my-3">
+
+  <!-- Add TEXT global control -->
+  <div id="addTextControl" class="d-flex justify-content-between align-items-center mb-2">
+    <div class="custom-control custom-switch ml-n2 ">
+      <input type="checkbox" class="custom-control-input" id="addText" data-toggle='collapse' data-target='#textParams'>
+      <label class="custom-control-label align-middle text-md font-weight-bold" for="addText" role="button" data-i18n="modifyPhotosParams_addText"></label>
+    </div>
+
+    <a href="https://www.clemz.app/documentation/modifier-les-photos#add-text" target="_blank" class="text-sm ml-3 tooltip tooltip-left" data-i18n-tooltip="modifyPhotosParams_textAdaptTooltip">
+      <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle mb-0 " src="">
+      <span data-i18n="modifyPhotosParams_autoTexts"></span>
+    </a>
+  </div>
+
+  <!-- Text choices -->
+  <div id="textParams" class="collapse-clemz d-none">
+    <textarea id="textChosen" class="w-100 rounded fake-disabled fake-enabled" rows=2 value="" data-i18n-placeholder="modifyPhotosParams_textPlaceholder"></textarea>
+
+    <div class="text-sm d-flex justify-content-around ">
+      <div class="text-dark">
+        <span data-i18n="modifyPhotosParams_letters"></span>
+        <input type="color" id="textColor" class="text-center rounded fake-disabled fake-enabled" style="width: 30px; height: 20px; padding: 0;"  value="#000000" role="button">
+        <select id="textFont" class="rounded fake-disabled fake-enabled text-sm" style="max-width: 60px;" role="button">
+          <option value="Arial" selected>Arial</option>
+        </select>
+        <select id="textSize" class="rounded fake-disabled fake-enabled text-sm" style="max-width: 70px;" role="button">
+          <option value="small">30% largeur</option>
+          <option value="medium" selected>45% largeur</option>
+          <option value="large">60% largeur</option>
+          <option value="large+">85% largeur</option>
+          <option value="large++">100% largeur</option>
+        </select>
+        <a href="https://www.clemz.app/documentation/modifier-les-photos#fonts-list" target="_blank" class="text-sm ml-3 tooltip tooltip-left" data-i18n-tooltip="modifyPhotosParams_fontsTooltip">
+          <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle mb-0 " src="">
+          <span data-i18n="modifyPhotosParams_fonts"></span>
+        </a>
+      </div>
+    </div>
+    <div class="text-sm d-flex justify-content-around mt-2">
+      <div class="text-dark">
+        <span data-i18n="modifyPhotosParams_textBackground"></span>
+        <select id="textBackground" class="rounded fake-disabled fake-enabled text-sm" role="button">
+          <option value="true" data-i18n="modifyPhotosParams_yes"></option>
+          <option value="false" selected data-i18n="modifyPhotosParams_no"></option>
+        </select>
+
+        <input type="color" id="textBackgroundColor" class="text-center rounded fake-disabled fake-enabled" style="width: 30px; height: 20px; padding: 0;"  value="#007782" role="button">
+      </div>
+      <div class="text-dark">
+        <span data-i18n="modifyPhotosParams_position"></span>
+        <select id="textPosition" class="rounded fake-disabled fake-enabled" role="button">
+          <option value="north_west">↖️</option>
+          <option value="north">⬆️</option>
+          <option value="north_east">↗️</option>
+          <option value="east">➡️</option>
+          <option value="south_east">↘️</option>
+          <option value="south" selected>⬇️</option>
+          <option value="south_west">↙️</option>
+          <option value="west">⬅️</option>
+          <option value="center">◾</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <hr class="border-black border-sm mx-2 my-3">
+
+  <!-- Add BACKGROUND global control -->
+  <div id="addBackgroundControl" class="custom-control custom-switch ml-n2 d-flex align-items-center">
+    <input type="checkbox" class="custom-control-input" id="addBackground" data-toggle='collapse' data-target='#backgroundParams'>
+    <label class="custom-control-label align-middle text-md font-weight-bold" for="addBackground" role="button" data-i18n="modifyPhotosParams_addBackground"></label>
+  </div>
+  <!-- color background type + choices -->
+  <div id="backgroundParams" class="collapse-clemz d-none">
+    <div class="text-sm text-center lh-100 ml-3" data-i18n="modifyPhotosParams_backgroundWarning"></div>
+
+    <div class="form-check d-flex flex-column">
+
+      <div class="d-flex justify-content-start align-items-center mt-2">
+        <input class="form-check-input mt-0" type="radio" name="backgroundType" id="background-single-color" checked  style="" role="button">
+        <label class="form-check-label" for="background-single-color" style="" id="background-single-color-label">
+          <div class="d-flex align-items-center justify-content-around">
+            <div class="text-sm font-weight-bolder" role="button" data-i18n="modifyPhotosParams_putAColor"></div>
+            <input type="color" id="backgroundColor" class="text-center rounded fake-disabled fake-enabled ml-2" style="width: 30px; height: 20px; padding: 0;"  value="#007782" role="button">
+          </div>
+        </label>
+      </div>
+
+      <div class="d-flex justify-content-start align-items-center mt-2">
+        <input class="form-check-input" type="radio" name="backgroundType" id="background-personal" role="button">
+        <label class="form-check-label" for="background-personal" id="background-personal-label">
+          <div class="d-flex align-items-center justify-content-around">
+            <div class="text-sm font-weight-bolder" role="button" data-i18n="modifyPhotosParams_myBackgrounds"></div>
+            <div class="text-sm ml-2">
+              <select id="backgroundPersonal" class="rounded fake-disabled text-sm" style="min-width:60px; max-width: 80px" role="button">
+                <option value="" selected>--aucun--</option>
+              </select>
+            </div>
+            <a href="https://www.clemz.app/dashboard/photo_modifications#custom-background" target="_blank" class="text-sm ml-3 tooltip tooltip-top" data-i18n-tooltip="modifyPhotosParams_createBackgroundTooltip">
+              <span data-i18n="modifyPhotosParams_createBackground"></span>
+              <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle mb-0 " src=""> 
+            </a>
+          </div>
+        </label>
+      </div>
+
+      <div class="d-flex justify-content-start align-items-center mt-2">
+        <input class="form-check-input" type="radio" name="backgroundType" id="background-template" style="display: none;">
+        <label class="form-check-label" for="template-background" id="template-background-label" style="display: none;" data-i18n="modifyPhotosParams_chooseModelBackgroundChunk"></label>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<hr class="border-black border-sm mx-2 my-2">
+
+<!-- <div id="cancelParamsButton" role="button" class="btn-sm btn-danger btn-xs">&#10229;</div> -->
+<div class="d-flex justify-content-end mb-2">
+  <button id="testParamsButton" class="btn btn-sm btn-outline-primary mr-2" style="position: relative;">
+    <span data-i18n="modifyPhotosParams_preview"></span>
+    <div class="spinner-border text-primary" role="status" style="position: absolute; right: 5px; display:none;"></div>
+  </button>
+  <div id="confirmParamsButton" role="button" class="btn btn-sm btn-success" data-i18n="save"></div>
+</div>

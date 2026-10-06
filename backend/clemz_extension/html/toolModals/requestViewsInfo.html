@@ -1,0 +1,39 @@
+<div class="toolModal-content">
+  <div class="tabBox w-100">
+    <div id="" class="frozenTabLinks flex-basis-auto text-lg font-weight-bolder" data-i18n="requestViewsInfo_title"></div>
+    <span class="close-modal bg-primary-dark px-2" id="close-modal">&times;</span>
+  </div>
+
+  <div class="toolModal-tabContent px-2 text-justify lh-120" style="display: block;">
+    <!-- User needs to send views first -->
+    <div id="start-send-views" class="d-none">
+      <p class="text-sm-md" data-i18n="requestViewsInfo_startSendViewsParagraph"></p>
+      <div class="d-flex justify-content-center my-4">
+        <div class="btn btn-sm btn-primary" id="sendViewsButton" role="button" data-i18n="requestViewsInfo_sendViewsButton"></div>
+      </div>
+      <p class="text-sm-md text-justify" data-i18n="requestViewsInfo_rulesLink"></p>
+    </div>
+
+    <!-- User is ready to create a requestViews -->
+    <div id="ready-to-create" class="d-none">
+      <p class="text-sm-md" data-i18n="requestViewsInfo_readyParagraph"></p>
+      <div class="d-flex justify-content-center my-3">
+        <div class="btn btn-sm btn-primary" id="createRequestViews" role="button" data-i18n="requestViewsInfo_createViewsRequest"></div>
+      </div>
+      <p class="text-sm-md text-justify" data-i18n="requestViewsInfo_rulesLink"></p>
+    </div>
+
+    <!-- User has already created a requestViews -->
+    <div id="already-created" class="d-none">
+      <p class="text-sm-md" data-i18n="requestViewsInfo_alreadyCreatedParagraph"></p>
+      <div class="d-flex justify-content-center my-3">
+        <span id="show-request-views-date">XXXX</span>
+      </div>
+      <p class="text-sm-md text-justify" data-i18n="requestViewsInfo_rulesLink"></p>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+      <div class="btn btn-sm btn-dark" id="closeViewInfoModalButton" role="button" data-i18n="close"></div>
+    </div>
+  </div>
+</div>

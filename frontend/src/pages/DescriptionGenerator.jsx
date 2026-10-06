@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Upload, Copy, Sparkles, X,AlertTriangle } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
+import PriceEstimationPanel from '../components/PriceEstimationPanel';
 
 export default function DescriptionGenerator() {
     const [productsFiles, setProductsFiles] = useState([[], [], [], [], []]);
@@ -82,7 +83,7 @@ export default function DescriptionGenerator() {
             
             <div className="mb-8 flex justify-between items-end">
                 <div>
-                    <h1 className="text-3xl font-black tracking-tighter text-slate-800 flex items-center gap-3">
+                    <h1 className="text-2xl font-black tracking-tight text-slate-800 flex items-center gap-3">
                         <Sparkles className="text-indigo-500" size={32} />
                         GÉNÉRATEUR 5 ZONES
                     </h1>
@@ -90,7 +91,7 @@ export default function DescriptionGenerator() {
                 
                 <button 
                     onClick={handleGenerateBatch} disabled={loading}
-                    className={`px-8 py-4 rounded-xl font-black uppercase tracking-widest transition-all shadow-lg ${
+                    className={`px-8 py-3 rounded-lg font-black uppercase tracking-widest transition-all shadow-lg ${
                         loading ? 'bg-slate-100 text-slate-400' : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200'
                     }`}
                 >
@@ -98,7 +99,7 @@ export default function DescriptionGenerator() {
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
                 {/* ZONES DE DÉPÔT */}
                 <div className="space-y-4">
                     {productsFiles.map((files, productIndex) => (
@@ -151,7 +152,7 @@ export default function DescriptionGenerator() {
                                                     <Copy size={12} /> Copier
                                                 </button>
                                             </div>
-                                            <pre className="whitespace-pre-wrap text-sm text-slate-700 font-sans">{description.trim()}</pre>
+                                            <pre className="whitespace-pre-wrap text-sm font-normal leading-relaxed">{description.trim()}</pre>
                                             {vigilance && (
                                                 <div className="mt-4 p-3 bg-amber-50 border-l-4 border-amber-500 rounded text-amber-900">
                                                     <div className="flex items-center gap-2 mb-1">
@@ -194,6 +195,8 @@ export default function DescriptionGenerator() {
                         </div>
                     )}
                 </div>
+                {/* ESTIMATION DE PRIX */}
+                <PriceEstimationPanel />
             </div>
         </div>
     );

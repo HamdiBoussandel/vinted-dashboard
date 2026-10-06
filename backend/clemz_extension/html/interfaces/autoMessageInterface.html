@@ -1,0 +1,94 @@
+<div id="currentInterface" data-interface-name="autoMessage">
+  <div class="upperButtons" id="upperButtons">
+    <div class="tabBox" id="tabBox">
+      <h6 class="progressTitle d-flex justify-content-center align-items-center">
+        <img class="vinz-image" data-image-name="bot_smiling.png" src=""><span class="ml-2 mr-3" data-i18n="autoMessageInterface_continuousMonitoring"></span>
+      </h6>
+    </div>
+    <div class="upperRightButtons">
+      <div id="minimizeButton" class="minimizeButton"></div>
+    </div>
+  </div>
+
+  <div class="d-flex flex-column justify-content-between tabContent">
+    <div class="d-flex flex-column lh-100">
+      <div class="d-flex align-items-center justify-content-around mb-1">
+        <div class="d-flex align-items-center">
+          <span class="h5 font-weight-bolder text-success mx-1 text-center" id="autoMessageStatus" data-i18n="autoMessageInterface_activated"></span>
+          <span class="spinner-border text-success mr-2" role="status" id="autoMessageSpinner"><span class="sr-only"></span></span>
+        </div>
+        <span role="button" class="btn btn-xs btn-dark ml-2" id="autoMessageStopButton" data-i18n="stopButton"></span>
+      </div>
+
+      <div id="progressUiContainer" class="border-top border-md" style="min-height: 118px;" data-interface-name="countDown">
+        <div class="d-flex flex-column align-items-center mt-2">
+          <d class="d-flex justify-content-start">
+            <div class="font-weight-bolder text-left" data-i18n="autoMessageInterface_nextCycleIn"></div>
+          </d>
+
+          <div class="d-flex justify-content-center align-items-center lh-100 mt-4">
+            <div class="h3 mr-3">⌚</div>
+            <div id="" class="h3 font-weight-bolder text-dark mr-1" style="display: flex;">
+              <div id="minutesValue" class="mr-1">--</div>
+              <div class="">min</div>
+            </div>
+            <div id="" class="h3 font-weight-bolder text-dark" style="display: flex;">
+              <div id="secondsValue" class="mr-1">--</div>
+            </div>
+          </div>
+          <div class="mt-2 border border-warning rounded text-sm-md text-center d-none d-lg-flex flex-column align-items-center px-2 lh-130" data-i18n="autoMessageInterface_attentionLarge"></div>
+          <div class="mt-2 border border-warning rounded text-sm-md text-center d-block d-lg-none flex-column align-items-center px-2 text-center lh-120" data-i18n="autoMessageInterface_attentionSmall"></div>
+        </div>
+      </div>
+
+      <!-- Pipeline sections -->
+      <div class="border-top border-md pt-1 mb-1">
+
+        <!-- FavMessages -->
+        <div id="pipelineFavMessages" class="mb-2">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <span id="pipelineFavStatusIcon" class="mr-1"></span>
+              <span id="pipelineFavName" class="font-weight-bolder"></span>
+              <span id="pipelineFavStatusText" class="ml-1"></span>
+            </div>
+            <div id="pipelineFavGearButton" class="badge btn-outline-primary cursor-pointer border text-sm d-none">⚙</div>
+          </div>
+          <div id="pipelineFavResults" class="text-md text-muted ml-3 mt-1 mb-3 d-none"></div>
+        </div>
+
+        <!-- OfferMessages -->
+        <div id="pipelineOfferMessages" class="mb-1">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <span id="pipelineOfferStatusIcon" class="mr-1"></span>
+              <span id="pipelineOfferName" class="font-weight-bolder"></span>
+              <span id="pipelineOfferStatusText" class="ml-1"></span>
+            </div>
+            <div id="pipelineOfferGearButton" class="badge btn-outline-primary cursor-pointer border text-sm d-none">⚙</div>
+          </div>
+          <div id="pipelineOfferResults" class="text-md text-muted ml-3 mt-1 mb-3 d-none"></div>
+        </div>
+
+      </div>
+
+      <!-- Attention banner -->
+      <div id="autoMessageRunningAttentionBanner" class="mt-1 mb-1 d-none">
+        <a href="https://www.clemz.app/dashboard/conversations" target="_blank" class="d-flex align-items-center justify-content-center text-sm border border-warning rounded px-2 py-1 text-dark text-decoration-none">
+          <span class="mr-1">⚠️</span>
+          <span id="autoMessageRunningAttentionText" class="font-weight-bold"></span>
+          <img class="font-icon vinz-image ml-1" data-image-name="up-right-from-square-solid.svg" src="" style="max-height: 10px;">
+        </a>
+      </div>
+
+      <!-- Dashboard link -->
+      <div class="text-center mt-1 mb-1">
+        <a href="https://www.clemz.app/dashboard/activities?process_type=send_message#activities-detailed-table" target="_blank" class="text-sm text-primary">
+          <u data-i18n="autoMessageInterface_dashboardLink"></u>
+          <img class="font-icon text-primary vinz-image ml-1" data-image-name="up-right-from-square-solid.svg" src="" style="max-height: 10px;">
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>

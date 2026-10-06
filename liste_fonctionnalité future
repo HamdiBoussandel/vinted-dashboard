@@ -1,44 +1,6 @@
-- Ajout d'une nouvelle regle de gestion : reperer les produits qui sont stock dormant ils doivent depasser 30j (Durée encore a determiner)
-    => C'est une nouvelle section à ajouter qui s'apelle "Stock Dormant"
-    => Ajout du tag Dormant
-- Nouveau prix proposé dans les cartes produits : Prix d'achat (x2)
-- Developper une interface mobile qui permet de completer les taches de baisse de prix de façon et intuitive
-- Ajout de filtre dans les menus de l'inventaire : trie possible par marque et afficher que les produit d'un dressing en particulier
-- Ne plus afficher dans les mauvaise performance, les baisse de prix donc si le produit atteint le prix plancher à savoir le prix d'achat x1.6
-- Possible d'exclure des produits pour lesquels on ne veut pas baisser les prix, ce produikt ne sera alors plus afficher dans la liste des mauavaises performances
-- Developper la page des ventes en indique à chaque fois : le prix et la date d'achat et le prix et la date de vente, et indiquer combien de beneficer avons nous fait
-- Identifier les marques/niches qui font les meilleurs benefice en fonction des statistique de vente
-- Trouver un moyen de preparer la liste des baisse de prix de la semaine sans avoir à lancer le script manuellement
-- Mettre en ligne le cron du scrapping de Vinted
-- Ajout un moyen de prendre toujours la derniere version de l'extension clemz
-- N'afficher que les mauvaise performance/Statut Quo/Pepites si on a 10 articles minimum
-- Ajout de tag cliquable avec des infos produit comme : indiquette manquante ou usé, Taille Enfant/Ado, Tissu qui a vécu etc l'IA devra s'en servir
-  pour un estimer le prix finale de revente
-- Ajout une option pour Gemini puisse defroisser un vetements en se basant sur des photos
-- Ajout notification type Windows à la fin du scrapping si il a reussi ou échoué
-- Ajout d'un bouton qui coche la case vendu (Produit Vendu)
-- Creation de liste rangé par pourcentage de baisse de prix : une liste pour les baisses de prix 5, 10, 15, 20, 30 pourcent
-- Introduire un systeme de routine/srint
-- Ajoute la possibilité de lancer pour les deux dressing, le mode envoi des favoris
+Correction d'anomalie :
 
-
-
----------------------------------------------------------------------------------------------------
-Correction de bugs optimisations
----------------------------------------------------------------------------------------------------
-
-- Lancer une nouvelle instance de chrome et de edge pour le script d'automation clemz
-- Fermer l'onglet clemz qui s'ouvre de facon systematique à chaque lancement
-- S'assurer de repartir sur une toute nouvelle session pour chacun des navigateurs, ils sont encore mémorisé
-- Affichage du statut derniere execution des Cron non affiché
-- Essayer de diminuer le temps d'execution du script d'automation clemz
-- Correction bug marquer comme traité qui ne fait pas pour le dressing 2 
-- Corriger le chargement analyse en cours à chaque changement d'onglet
-- Affichage notification toast confirmer succes / echec baisse de prix (Mauvaise performance)
-- Liquidation : bouton à supprimer
-- Retester le bouton "marquer comme traité/republié"
-- Bug aléatoire transport...
-- Ajout des Articles en liquidations et des articles à republier non cumulé dans la liste de course
-- Le bouton preparation section fais buger l'automation clemz, soit chrome ne se lance pas par playwright, soit les produits ne sont pa s ajouter, il faut verifier ce qu'on envoi comme liste de produit depuis le bouton preparer section
-- Generateur IA, les prix ne sont plus afficher au 5 ème produit de la liste
-- Type de vêtement et Marque afficher dans l'annonce
+- on doit reinitialiser les action de l'instance 1 quand on lance l'intance 2
+- Verifier les CRON des taches automatisé
+- Ajout un toast de confirmation d'une tache dans la page Dashboard
+- Exploration de la possibité des photos portés realiser par l'ia

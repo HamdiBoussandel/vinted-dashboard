@@ -1,2 +1,38 @@
-**/clemz_session_edge/
-**/*Cache*/
+# Dépendances
+node_modules/
+__pycache__/
+doublons_log.json
+*.pyc
+*.pyo
+
+# Variables d'environnement — NE JAMAIS COMMITER
+.env
+*.env
+.env.local
+.env.*.local
+
+backend/clemz_session_chrome/
+backend/clemz_session_edge/
+
+# Fichiers de persistance locale (générés à l'exécution)
+scheduled_republish.json
+task_history.json
+cron_status.json
+error_log.txt
+extension_errors.log
+plan_du_jour_d1.json
+plan_du_jour_d2.json
+plan_du_jour_historique.jsonl
+
+# Build frontend
+dist/
+build/
+.vite/
+
+# Logs
+*.log
+backend/logs/
+
+# OS
+.DS_Store
+Thumbs.db

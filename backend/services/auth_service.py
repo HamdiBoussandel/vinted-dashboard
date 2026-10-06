@@ -14,15 +14,17 @@ class AuthService:
             context = await browser.new_context(user_agent=self.user_agent)
             page = await context.new_page()
 
-            auth_data = {"token": None, "session": None, "ua": self.user_agent}
+            auth_data = {"token": None, "session": None, "ua": self.user_agent, "csrf_token": None}
 
-            # Intercepteur de requêtes pour capturer le Token Bearer
+            # Intercepteur de requêtes pour capturer le Token Bearer ET le x-csrf-token
+            # (svc-catalogue/items exige x-csrf-token, absent des cookies -- doit être
+            # intercepté depuis une requête réseau réelle du navigateur)
             async def intercept_request(request):
-                if "api/v2/catalog/items" in request.url:
-                    headers = request.headers
-                    if "authorization" in headers:
-                        # On extrait le token sans le préfixe 'Bearer '
-                        auth_data["token"] = headers["authorization"].replace("Bearer ", "")
+                headers = request.headers
+                if "authorization" in headers:
+                    auth_data["token"] = headers["authorization"].replace("Bearer ", "")
+                if "x-csrf-token" in headers and not auth_data.get("csrf_token"):
+                    auth_data["csrf_token"] = headers["x-csrf-token"]
 
             page.on("request", intercept_request)
 
@@ -35,16 +37,16 @@ class AuthService:
                 await page.mouse.wheel(0, 500)
                 await asyncio.sleep(5)
 
-                # Extraction du cookie de session
+                # Extraction du jar complet (nécessaire : Datadome pose des cookies
+                # anti-bot en plus de access_token_web / _vinted_fr_session, et ils
+                # doivent tous être renvoyés ensemble sur les requêtes curl_cffi)
                 cookies = await context.cookies()
-                for cookie in cookies:
-                    # Récupération du TOKEN (le fameux eyJ...)
-                    if cookie['name'] == 'access_token_web':
-                        auth_data["token"] = cookie['value']
+                cookie_dict = {c["name"]: c["value"] for c in cookies}
 
-                    if cookie['name'] == '_vinted_fr_session':
-                        auth_data["session"] = cookie['value']
-                        break
+                auth_data["token"] = cookie_dict.get("access_token_web")
+                auth_data["session"] = cookie_dict.get("_vinted_fr_session")
+                auth_data["all_cookies"] = cookie_dict
+
                 if not auth_data["token"]:
                     print("⚠️ access_token_web non trouvé dans les cookies, tentative via LocalStorage...")
                     # Backup : Parfois Vinted le stocke en LocalStorage au lieu des cookies

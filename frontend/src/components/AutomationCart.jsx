@@ -5,8 +5,7 @@ import { TrendingDown } from 'lucide-react';
 export default function AutomationCart({
     selectedItems,
     isAutomating,
-    onLaunch,
-    onClear
+    onLaunch
 }) {
     if (selectedItems.length === 0) return null;
 
@@ -21,7 +20,7 @@ export default function AutomationCart({
             <button
                 onClick={onLaunch}
                 disabled={isAutomating}
-                className="flex items-center gap-3 px-8 py-4 bg-orange-500 text-white rounded-2xl font-black uppercase text-xs hover:scale-105 transition-all shadow-2xl shadow-orange-200 disabled:opacity-50 active:scale-95"
+                className="flex items-center gap-3 px-8 py-3 bg-orange-500 text-white rounded-lg font-black uppercase text-xs hover:scale-105 transition-all shadow-2xl shadow-orange-200 disabled:opacity-50 active:scale-95"
             >
                 {isAutomating ? (
                     <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
@@ -32,15 +31,6 @@ export default function AutomationCart({
                     ? `Automation en cours...`
                     : `Lancer baisse de prix (${selectedItems.length})`
                 }
-            </button>
-
-            {/* Vider la sélection */}
-            <button
-                onClick={onClear}
-                disabled={isAutomating}
-                className="bg-white px-4 py-2 rounded-lg shadow-xl border border-slate-100 text-[10px] font-black uppercase text-red-500 hover:text-red-700 disabled:opacity-40"
-            >
-                Vider la sélection
             </button>
         </div>
     );

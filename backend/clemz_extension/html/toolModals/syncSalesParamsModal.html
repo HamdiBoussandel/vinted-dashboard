@@ -1,0 +1,94 @@
+<div class="toolModal-content">
+  <div class="tabBox w-100">
+    <div data-i18n="syncSalesParamsModal_title" class="frozenTabLinks flex-basis-auto text-lg font-weight-bolder"></div>
+    <span class="close-modal bg-primary-dark px-2" id="close-modal">&times;</span>
+  </div>
+  <div class="toolModal-tabContent px-0" style="display: block;">
+    <form class="p-1 mx-2" id="syncSalesParamsForm">
+
+      <!-- Sync frequency -->
+      <div class="d-flex align-items-center mt-1">
+        <label class="text-sm mb-0 d-flex align-items-center">
+          <span data-i18n="syncSalesParamsModal_syncFrequency"></span>
+          <input type="number" id="syncFrequency" class="text-center rounded ml-1 border" style="width: 45px; height: 20px;" step="1">
+          <span class="ml-1" data-i18n="syncSalesParamsModal_hours"></span>
+        </label>
+        <div class="tooltip tooltip-left text-sm ml-3 align-middle" data-i18n-tooltip="syncSalesParamsModal_syncFrequencyTooltip">
+          <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle" src="">
+        </div>
+      </div>
+
+      <!-- Shipping labels -->
+      <div class="d-flex align-items-center justify-content-between mt-2">
+        <div class="custom-control custom-switch ml-n4">
+          <input type="checkbox" class="custom-control-input" id="shippingLabelAutoGeneration">
+          <label class="custom-control-label align-middle text-sm" for="shippingLabelAutoGeneration" data-i18n="syncSalesParamsModal_shippingLabels"></label>
+        </div>
+        <a id="excludedCarriersLink" href="" target="_blank" class="badge btn-outline-primary border cursor-pointer text-xs p-1">
+          <span data-i18n="syncSalesParamsModal_excludedCarriers"></span>
+          <span id="excludedCarriersCount" class="badge badge-light ml-1 text-xs"></span>
+        </a>
+      </div>
+
+      <div class="d-flex align-items-center justify-content-between mt-2">
+        <div class="custom-control custom-switch ml-n4">
+          <input type="checkbox" class="custom-control-input" id="saleCreationMessageEnabled">
+          <label class="custom-control-label align-middle text-sm" for="saleCreationMessageEnabled" data-i18n="syncSalesParamsModal_purchaseMessage"></label>
+        </div>
+        <a id="saleCreationMessagesLink" href="" target="_blank" class="badge btn-outline-primary border cursor-pointer text-xs p-1">
+          ✏️<span class="text-danger" id="saleCreationMessagesRequiredStar" style="display: none;">*</span>
+          <span id="saleCreationMessagesCount" class="badge badge-light ml-1 text-xs"></span>
+        </a>
+      </div>
+
+      <div class="d-flex align-items-center justify-content-between mt-1">
+        <div class="custom-control custom-switch ml-n4">
+          <input type="checkbox" class="custom-control-input" id="saleShippedMessageEnabled">
+          <label class="custom-control-label align-middle text-sm" for="saleShippedMessageEnabled" data-i18n="syncSalesParamsModal_shippedMessage"></label>
+        </div>
+        <a id="saleShippedMessagesLink" href="" target="_blank" class="badge btn-outline-primary border cursor-pointer text-xs p-1">
+          ✏️<span class="text-danger" id="saleShippedMessagesRequiredStar" style="display: none;">*</span>
+          <span id="saleShippedMessagesCount" class="badge badge-light ml-1 text-xs"></span>
+        </a>
+      </div>
+
+      <div class="d-flex align-items-center justify-content-between mt-1">
+        <div class="custom-control custom-switch ml-n4">
+          <input type="checkbox" class="custom-control-input" id="saleFinalizationMessageEnabled">
+          <label class="custom-control-label align-middle text-sm" for="saleFinalizationMessageEnabled" data-i18n="syncSalesParamsModal_finalizationMessage"></label>
+        </div>
+        <a id="saleFinalizationMessagesLink" href="" target="_blank" class="badge btn-outline-primary border cursor-pointer text-xs p-1">
+          ✏️<span class="text-danger" id="saleFinalizationMessagesRequiredStar" style="display: none;">*</span>
+          <span id="saleFinalizationMessagesCount" class="badge badge-light ml-1 text-xs"></span>
+        </a>
+      </div>
+
+      <div class="d-flex align-items-center justify-content-between mt-1">
+        <div class="custom-control custom-switch ml-n4">
+          <input type="checkbox" class="custom-control-input" id="customerReviewMessageEnabled">
+          <label class="custom-control-label align-middle text-sm" for="customerReviewMessageEnabled" data-i18n="syncSalesParamsModal_reviewMessage"></label>
+        </div>
+        <a id="customerReviewMessagesLink" href="" target="_blank" class="badge btn-outline-primary border cursor-pointer text-xs p-1">
+          ✏️<span class="text-danger" id="customerReviewMessagesRequiredStar" style="display: none;">*</span>
+          <span id="customerReviewMessagesCount" class="badge badge-light ml-1 text-xs"></span>
+        </a>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center">
+        <!-- Invoicing (link only) -->
+        <a id="invoicingLink" href="" target="_blank" class="badge btn-outline-primary border cursor-pointer text-xs p-1 mt-2">
+          <span data-i18n="syncSalesParamsModal_invoicing"></span>
+          <span id="invoicingCount" class="badge badge-light ml-1 text-xs"></span>
+        </a>
+
+        <!-- SAVE -->
+        <div class="d-flex justify-content-end mt-3">
+          <button type="submit" class="btn btn-success btn-sm font-weight-500 can-be-disabled position-relative">
+            <span data-i18n="save"></span>
+            <div class="spinner-border spinner-border-sm text-white" role="status" style="position: absolute; display: none;"></div>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

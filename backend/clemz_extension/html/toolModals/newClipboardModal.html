@@ -1,0 +1,17 @@
+<div class="toolModal-content">
+  <div class="tabBox w-100">
+    <div id="newClipboardModalTitle" class="frozenTabLinks flex-basis-auto text-lg font-weight-bolder" data-i18n="newClipboardModal_createNewText"></div>
+    <span class="close-modal bg-primary-dark px-2" id="close-modal">&times;</span>
+  </div>
+  <div class="toolModal-tabContent px-0" style="display: block;">
+    <form class="p-1 mx-2" id="clipboardForm">
+      <label data-i18n="newClipboardModal_textTitleLabel"></label>
+      <input type="text" name="clipboardTitle" id="clipboardTitle" class="formControl-sm p-1 mb-2" required data-i18n-placeholder="newClipboardModal_textTitlePlaceholder">
+      <label class="font-weight-bolder" data-i18n="newClipboardModal_textContentLabel"></label>
+      <textarea rows="5" name="clipboardContent" id="clipboardContent" class="formControl-sm p-1 h-100" required data-i18n-placeholder="newClipboardModal_textContentPlaceholder"></textarea>
+      <div class="d-flex justify-content-end mt-2">
+        <button type="submit" class="btn btn-success btn-sm font-weight-500" id="newClipboardModalButton" data-i18n="save"></button>
+      </div>
+    </form>
+  </div>
+</div>

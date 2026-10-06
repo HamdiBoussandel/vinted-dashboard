@@ -1,0 +1,129 @@
+<div class="toolModal-content">
+  <div class="tabBox w-100">
+    <div data-i18n="favParamsModal_title" class="frozenTabLinks flex-basis-auto text-lg font-weight-bolder"></div>
+    <span class="close-modal bg-primary-dark px-2" id="close-modal">&times;</span>
+  </div>
+  <div class="toolModal-tabContent px-0" style="display: block;">
+    <form class="p-1 mx-2" id="favParamsForm">
+
+      <!-- Scope indicator (default vs custom) — shown as title -->
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <span id="favParamsScopeIndicator" class="text-md font-weight-bolder text-dark"></span>
+        <a id="favParamsDashboardLink" href="" target="_blank" class="text-sm text-primary"><u data-i18n="modify"></u></a>
+      </div>
+
+      <!-- Make an offer -->
+      <div class="d-flex align-items-center mt-1">
+        <div class="custom-control custom-switch ml-n4">
+          <input type="checkbox" class="custom-control-input" id="makeOffer">
+          <label class="custom-control-label align-middle text-sm" for="makeOffer">
+            <b data-i18n="actionInterface_makeOffer"></b>:
+            <select id="favDiscountMode" class="fake-disabled rounded border" style="width: 70px; height: 20px;">
+              <option value="simple" data-i18n="favParamsModal_modeSimple"></option>
+              <option value="tiers" data-i18n="favParamsModal_modeTiers"></option>
+            </select>
+            <!-- Simple mode: inline value/type/round -->
+            <span id="favSimpleDiscountSection" class="d-inline-flex align-items-center ml-1">
+              <span class="text-muted mx-1" data-i18n="favParamsModal_simplePrefix"></span>
+              <input type="number" id="makeOfferValue" class="text-center fake-disabled rounded" style="width: 30px; height: 20px;" value="0" min="1" step="1">
+              <select id="makeOfferType" class="fake-disabled rounded">
+                <option value="percent" selected>%</option>
+                <option value="fixed" id="makeOfferTypeFixedOption">€</option>
+              </select>
+            </span>
+            <!-- Tiers mode: badge-link to clemz.app -->
+            <span id="favTiersDiscountSection" class="ml-1" style="display: none;">
+              <a id="favTiersConfigureLink" href="" target="_blank" class="badge btn-outline-primary border cursor-pointer text-xs p-1">
+                ✏️ <span data-i18n="favParamsModal_tiersLabel"></span>
+                <span id="favTiersCountBadge" class="badge badge-light ml-1 text-xs"></span>
+              </a>
+            </span>
+            <select id="makeOfferRound" class="fake-disabled rounded" style="max-width: 90px;">
+              <option value="no_round" selected data-i18n="actionInterface_noRounding"></option>
+              <option value="no_decimal_round" data-i18n="actionInterface_roundingEuro"></option>
+              <option value="half_unit_round" data-i18n="actionInterface_roundingHalfUnit"></option>
+              <option value="one_decimal_round" data-i18n="actionInterface_roundingTenCents"></option>
+            </select>
+          </label>
+        </div>
+        <div class="tooltip tooltip-left text-sm ml-3 align-middle" data-i18n-tooltip="actionInterface_makeOfferTooltip">
+          <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle" src="">
+        </div>
+      </div>
+      <div class="text-xs text-muted ml-1 mt-0"><span data-i18n="paramsModal_minPriceHint"></span> <a href="https://www.clemz.app/documentation/messages-aux-favoris#options" target="_blank" class="text-xs text-muted">(<span data-i18n="paramsModal_minPriceReadLink"></span>)</a></div>
+
+      <!-- Ignore bad ratings -->
+      <div class="d-flex align-items-center mt-1">
+        <div class="custom-control custom-switch ml-n4">
+          <input type="checkbox" class="custom-control-input" id="checkUserFeedback">
+          <label class="custom-control-label align-middle text-sm" for="checkUserFeedback" data-i18n="actionInterface_checkUserFeedback"></label>
+        </div>
+        <div class="tooltip tooltip-left text-sm ml-3" data-i18n-tooltip="actionInterface_checkUserFeedbackTooltip">
+          <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle" src="">
+        </div>
+      </div>
+
+      <!-- READING OPTIONS -->
+      <div class="text-sm font-weight-bolder mt-2" data-i18n="actionInterface_readingOptions"></div>
+
+      <!-- Add a delay -->
+      <div class="d-flex align-items-center mt-1">
+        <div class="custom-control custom-switch ml-n4">
+          <input type="checkbox" class="custom-control-input" id="notifMinAge">
+          <label class="custom-control-label align-middle text-sm" for="notifMinAge" data-i18n="actionInterface_notifMinAge"></label>
+        </div>
+        <div class="tooltip tooltip-left text-sm ml-3 align-middle" data-i18n-tooltip="actionInterface_notifMinAgeTooltip">
+          <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle" src="">
+        </div>
+      </div>
+
+      <!-- Read history -->
+      <div class="d-flex align-items-center mt-1">
+        <div class="custom-control custom-switch ml-n4">
+          <input type="checkbox" class="custom-control-input" id="maxHoursInPastSwitch">
+          <label class="custom-control-label align-middle text-sm" for="maxHoursInPastSwitch" data-i18n="actionInterface_maxHoursInPast"></label>
+        </div>
+        <div class="tooltip tooltip-left text-sm ml-3" data-i18n-tooltip="actionInterface_maxHoursInPastTooltip">
+          <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle" src="">
+        </div>
+      </div>
+
+      <!-- Ignore past notifications -->
+      <div class="d-flex align-items-center mt-0">
+        <div class="custom-control custom-switch ml-n4">
+          <input type="checkbox" class="custom-control-input" id="ignorePastNotifications">
+          <label class="custom-control-label align-middle text-sm" for="ignorePastNotifications" data-i18n="actionInterface_ignorePastNotifications"></label>
+        </div>
+        <div class="tooltip tooltip-left text-sm ml-3" data-i18n-tooltip="actionInterface_ignorePastNotificationsTooltip">
+          <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle" src="">
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center">
+        <!-- MESSAGES & EXCLUDED VINTIES (links to VinzApp) -->
+        <div class="d-flex flex-column justify-content-around align-items-center mt-2">
+        <a id="favParamsFirstMessagesLink" href="" target="_blank" class="badge btn-outline-primary border cursor-pointer text-xs p-1 mb-1">
+          <span data-i18n="favParamsModal_firstMessages"></span><span class="text-danger" id="favFirstMessagesRequiredStar">*</span>
+          <span id="favParamsFirstMessagesCount" class="badge badge-light ml-1 text-xs"></span>
+        </a>
+        <a id="favParamsSecondMessagesLink" href="" target="_blank" class="badge btn-outline-primary border cursor-pointer text-xs p-1 mb-1">
+          <span data-i18n="favParamsModal_secondMessages"></span>
+          <span id="favParamsSecondMessagesCount" class="badge badge-light ml-1 text-xs"></span>
+        </a>
+        <a id="favParamsExcludedVintiesLink" href="" target="_blank" class="badge btn-outline-primary border cursor-pointer text-xs p-1">
+          <span data-i18n="favParamsModal_excludedVinties"></span>
+          <span id="favParamsExcludedVintiesCount" class="badge badge-light ml-1 text-xs"></span>
+        </a>
+        </div>
+        
+        <!-- SAVE -->
+        <div class="d-flex justify-content-end mt-3">
+          <button type="submit" class="btn btn-success btn-sm font-weight-500 can-be-disabled position-relative">
+            <span data-i18n="save"></span>
+            <div class="spinner-border spinner-border-sm text-white" role="status" style="position: absolute; display: none;"></div>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,15 @@
+2026/10/03-19:09:30.632 a230 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\EdgeCoupons/coupons_data.db/MANIFEST-000001
+2026/10/03-19:09:30.633 a230 Recovering log #42
+2026/10/03-19:09:30.633 a230 Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\EdgeCoupons/coupons_data.db/000042.log 
+2026/10/03-19:09:30.811 8788 Level-0 table #46: started
+2026/10/03-19:09:30.814 8788 Level-0 table #46: 683376 bytes OK
+2026/10/03-19:09:30.815 8788 Delete type=0 #42
+2026/10/03-19:09:30.816 8788 Compacting 4@0 + 1@1 files
+2026/10/03-19:09:30.821 8788 Generated table #47@0: 4 keys, 683449 bytes
+2026/10/03-19:09:30.821 8788 Compacted 4@0 + 1@1 files => 683449 bytes
+2026/10/03-19:09:30.822 8788 compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/10/03-19:09:30.822 8788 Delete type=2 #34
+2026/10/03-19:09:30.822 8788 Delete type=2 #37
+2026/10/03-19:09:30.822 8788 Delete type=2 #40
+2026/10/03-19:09:30.822 8788 Delete type=2 #43
+2026/10/03-19:09:30.822 8788 Delete type=2 #46

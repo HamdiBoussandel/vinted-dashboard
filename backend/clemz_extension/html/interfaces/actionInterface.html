@@ -1,0 +1,1048 @@
+<div id="currentInterface" data-interface-name="action">  
+  <div class="upperButtons" id="upperButtons">
+    <div class="tabBox" id="tabBox">
+      <div id="homeTabLink" data-open-tab="homeTabLink" data-open-tab-container="currentInterface" class="tabLinks max-w-50px d-flex align-items-center justify-content-center">
+        <img class="font-icon text-white vinz-image" src="" data-image-name="house-user-solid.svg">
+      </div>
+      <div id="listsTabLink" data-open-tab="listsTabLink" data-open-tab-container="currentInterface" class="tabLinks max-w-50px d-none align-items-center justify-content-center">
+        <img class="font-icon text-white vinz-image" data-image-name="list-solid.svg" src="">
+      </div>
+      <div id="repostTabLink" data-open-tab="repostTabLink" data-open-tab-container="currentInterface" class="tabLinks max-w-50px d-none align-items-center justify-content-center">
+        <img class="font-icon text-white vinz-image" data-image-name="sync-alt-solid.svg" src="">
+      </div>
+      <div id="exchangeTabLink" data-open-tab="exchangeTabLink" data-open-tab-container="currentInterface" class="tabLinks max-w-50px d-none align-items-center justify-content-center">
+        <img class="font-icon text-white vinz-image" data-image-name="hand-holding-hand-solid.svg" src="">
+      </div>
+      <div id="modifyTabLink" data-open-tab="modifyTabLink" data-open-tab-container="currentInterface" class="tabLinks max-w-50px d-none align-items-center justify-content-center">
+        <img class="font-icon text-white vinz-image" data-image-name="edit-solid.svg" src="">
+      </div>
+      <div id="myDressingTabLink" data-open-tab="myDressingTabLink" data-open-tab-container="currentInterface" class="tabLinks max-w-50px d-none align-items-center justify-content-center">
+        <img class="font-icon text-white vinz-image" data-image-name="tshirt-solid.svg" src="">
+      </div>
+      <div id="autoMessageTabLink" data-open-tab="autoMessageTabLink" data-open-tab-container="currentInterface" class="tabLinks max-w-50px d-none align-items-center justify-content-center">
+        <img class="font-icon text-white vinz-image" data-image-name="comment-dollar-solid.svg" src="">
+      </div>
+      <div id="smartInboxTabLink" data-open-tab="smartInboxTabLink" data-open-tab-container="currentInterface" class="tabLinks max-w-50px d-none align-items-center justify-content-center">
+        <img class="font-icon text-white vinz-image" data-image-name="envelope-circle-check-solid.svg" src="">
+      </div>
+      <div id="clipboardTabLink" data-open-tab="clipboardTabLink" data-open-tab-container="currentInterface" class="tabLinks max-w-50px d-none align-items-center justify-content-center">
+        <img class="font-icon text-white vinz-image" data-image-name="clipboard-solid.svg" src="">
+      </div>
+      <div id="sendFavouritesTabLink" data-open-tab="sendFavouritesTabLink" data-open-tab-container="currentInterface" class="tabLinks max-w-50px d-none align-items-center justify-content-center">
+        <img class="font-icon text-white vinz-image" data-image-name="hand-holding-heart-solid.svg" src="">
+      </div>
+      <div id="syncSalesTabLink" data-open-tab="syncSalesTabLink" data-open-tab-container="currentInterface" class="tabLinks max-w-50px d-none align-items-center justify-content-center">
+        <img class="font-icon text-white vinz-image" data-image-name="dollar-sign-solid.svg" src="">
+      </div>
+      <div id="autoCompleteTabLink" data-open-tab="autoCompleteTabLink" data-open-tab-container="currentInterface" class="tabLinks max-w-50px d-none align-items-center justify-content-center">
+        <img class="font-icon text-white vinz-image" data-image-name="file-signature-solid.svg" src="">
+      </div>
+      <div id="explainTabsTabLink" data-open-tab="explainTabsTabLink" data-open-tab-container="currentInterface" class="tabLinks max-w-20px d-flex align-items-center justify-content-center" style="border:none;">
+        <img class="font-icon text-white vinz-image" data-image-name="ellipsis-h-solid.svg" src="">
+      </div>
+
+    </div>
+    <div class="upperRightButtons">
+      <div id="minimizeButton" class="minimizeButton"></div>
+    </div>
+  </div>
+
+  <!-- Home Tab -->
+  <div aria-labelledby="homeTabLink" class="tabContent" style="display: none;">
+    <div class="d-flex justify-content-between align-items-center">
+
+      <!-- Menu -->
+      <div class="d-flex cursor-pointer dropdown-main flex-column">
+        <div class="d-flex align-items-center">
+          <img class="mx-1 vinz-image" data-image-name="bot_smiling.png" style="max-height: 20px;" src="">
+          <div class="d-flex font-weight-bolder align-items-center">
+            <span data-i18n="actionInterface_menu"></span>
+            <div class="chevron-down"></div>
+          </div>
+        </div>
+        <div class="dropdown-content" style="width: 130px;">
+          <a class="pl-2" href="https://www.clemz.app/dashboard/home" target="_blank" data-i18n="actionInterface_myDashboard"></a>
+          <a id="tutorialButtonMenu" class="pl-2 my-1" data-i18n="actionInterface_tutorialsClemz"></a>
+          <a id="helpTabLink" class="pl-2 my-1" data-open-tab="helpTabLink" data-open-tab-container="currentInterface" data-i18n="actionInterface_needHelp"></a>
+          <hr class="my-1">
+          <div id="logoutButton" class="text-danger pl-2" data-i18n="actionInterface_logout"></div>
+        </div>
+      </div>
+
+      <!-- Refresh button -->
+      <div id="" class="refreshButton cursor-pointer text-sm badge badge-info ml-3">
+        <img class="font-icon vinz-image text-white" data-image-name="sync-alt-solid.svg" style="max-height: 10px;" src="">
+        <span data-i18n="actionInterface_refresh"></span>
+      </div>
+
+      <!-- Version number -->
+      <div class="tooltip tooltip-left font-weight-bolder"><span data-i18n="version_number"></span><span id='versionNumber' class='text-sm'>???</span></span></div>
+    </div>
+    <div class="text-center my-3" id="subscribeCTA" style="display:none;">
+      <a href="https://www.clemz.app/users/pricing" class="btn btn-danger" target="_blank" ><b class="text-lg" style="color: white;" data-i18n="actionInterface_subscribeClemz"></b></a>
+    </div>
+
+    <!-- User informations (normal content) -->
+    <div id="userInformations" class="mt-3 text-left">
+
+      <!-- Clemz account -->
+      <div class="d-flex align-items-center">
+        <div class="font-weight-bold mr-1" style="width: 110px;" data-i18n="actionInterface_account"></div>
+        <div class="d-flex text-md border-left border-grey pl-1">
+          <span id="userInfoEmail" class="font-weight-normal text-truncate d-inline-block" style="max-width: 150px;" data-i18n-tooltip="actionInterface_validityTooltip"></span>
+          <a class="text-sm-md ml-2" href="https://www.clemz.app/dashboard/home" target="_blank">
+            <img class="font-icon text-primary vinz-image " data-image-name="up-right-from-square-solid.svg" src="">
+          </a>
+        </div>
+      </div>
+
+      <!-- Wardrobes -->
+      <div id="wardrobesInfos" class="mt-2">
+        <div  class="d-flex flex-column">
+
+          <div  class="d-flex align-items-center">
+            <div class="font-weight-bold mr-1" style="width: 110px;" data-i18n="actionInterface_wardrobes"></div>
+            <div class="d-flex flex-column text-md border-left border-grey pl-1">
+              <div class="d-flex align-items-center">
+                <div id="wardrobesInfo" class=""></div>
+                <div class="text-sm-md ml-3 d-flex align-items-center cursor-pointer manageWardrobesButtons">
+                  <img class="font-icon text-primary vinz-image " data-image-name="gear-solid.svg" src="">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="addWardrobeInfos" class="" style="display: none;">
+            <div class="d-flex align-items-center justify-content-center text-sm border border-2 border-primary rounded text-dark font-weight-bolder p-2">
+              <div data-i18n="actionInterface_addWardrobeInfos"></div>
+              <div class="cursor-pointer d-flex align-items-center ml-2 manageWardrobesButtons">
+                <img class="font-icon text-primary vinz-image " data-image-name="gear-solid.svg" src="">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subscription informations -->
+      <div id="userSubscriptionInfos">
+        <div class="d-flex align-items-center mt-2">
+          <a class="font-weight-bold mr-1" style="width: 110px; color: #718096 !important;" href="https://www.clemz.app/dashboard/subscriptions" target="_blank" data-i18n="actionInterface_subscription"></a>
+          <div class="d-flex text-md border-left border-grey pl-1">
+            <span id="userSubscriptionName" class="text-danger font-weight-bolder" data-i18n="actionInterface_noSubscription"></span>
+          </div>
+        </div>
+        <div class="d-flex align-items-center mt-2">
+          <span class="font-weight-bold text-md-lg mr-1" style="width: 110px;" data-i18n="actionInterface_republications"></span>
+          <div class="d-flex flex-column text-md border-left border-grey pl-1">
+            <p class="font-weight-bold mt-1 mb-0" style="display: block;">
+              <span data-i18n="actionInterface_remainingReposts"></span>
+              <span class="text-primary" id="userInfoRepostLeft">---</span>
+              <span class="font-weight-bold text-dark" id="userInfoMaxRepostLeft"></span>
+            </p>
+            <p class="font-weight-bold mt-0" style="display: block;">
+              <span data-i18n="actionInterface_validity"></span>
+              <span class="text-primary" id="userInfoNextTopUp">---</span>
+              <span class="tooltip tooltip-left mb-1 text-sm ml-2" data-i18n-tooltip="actionInterface_validityTooltip">
+                <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle mb-0" src="">
+              </span>
+            </p>
+          </div>
+        </div>
+        <div class="d-flex align-items-center mt-1">
+          <span class="font-weight-bold text-md-lg mr-1" style="width: 110px;" data-i18n="actionInterface_favMessages"></span>
+          <div class="d-flex flex-column text-md border-left border-grey pl-1">
+            <div>
+              <span id="userInfoAutoMessageNotAllowed" class="badge badge-danger" data-i18n="actionInterface_notIncluded"></span>
+            </div>
+            <div id="userInfoAutoMessageAllowed" class="d-none">
+              <p class="font-weight-bold mt-1 mb-0" style="display: block;">
+                <span data-i18n="actionInterface_remainingFavMessages"></span>
+                <span class="text-primary" id="userInfoAutoMessageLeft">---</span>
+                <span class="font-weight-bold text-dark" id="userInfoAutoMessageIncluded"></span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Onboarding sections -->
+    <div id="askingToGoOnVinted" class="status-divs" style="display:none;">
+      <div class="mt-4 d-flex flex-column justify-content-center align-items-center">
+        <div class="text-dark text-center my-4" data-i18n="actionInterface_goOnVinted"></div>
+        <a href="https://www.vinted.fr" class="btn btn-primary" style="color: white !important;" data-i18n="actionInterface_clickHere"></a>
+      </div>
+    </div>
+
+    <!-- Asking user to login -->
+    <div id="askingToLoginVintedProfile" class="status-divs" style="display:none;">
+      <div class="mt-4 d-flex flex-column justify-content-center align-items-center">
+        <div class="text-dark text-center my-4" data-i18n="actionInterface_loginVinted"></div>
+        <a href="" id="loginVintedButton" class="btn btn-primary" style="color: white !important;" data-i18n="actionInterface_clickHere"></a>
+      </div>
+    </div>
+
+    <!-- link Vinted profile -->
+    <div id="linkVintedProfileButton" class="text-center status-divs" style="display:none;">
+      <div class="btn btn-danger mt-6 can-be-disabled" target="_blank" role="button">
+        <b class="" data-i18n="actionInterface_linkVintedProfile"></b>
+        <div class="spinner-border text-white" role="status" style="position: absolute; left: 40px; display: none;">
+        </div>
+      </div>
+    </div>
+    <!-- start free trial -->
+    <div id="anotherFreeTrialButton" class="text-center status-divs" style="display: none;">
+      <div class="font-weight-bolder mt-4" style="" data-i18n="actionInterface_newTrial">
+      </div>
+      <div class="btn btn-danger mt-4 can-be-disabled" target="_blank" role="button">
+        <b class="" data-i18n="actionInterface_startFreeTrial"></b>
+        <div class="spinner-border text-white" role="status" style="position: absolute; left: 76px; display: none;">
+        </div>
+      </div>
+    </div>
+    <!-- show Tutorial -->
+    <div id="tutorialModalButton" class="text-center status-divs" style="display: none;">
+      <div class="btn btn-outline-danger mt-4" target="_blank" role="button">
+        <b class="" data-i18n="actionInterface_showTutorial"></b>
+      </div>
+    </div>
+    <!-- User in error status -->
+    <div id="errorStatusMessage" class="text-center border border-danger rounded py-3 mt-2 status-divs" style="display:none;">
+      <div class="font-weight-bolder" style="">
+        <span data-i18n="actionInterface_accountIssue"></span>
+      </div>
+    </div>
+    <!-- User in past_due status -->
+    <div id="handlePastDue" class="status-divs" style="display:none;">
+      <div class="mt-2 text-center">
+        <p class="badge badge-danger text-sm-md" data-i18n="actionInterface_paymentFailed"></p>
+        <div class="border border-danger border-radius text-sm-md py-2 text-center" style="border-width: 3px;">
+          <p data-i18n="actionInterface_paymentFailedMessage"></p>
+          <a href="https://www.clemz.app/dashboard/subscriptions" class="btn btn-danger mt-2" target="_blank"><b class="text-lg text-white" data-i18n="actionInterface_regularize"></b></a>
+        </div>
+        <div class="text-right">
+          <span id="" class="refreshButton cursor-pointer text-sm badge badge-info">
+            <img class="mr-1 font-icon vinz-image text-white" data-image-name="sync-alt-solid.svg" style="max-height: 10px;" src="">
+            <span data-i18n="actionInterface_refreshInfo"></span>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex flex-column align-items-center justify-content-center" style="position: absolute; bottom: 1px; width: 300px;">
+      <p class="text-sm-md" data-i18n="actionInterface_contactUs"></p>
+      <p class="text-sm-md mt-0">
+        <span data-i18n="actionInterface_writeToContactEmail"></span>
+        <span class="text-danger font-weight-bold text-lg cursor-pointer click-to-copy"><u>bonjour@clemz.app</u></span>
+      </p>
+    </div>
+  </div>
+
+  <!-- List Tab -->
+  <div aria-labelledby="listsTabLink" class="tabContent" style="display: none;">
+    <p class="h4 text-center font-weight-bolder mt-0 text-primary d-flex align-items-center justify-content-center" data-i18n="actionInterface_fillMyLists">
+      <a class="text-sm ml-2 tooltip tooltip-left" href="https://www.clemz.app/documentation/republier-des-articles#how" target="_blank" data-i18n-tooltip="actionInterface_fillMyListsTooltip">
+        <img class="font-icon align-middle pb-1 vinz-image" data-image-name="question-circle-solid.svg" src="">
+      </a>
+    </p>
+    <div class="d-flex flex-column">
+      <span class="font-weight-bolder mt-2" id="listStartSmartDressing" data-i18n="actionInterface_startSmartDressing"></span>
+      <ul id="smartDressingAd" class="text-sm font-weight-normal mt-0 lh-110">
+        <li class="mt-0" data-i18n="actionInterface_completeDressing"></li>
+        <li class="mt-0" data-i18n="actionInterface_filterSort"></li>
+      </ul>
+      <span class="font-weight-normal text-sm lh-120 text-justify mt-2" style="display: none;" id="importItemWarning" data-i18n="actionInterface_importItemWarning"></span>
+      <span class="font-weight-bolder mt-2" id="selectArticlesTitle" data-i18n="actionInterface_selectArticles"></span>
+      <div class="d-flex justify-content-center align-items-center my-1">
+        <button role="button" id="selectItemsButton" class="btn btn-primary btn-sm" data-i18n="actionInterface_startSelection"></button>
+        <span class="ml-2 text-bold" id="selectedCount" style="display: none;" data-i18n="actionInterface_selectedCount"></span>
+      </div>
+      <div class="d-flex flex-column align-items-center justify-content-center" style="display: none  !important;" id="shownArticleSelected">
+        <span class="text-dark text-md font-weight-bold text-center" data-i18n="actionInterface_articleReady"></span>
+      </div>
+      <div id="selectOptions" class="d-none">
+        <div class="d-flex align-items-center mt-1">
+          <span class="text-sm-md" data-i18n="actionInterface_unselectAll"></span>
+          <span role="button" class="badge btn-outline-primary cursor-pointer border border-primary ml-2" id="unselectAllButton" data-i18n="actionInterface_unselectAllButton"></span>
+        </div>
+        <div class="d-flex align-items-center">
+          <form id="selectTopArticlesForm">
+            <span class="text-sm-md" data-i18n="actionInterface_selectTopArticles"></span>
+            <input type="number" min="0" name="" style="width: 30px" class="text-sm-md mx-1 text-center rounded" placeholder="0" id="selectTopArticlesValue">
+            <span class="text-sm-md" data-i18n="actionInterface_topArticles"></span>
+            <button role="button" class="badge btn-outline-primary cursor-pointer border border-primary ml-2 font-weight-bold" id="" data-i18n="actionInterface_selectTopArticlesButton"></button>
+          </form>
+        </div>
+      </div>
+      <span class="font-weight-bolder mt-3" data-i18n="actionInterface_addToList"></span>
+      <div class="input-group mt-1">
+        <select class="custom-select text-center rounded" id="listSelect">
+          <option value="1" data-i18n="actionInterface_toDoListDropdown"></option>
+          <option value="2" data-i18n="actionInterface_inStockListDropdown"></option>
+        </select>
+        <div class="input-group-append">
+          <button role="button" id="addToListButton" class="btn btn-primary btn-sm can-be-disabled" style="position: relative;">
+            <span data-i18n="actionInterface_addToListButton"></span>
+            <div class="spinner-border text-white" role="status" style="position: absolute; right: 9px; display:none;"></div>
+          </button>
+        </div>
+      </div>
+      <span class="font-weight-bolder mt-2" data-i18n="actionInterface_checkMyLists"></span>
+      <div class="mt-1 font-weight-bold text-center"><span role="button" class="btn btn-outline-primary" id="showListsButton1" data-i18n="actionInterface_viewMyLists"></span></div>
+    </div>
+  </div>
+
+  <!-- Repost Tab -->
+  <div aria-labelledby="repostTabLink" class="tabContent" style="display: none;">
+    <p class="h4 font-weight-bolder text-primary mt-0 d-flex align-items-center justify-content-center" data-i18n="actionInterface_repostAdsTitle"></p>
+    <div class="d-flex flex-column">
+      <div class="font-weight-bolder mt-2" data-i18n="actionInterface_checkToDoList"></div>
+      <div class="text-sm font-weight-normal text-center lh-110" data-i18n="actionInterface_repostToDoList"></div>
+      <div class="font-weight-bolder mt-2" data-i18n="actionInterface_chooseOptions"></div>
+      <!-- option : 1 by 1 -->
+      <div class="d-flex align-items-center mt-0">
+        <div id="repostOnebyOneControl" class="custom-control custom-switch ml-n4">
+          <input type="checkbox" class="custom-control-input" id="repostOnebyOne">
+          <label class="custom-control-label align-middle text-sm" for="repostOnebyOne" data-i18n="actionInterface_oneByOneOption"></label>
+        </div>
+        <div class="tooltip tooltip-left mb-1 text-sm ml-2" data-i18n-tooltip="actionInterface_oneByOneTooltip">
+          <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle mb-0 " src="">
+        </div>
+      </div>
+      <!-- option : protection settings (gear button + summary badges) -->
+      <div class="d-flex align-items-center mt-2">
+        <button type="button" id="openProtectionSettings" class="badge btn-outline-primary cursor-pointer border text-md can-be-disabled mr-2 p-1" style="min-width: 28px;">
+          ⚙
+        </button>
+        <span class="font-weight-bolder text-sm mr-2" data-i18n="actionInterface_protectionLabel"></span>
+        <span id="protectionExecutionBadge" class="badge text-xs mr-1 d-none" style="background-color: #e9ecef;"></span>
+        <span id="protectionSummaryText" class="badge text-xs" style="background-color: #e9ecef;"></span>
+      </div>
+      <div id="restrictionWarningTabAlert" class="text-center text-sm text-dark d-none">
+        <span data-i18n="restrictionWarningTab_message"></span>
+      </div>
+
+      <div class="font-weight-bolder mt-2" data-i18n="actionInterface_modifyPhotos"></div>
+      <div class="d-flex align-items-center justify-content-center">
+        <select id="modifyPhotosChoice" class="rounded custom-select">
+          <option value="noModification" data-i18n="actionInterface_noModificationChoice"></option>
+          <option value="customizedModification" data-i18n="actionInterface_customizedModificationChoice"></option>
+          <option value="activeModification" data-i18n="actionInterface_activeModificationChoice"></option>
+        </select>
+      </div>
+      <div id="no_photo_modification_risk_high" class="context-div-to-hide text-center text-sm text-dark d-none">
+        <span data-i18n="actionInterface_no_photo_modification_risk_high"></span>
+        <a href="https://www.clemz.app/documentation/modifier-les-photos#still-necessary" target="_blank" class="text-decoration-underline" data-i18n="actionInterface_no_photo_modification_risk_link"></a>
+      </div>
+      <div id="no_photo_modification_risk_medium" class="context-div-to-hide text-center text-sm text-dark d-none">
+        <span data-i18n="actionInterface_no_photo_modification_risk_medium"></span>
+        <a href="https://www.clemz.app/documentation/modifier-les-photos#still-necessary" target="_blank" class="text-decoration-underline" data-i18n="actionInterface_no_photo_modification_risk_link"></a>
+      </div>
+      <div id="no_photo_modification_risk_low" class="context-div-to-hide text-center text-sm text-dark d-none">
+        <span data-i18n="actionInterface_no_photo_modification_risk_low"></span>
+        <a href="https://www.clemz.app/documentation/modifier-les-photos#still-necessary" target="_blank" class="text-decoration-underline" data-i18n="actionInterface_no_photo_modification_risk_link"></a>
+      </div>
+      <div id="customizedModificationParams" class="context-div-to-hide d-none text-center mt-1">
+        <a role="button" id="showModifyPhotosParams" class="btn btn-xs btn-outline-primary text-white" data-i18n="actionInterface_customizedModificationParams"></a>
+      </div>
+      <div id="noActiveModification" class="context-div-to-hide d-none mt-1">
+        <div class="text-sm-md text-dark d-flex flex-column justify-content-center align-items-center border border-danger border-sm rounded position-relative">
+          <div class="font-weight-bolder text-left w-100" data-i18n="actionInterface_noActiveModification"></div>
+          <span id="" class="refreshButton cursor-pointer text-sm badge badge-info ml-3" style="position: absolute; top: 0; right: 0;">
+            <img class="font-icon vinz-image text-white" data-image-name="sync-alt-solid.svg" style="max-height: 10px;" src="">
+          </span>
+          <div class="d-flex align-items-center">
+            <div data-i18n="actionInterface_modificationUsage"></div>
+          </div>
+          <div class="d-flex justify-content-around w-100 mb-1">
+            <a class="font-weight-bold" href="https://www.clemz.app/documentation/modifier-les-photos#current-modification" target="_blank" data-i18n="actionInterface_whyModify"></a>
+            <a class="font-weight-bold" href="https://www.clemz.app/dashboard/photo_modifications" target="_blank" data-i18n="actionInterface_createModification"></a>
+          </div>
+        </div>
+      </div>
+      <div id="hasActiveModification" class="context-div-to-hide d-none text-center mt-1">
+        <a role="button" id="showModifyPhotosParams" class="btn btn-xs btn-outline-primary text-white" href="https://www.clemz.app/dashboard/photo_modifications" target="_blank" data-i18n="actionInterface_seeActiveModification"></a>
+      </div>
+
+
+      <div class="font-weight-bolder mt-3 d-flex align-items-center" >
+        4. <div class="input-group">
+          <select id="repostSelectAction" class="custom-select text-sm-md">
+            <option value="1" data-i18n="actionInterface_repostAction"></option>
+            <option value="2" data-i18n="actionInterface_saveItemAction"></option>
+          </select>
+          <div class="input-group-append">
+            <button role="button" id="repostButton" class="btn btn-primary btn-sm can-be-disabled" style="position: relative;">Go Clemz !
+              <div class="spinner-border text-white" role="status" style="position: absolute; right: 10%; display:none;"></div>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="font-weight-bolder mt-3 d-flex align-items-center" data-i18n="actionInterface_getViewsLikes"></div>
+    </div>
+  </div>
+
+  <!-- Exchange Tab -->
+  <div aria-labelledby="exchangeTabLink" class="tabContent" style="display: none;">
+    <p class="h4 font-weight-bolder text-primary mt-0 d-flex align-items-center justify-content-center" data-i18n="actionInterface_exchangeViewsFavsTitle"></p>
+    
+    <!-- Small Cluster Warning -->
+    <div id="smallClusterWarning" class="alert alert-warning text-dark text-sm mb-2 py-2 lh-120 text-center" style="display: none;">
+      <div class="font-weight-bold mb-1" data-i18n="smallCluster_warningTitle"></div>
+      <div data-i18n="smallCluster_warningMessage"></div>
+      <a href="https://www.clemz.app/dashboard/referrees/1" target="_blank" class="text-dark font-weight-bold">
+        <u data-i18n="smallCluster_referralLink"></u>
+      </a>
+    </div>
+
+    <div class="d-flex flex-column">
+      <div class="font-weight-bolder mt-4 d-flex align-items-center" data-i18n="actionInterface_exchangeViews"></div>
+      <div class="d-flex mt-2 align-items-center">
+        <div class="col-6 d-flex flex-column align-items-center">
+          <div class="text-sm-md" data-i18n="actionInterface_recentViewRequest"></div>
+          <div class="lh-100 tooltip tooltip-top my-2" data-i18n-tooltip="actionInterface_lastRequestViewsDateTooltip" id="lastRequestViewsDate">???</div>
+          <a href="https://www.clemz.app/dashboard/activities?timeframe=7&process_type=request_views#activities-detailed-table" target="_blank" class="text-sm-md text-underline"><u data-i18n="viewOnClemz"></u></a>
+        </div>
+        <div class="col-6 d-flex flex-column align-items-center">
+          <button role="button" id="requestViewsButton" class="btn btn-outline-primary btn-xs can-be-disabled" style="position: relative;">
+            <span data-i18n="actionInterface_giveReceiveViews"></span>
+            <div class="spinner-border text-dark" role="status" style="position: absolute; left: 25px; top:3px; display:none;"></div>
+          </button>
+        </div>
+      </div>
+      <div class="font-weight-bolder mt-5 d-flex align-items-center" data-i18n="actionInterface_exchangeFavs"></div>
+      <!-- option : randomize -->
+      <div class="d-flex align-items-center mt-0">
+        <div id="randomizeFavouritesTotalControl" class="custom-control custom-switch ml-n4">
+          <input type="checkbox" class="custom-control-input" id="randomizeFavouritesTotal">
+          <label class="custom-control-label align-middle text-sm" for="randomizeFavouritesTotal">
+            <img class="font-icon align-middle pb-1 vinz-image" data-image-name="random-solid.svg" src="">
+            <span data-i18n="actionInterface_randomizeFavs"></span>
+          </label>
+        </div>
+        <div class="tooltip tooltip-left mb-1 text-sm ml-2" data-i18n-tooltip="actionInterface_randomizeFavsTooltip">
+          <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle mb-0 " src="">
+        </div>
+      </div>
+      <div class="d-flex align-items-center mt-0">
+        <div id="" class="custom-control custom-switch ml-n4">
+          <input type="checkbox" checked disabled class="custom-control-input" id="">
+          <label class="custom-control-label align-middle text-sm" for="" data-i18n="actionInterface_receiveFavs"></label>
+        </div>
+      </div>
+      <div class="d-flex mt-3 align-items-center">
+        <div class="col-6 d-flex flex-column align-items-center">
+          <div class="text-sm-md" data-i18n="actionInterface_recentFavRequest"></div>
+          <div class="lh-100 tooltip tooltip-top my-2" data-i18n-tooltip="actionInterface_lastRequestFavsDateTooltip" id="lastRequestFavsDate">???</div>
+          <a href="https://www.clemz.app/dashboard/activities?timeframe=7&process_type=request_favs#activities-detailed-table" target="_blank" class="text-sm-md text-underline"><u data-i18n="viewOnClemz"></u></a>
+
+        </div>
+        <div class="col-6 d-flex flex-column align-items-center">
+          <button role="button" id="requestFavsButton" class="btn btn-outline-primary btn-xs can-be-disabled" style="position: relative;">
+            <span data-i18n="actionInterface_giveReceiveFavs"></span>
+            <div class="spinner-border text-dark" role="status" style="position: absolute; left: 25px; top:3px; display:none;"></div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modify Tab -->
+  <div aria-labelledby="modifyTabLink" class="tabContent" style="display: none;">
+    <p class="h4 font-weight-bolder text-primary mt-0 d-flex align-items-center justify-content-center" data-i18n="actionInterface_bulkModify"></p>
+    <div class="d-flex flex-column">
+
+      <!-- 1. Check toDoList -->
+      <div class="font-weight-bolder mt-1" data-i18n="actionInterface_checkToDoList2"></div>
+      <div class="text-sm font-weight-normal text-center mb-1 lh-110" data-i18n="actionInterface_modifyToDoList"></div>
+
+      <!-- 2. Choose options -->
+      <div class="font-weight-bolder mt-1" data-i18n="actionInterface_chooseOptions2"></div>
+      <div class="d-flex align-items-center mt-0">
+        <div id="modifyPriceControl" class="custom-control custom-switch ml-n4">
+          <input type="checkbox" class="custom-control-input" id="modifyPrice">
+          <label class="custom-control-label align-middle text-sm d-flex" for="modifyPrice">
+            <b class="mr-2" data-i18n="actionInterface_modifyPrice">Prix :</b>
+            <div class="d-flex flex-column">
+              <div>
+                <select id="modifyPriceDirection" class="fake-disabled rounded" style="max-width: 105px;">
+                  <option value="decrease" selected data-i18n="actionInterface_modifyPriceDecrease"></option>
+                  <option value="increase" data-i18n="actionInterface_modifyPriceIncrease"></option>
+                  <option value="set" data-i18n="actionInterface_modifyPriceSet"></option>
+                </select>
+                <input type="number" id="modifyPriceValue" class="text-center fake-disabled rounded" style="width: 35px; height: 20px;" value="0" min="0">
+                <select id="modifyPriceType" class="fake-disabled rounded">
+                  <option value="%" selected>%</option>
+                  <option value="€">€</option>
+                </select>
+              </div>
+              <div>
+                <span data-i18n="actionInterface_modifyPriceAnd"></span>
+                <select id="modifyPriceRound" class="fake-disabled rounded">
+                  <option value="noRound" selected data-i18n="actionInterface_modifyPriceNoRounding"></option>
+                  <option value="noDecimalRound" data-i18n="actionInterface_modifyPriceNoDecimalRound"></option>
+                  <option value="oneDecimalRound" data-i18n="actionInterface_modifyPriceOneDecimalRound"></option>
+                </select>
+              </div>
+            </div>
+          </label>
+        </div>
+      </div>
+      <div class="d-flex align-items-center mt-1">
+        <div id="modifyVisibilityControl" class="custom-control custom-switch ml-n4">
+          <input type="checkbox" class="custom-control-input" id="modifyVisibility">
+          <label class="custom-control-label align-middle text-sm" for="modifyVisibility" data-i18n="actionInterface_modifyVisibility"></label>
+        </div>
+      </div>
+      <div class="d-flex align-items-center mt-1">
+        <div id="restorePhotosModifyControl" class="custom-control custom-switch ml-n4">
+          <input type="checkbox" class="custom-control-input" id="restorePhotosModify">
+          <label class="custom-control-label align-middle text-sm" for="restorePhotosModify" data-i18n="actionInterface_restorePhotos"></label>
+        </div>
+        <div class="tooltip tooltip-left mb-1 text-sm ml-2" data-i18n-tooltip="actionInterface_restorePhotosTooltip">
+          <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle mb-0 " src="">
+        </div>
+      </div>
+      <!-- Protection settings (gear button + summary badge) -->
+      <div class="d-flex align-items-center mt-2">
+        <button type="button" id="openModifyProtectionSettings" class="badge btn-outline-primary cursor-pointer border text-md can-be-disabled mr-2 p-1" style="min-width: 28px;">
+          ⚙
+        </button>
+        <span class="font-weight-bolder text-sm mr-2" data-i18n="actionInterface_protectionLabel"></span>
+        <span id="modifyProtectionSummaryText" class="badge text-xs" style="background-color: #e9ecef;"></span>
+      </div>
+
+      <!-- 3. Choose an action -->
+      <div class="font-weight-bolder mt-1" data-i18n="actionInterface_chooseActionModify"></div>
+      <div class="d-flex flex-column align-items-center justify-content-center mt-2">
+        <div>
+          <button role="button" id="modifyButton" class="btn btn-primary btn-sm can-be-disabled" style="position: relative;">
+            <span data-i18n="actionInterface_modifyAds"></span>
+            <div class="spinner-border text-white" role="status" style="position: absolute; left: 8%; top:9px; display: inline;"></div>
+          </button>
+        </div>
+        <div data-i18n="actionInterface_or"></div>
+        <div>
+          <button role="button" id="deleteButton" class="btn btn-danger btn-xs py-0 px-2 can-be-disabled" style="position: relative;">
+            <span data-i18n="actionInterface_deleteAds"></span>
+            <div class="spinner-border text-white" role="status" style="position: absolute; left: 3%; top:9px; display: none;"></div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- My Dressing Tab -->
+  <div aria-labelledby="myDressingTabLink" class="tabContent" style="display: none;">
+    <div class="d-flex align-items-center justify-content-center">
+      <p class="h4 text-center font-weight-bolder mt-0 text-primary" data-i18n="actionInterface_myDressingTitle"></p>
+      <a class="profileLink text-sm-md ml-2" href="">
+        <img class="font-icon text-primary vinz-image" data-image-name="up-right-from-square-solid.svg" src="">
+      </a>
+    </div>
+    <div class="text-sm-md font-weight-normal text-center text-dark mt-1 lh-110" data-i18n="actionInterface_smartDressing"></div>
+    <div class="font-weight-bolder mt-1" data-i18n="actionInterface_targetItems"></div>
+    <div class="form-check d-flex">
+      <input type="radio" class="form-check-input" name="myDressingTargetedItems" id="myDressingTargetAll">
+      <label class="form-check-label" for="myDressingTargetAll">
+        <div class="d-flex mt-1 align-items-center text-sm-md text-dark" data-i18n="actionInterface_allDressing"></div>
+      </label>
+    </div>
+    <div class="form-check d-flex my-1">
+      <input type="radio" class="form-check-input" name="myDressingTargetedItems" id="myDressingTargetList">
+      <label class="form-check-label" for="myDressingTargetList">
+        <div class="d-flex mt-1 align-items-center text-sm-md text-dark" data-i18n="actionInterface_toDoList"></div>
+      </label>
+      <div role="button" class="badge badge-dark ml-2" id="showListsButton4" data-i18n="actionInterface_viewList"></div>
+    </div>
+    <div class="form-check d-flex align-items-center">
+      <input type="radio" class="form-check-input" name="myDressingTargetedItems" id="myDressingTargetScope">
+      <label class="form-check-label" for="myDressingTargetScope">
+        <div class="d-flex mt-1 align-items-center text-sm-md text-dark" data-i18n="actionInterface_itemsRange"></div>
+      </label>
+      <div class="tooltip tooltip-left text-sm ml-2" data-i18n-tooltip="actionInterface_itemsRangeTooltip">
+        <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle mb-0" src="">
+      </div>
+    </div>
+    <div class="font-weight-bolder mt-3" data-i18n="actionInterface_chooseActionDressing"></div>
+    <div class="d-flex justify-content-center">
+      <div class="input-group" style="width: 250px !important;">
+        <select id="myDressingSelectAction" class="custom-select" data-i18n="actionInterface_closetActions"></select>
+        <div class="input-group-append">
+          <button role="button" id="myDressingButton" class="btn btn-primary btn-sm can-be-disabled" style="position: relative;">
+            <span data-i18n="actionInterface_launchDressing"></span>
+            <div class="spinner-border text-white" role="status" style="position: absolute; right: 10%; display:none;"></div>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="font-weight-bolder mt-4" data-i18n="actionInterface_mySavedItems"></div>
+    <div class="d-flex justify-content-center align-items-center mt-1">
+      <div>
+        <span class="text-md" data-i18n="actionInterface_savedItemsCount"></span>
+      </div>
+      <a href="https://www.clemz.app/dashboard/items" target="_blank" class="ml-3">
+        <div class="btn btn-xs btn-outline-primary d-flex justify-content-center align-items-center" data-i18n="viewOnClemz"></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Auto Message Tab -->
+  <div aria-labelledby="autoMessageTabLink" class="tabContent" style="display: none;">
+    <p class="h4 d-flex justify-content-center align-items-center font-weight-bolder mt-0 text-primary"><span data-i18n="actionInterface_autoMessagesTitle"></span></p>
+
+    <!-- Wrong wardrobe warning (hidden by default) -->
+    <div id="autoMessageWrongWardrobe" class="text-center text-muted mt-3 py-3" style="display: none;">
+      <div class="text-sm" id="autoMessageWrongWardrobeMessage"></div>
+    </div>
+
+    <!-- Pipeline content (hidden when wardrobe is invalid) -->
+    <div id="autoMessagePipelineContent">
+      <!-- FavMessages section -->
+      <div class="mt-1">
+        <div class="d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center">
+            <div class="custom-control custom-switch ml-n4">
+              <input type="checkbox" class="custom-control-input" id="autoMessageFavEnabled">
+              <label class="custom-control-label align-middle ml-4 font-weight-bolder" for="autoMessageFavEnabled" data-i18n="actionInterface_favMessagesSection"></label>
+            </div>
+            <a class="text-sm ml-3 tooltip tooltip-bottom" href="https://www.clemz.app/documentation/messages-aux-favoris" target="_blank" data-i18n-tooltip="actionInterface_favMessagesSectionTooltip">
+              <img class="font-icon align-middle pb-1 vinz-image" data-image-name="question-circle-solid.svg" src="">
+            </a>
+          </div>
+          <button id="favMessagesParamsButton" class="badge btn-outline-primary cursor-pointer border text-sm can-be-disabled position-relative">
+            <span data-i18n="actionInterface_parameters"></span>
+            <div class="spinner-border spinner-border-sm text-dark" role="status" style="position: absolute; left: 4px; top:2px; display: none;"></div>
+          </button>
+        </div>
+        <div id="favMessagesSummary" class="mt-1 text-sm lh-120"></div>
+      </div>
+
+      <!-- OfferMessages section -->
+      <div class="mt-3">
+        <div class="d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center">
+            <div class="custom-control custom-switch ml-n4">
+              <input type="checkbox" class="custom-control-input" id="autoMessageOffersEnabled">
+              <label class="custom-control-label align-middle ml-4 font-weight-bolder" for="autoMessageOffersEnabled"><span data-i18n="actionInterface_offerMessagesSection"></span></label>
+            </div>
+            <a class="text-sm ml-3 tooltip tooltip-bottom" href="https://www.clemz.app/documentation/messages-auto" target="_blank" data-i18n-tooltip="actionInterface_offerMessagesSectionTooltip">
+              <img class="font-icon align-middle pb-1 vinz-image" data-image-name="question-circle-solid.svg" src="">
+            </a>
+          </div>
+          <button id="offerMessagesParamsButton" class="badge btn-outline-primary cursor-pointer border text-sm can-be-disabled position-relative">
+            <span data-i18n="actionInterface_parameters"></span>
+            <div class="spinner-border spinner-border-sm text-dark" role="status" style="position: absolute; left: 4px; top:2px; display: none;"></div>
+          </button>
+        </div>
+        <div id="offerMessagesSummary" class="mt-1 text-sm lh-120"></div>
+      </div>
+
+      <!-- Attention banner -->
+      <div id="autoMessageTabAttentionBanner" class="mt-3 d-none">
+        <a href="https://www.clemz.app/dashboard/conversations" target="_blank" class="d-flex align-items-center justify-content-center text-sm border border-warning rounded px-2 py-1 text-dark text-decoration-none">
+          <span class="mr-1">⚠️</span>
+          <span id="autoMessageTabAttentionText" class="font-weight-bold"></span>
+          <img class="font-icon vinz-image ml-1" data-image-name="up-right-from-square-solid.svg" src="" style="max-height: 10px;">
+        </a>
+      </div>
+
+      <!-- Actions -->
+      <div class="d-flex justify-content-between align-items-center mt-3">
+      <div class="refreshButton cursor-pointer text-sm badge badge-info">
+        <img class="font-icon vinz-image text-white" data-image-name="sync-alt-solid.svg" style="max-height: 10px;" src="">
+        <span data-i18n="actionInterface_refresh"></span>
+      </div>
+      <button role="button" id="autoMessageStartButton" class="btn btn-primary btn-sm d-flex justify-content-center align-items-center py-2 can-be-disabled position-relative">
+        <div class="h4 mr-2 mt-n3">📨</div>
+        <span data-i18n="actionInterface_startMessages"></span>
+        <div class="spinner-border text-white" role="status" style="position: absolute; left: 15%; display:none;"></div>
+      </button>
+    </div>
+    </div>
+  </div>
+
+  <!-- Smart Inbox Tab -->
+  <div aria-labelledby="smartInboxTabLink" class="tabContent" style="display: none;">
+    <p class="h4 d-flex justify-content-center align-items-center font-weight-bolder mt-0 text-primary" data-i18n="actionInterface_smartInboxTitle"></p>
+    <form class="form-check d-flex flex-column pl-0" id="smartInboxForm">
+      <div class="font-weight-bolder mr-2 mt-2" data-i18n="actionInterface_smartInboxSettings"></div>
+      <div class="custom-control custom-switch ml-n4">
+        <input type="checkbox" class="custom-control-input" checked disabled>
+        <label class="custom-control-label align-middle text-sm" for="">
+          <img class="font-icon align-middle pb-1 vinz-image" data-image-name="envelope-circle-check-solid.svg" src="">
+          <span data-i18n="actionInterface_loadMessages"></span>
+        </label>
+        <div class="tooltip tooltip-left text-sm" data-i18n-tooltip="actionInterface_loadMessagesTooltip">
+          <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle mb-0" src="">
+        </div>
+      </div>
+      <div class="font-weight-bolder mt-4 d-flex justify-content-start align-items-center" id="smartInboxLaunchDiv">
+        2. 
+        <button type="submit" class="btn btn-outline-primary btn-sm d-flex justify-content-center align-items-center py-2 can-be-disabled ml-2">
+          <div class="h4 mr-2">📫</div>
+          <div data-i18n="actionInterface_displaySmartInbox"></div>
+          <div class="spinner-border text-primary" role="status" style="position: absolute; left: 15%; display:none;"></div>
+        </button>
+      </div>
+      <div class="font-weight-bolder mt-4 d-none align-items-center text-success" id="smartInboxActiveMessage">
+        2- <span data-i18n="actionInterface_displaySmartInbox"></span> ✅
+      </div>
+    </form>
+    <div id="selectMessageOptions" class="d-none mt-2">
+      <div class="font-weight-bolder mt-2" data-i18n="actionInterface_manageMessages"></div>
+      <div class="d-flex flex-column align-items-start justify-content-start mb-1">
+        <div class="text-sm-md" data-i18n="actionInterface_selectedMessages"></div>
+        <div class="d-flex align-items-center">
+          <span class="text-sm-md" data-i18n="actionInterface_unselectAllMessages"></span>
+          <span role="button" class="badge btn-outline-primary cursor-pointer border border-primary ml-2" id="unselectAllMessagesButton" data-i18n="actionInterface_unselectAllMessagesButton"></span>
+        </div>
+      </div>
+      <div class="d-flex align-items-center justify-content-between mb-1">
+        <form id="selectTopMessagesForm" class="d-flex align-items-center">
+          <span class="text-sm-md" data-i18n="actionInterface_selectTopMessages"></span>
+          <input type="number" min="0" name="" style="width: 30px" class="text-sm-md mx-1 text-center rounded" placeholder="0" id="selectTopMessagesValue">
+          <span class="text-sm-md" data-i18n="actionInterface_topMessages"></span>
+          <button type="submit" class="badge btn-outline-primary cursor-pointer border border-primary ml-2 font-weight-bold" data-i18n="actionInterface_selectTopMessagesButton"></button>
+        </form>
+      </div>
+      <div class="d-flex justify-content-center mt-1">
+        <div class="input-group" style="max-width: 265px">
+          <select id="smartInboxSelectAction" class="custom-select text-sm-md">
+            <option value="delete" data-i18n="actionInterface_smartInboxActionsDelete"></option>
+            <option value="untag" data-i18n="actionInterface_smartInboxActionsRemove"></option>
+            <option value="tagRed" data-i18n="actionInterface_smartInboxActionsMarkRed"></option>
+            <option value="tagGreen" data-i18n="actionInterface_smartInboxActionsMarkGreen"></option>
+            <option value="tagYellow" data-i18n="actionInterface_smartInboxActionsMarkYellow"></option>
+            <option value="tagBlue" data-i18n="actionInterface_smartInboxActionsMarkBlue"></option>
+          </select>
+          <div class="input-group-append">
+            <button role="button" id="smartInboxActionButton" class="btn btn-primary btn-sm can-be-disabled" style="position: relative;">
+              <span data-i18n="actionInterface_launchSmartInboxAction"></span>
+              <div class="spinner-border text-white" role="status" style="position: absolute; right: 10%; display:none;"></div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live fill Tab -->
+  <div aria-labelledby="autoCompleteTabLink" class="tabContent" style="display: none;">
+    <p class="h4 d-flex justify-content-center align-items-center font-weight-bolder mt-0 text-primary" data-i18n="autoComplete_tabTitle"></p>
+    <p id="autoCompleteIntroNew" class="text-sm text-center text-dark mt-1" data-i18n="autoComplete_introNew"></p>
+    <p id="autoCompleteIntroEdit" class="d-none text-sm text-center text-dark mt-1"></p>
+    <p id="autoCompleteOtherPage" class="text-left font-weight-bolder mt-5" data-i18n="autoComplete_otherPageMessage"></p>
+    <div id="autoCompleteNewPage" class="d-none">
+      <div class="font-weight-bolder" data-i18n="autoComplete_stepChoose"></div>
+      <div id="autoCompleteSlot" class="d-none align-items-center pb-1">
+        <img id="autoCompleteThumb" class="mr-2 rounded" style="width: 36px; height: 36px; object-fit: cover;" src="">
+        <p id="autoCompleteTitle" class="text-dark text-sm-md font-weight-bolder my-0"></p>
+      </div>
+      <div class="text-center">
+        <button id="autoCompleteChooseItem" class="btn btn-outline-primary btn-xs" data-i18n="autoComplete_chooseItemButton"></button>
+      </div>
+      <div class="font-weight-bolder mt-2" data-i18n="autoComplete_stepPhotos"></div>
+      <div class="d-flex align-items-center">
+        <div class="flex-grow-1" style="min-width: 0;">
+          <select id="autoCompleteModifyPhotosChoice" class="rounded custom-select">
+            <option value="noModification" data-i18n="actionInterface_noModificationChoice"></option>
+            <option value="customizedModification" data-i18n="actionInterface_customizedModificationChoice"></option>
+            <option value="activeModification" data-i18n="actionInterface_activeModificationChoice"></option>
+          </select>
+        </div>
+        <a class="tooltip tooltip-left text-sm ml-2" href="https://www.clemz.app/documentation/modifier-les-photos" target="_blank" data-i18n-tooltip="autoComplete_photosHelpTooltip">
+          <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle mb-0" src="">
+        </a>
+      </div>
+      <div id="autoCompleteCustomizedModificationParams" class="d-none text-center mt-1">
+        <a role="button" id="autoCompleteShowModifyPhotosParams" class="btn btn-xs btn-outline-primary text-white" data-i18n="actionInterface_customizedModificationParams"></a>
+      </div>
+      <div class="d-flex align-items-center mt-2">
+        <div id="autoCompleteAsNewItemControl" class="lh-100 custom-control custom-switch ml-n4">
+          <input type="checkbox" class="custom-control-input" id="autoCompleteAsNewItem">
+          <label class="custom-control-label align-middle text-sm" for="autoCompleteAsNewItem"><img data-image-name="copy-solid.svg" class="vinz-image font-icon align-middle mb-0 mr-1" src=""><span data-i18n="autoComplete_asNewItem"></span></label>
+        </div>
+        <div class="tooltip tooltip-left mb-1 text-sm ml-2" data-i18n-tooltip="autoComplete_asNewItemTooltip">
+          <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle mb-0" src="">
+        </div>
+      </div>
+      <div class="font-weight-bolder mt-2" data-i18n="autoComplete_stepLaunch"></div>
+      <div class="text-center">
+        <button id="autoCompleteStartButton" class="btn btn-primary btn-sm" data-i18n="autoComplete_fillFormButton"></button>
+      </div>
+    </div>
+    <div id="autoCompleteEditPage" class="d-none">
+      <div id="autoCompleteEditSpinner" class="text-center mt-4">
+        <div class="spinner-border spinner-border-sm text-primary mr-2" role="status"></div>
+        <span data-i18n="autoComplete_searchingSavedItem"></span>
+      </div>
+      <p id="autoCompleteUnknownItem" class="d-none text-center font-weight-bolder mt-5" data-i18n="autoComplete_unknownItem"></p>
+      <div id="autoCompleteEditChoices" class="d-none">
+        <div class="font-weight-bolder mt-2" data-i18n="autoComplete_fieldsGroupTitle"></div>
+        <div class="d-flex align-items-center justify-content-center">
+          <select id="autoCompleteEditFields" class="rounded custom-select">
+            <option value="none" data-i18n="autoComplete_fieldsKeep"></option>
+            <option value="gaps" data-i18n="autoComplete_fieldsGaps" selected></option>
+            <option value="all" data-i18n="autoComplete_fieldsAll"></option>
+          </select>
+        </div>
+        <div class="font-weight-bolder mt-2" data-i18n="autoComplete_photosGroupTitle"></div>
+        <div class="d-flex align-items-center justify-content-center">
+          <select id="autoCompleteEditPhotos" class="rounded custom-select">
+            <option value="keep" data-i18n="autoComplete_photosKeep" selected></option>
+            <option value="replace" data-i18n="autoComplete_photosReplace"></option>
+          </select>
+        </div>
+        <div class="font-weight-bolder mt-3" data-i18n="autoComplete_stepLaunch"></div>
+        <div class="text-center mt-2">
+          <button id="autoCompleteEditStartButton" class="btn btn-primary btn-sm" style="position: relative;">
+            <span data-i18n="autoComplete_fillFormButton"></span>
+            <div class="spinner-border spinner-border-sm text-white" role="status" style="position: absolute; right: 10%; display: none;"></div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Clipboard Tab -->
+  <div aria-labelledby="clipboardTabLink" class="tabContent" style="display: none;">
+    <p class="h4 d-flex justify-content-center align-items-center font-weight-bolder mt-0 text-primary" data-i18n="actionInterface_copyPasteTitle"></p>
+    <div class="d-flex justify-content-around text-sm text-dark">
+      <div id="modifyClipboardButton" class="cursor-pointer border-radius bg-light-grey p-1" data-i18n="actionInterface_modifyClipboard"></div>
+      <div id="moveClipboardButton" class="cursor-pointer border-radius bg-light-grey p-1" data-i18n="actionInterface_moveClipboard"></div>
+      <div id="createClipboardButton" class="cursor-pointer border-radius bg-light-grey p-1" data-i18n="actionInterface_createClipboard"></div>
+    </div>
+    <div id="clipboardIndex" class=""></div>
+    <!-- clipboard element template -->
+    <div style="display: none;">
+      <div id="clipboardTemplate" class="clipboard-element d-flex align-items-center pb-1">
+        <button class="updateClipboardButton clipboard-element-hidden d-none">✏️</button>
+        <button class="deleteClipboardButton clipboard-element-hidden mx-1 d-none">❌</button>
+        <input type="number" name="" class="clipboard-element-hidden d-none rounded">
+        <div class="copyClipboardButton cursor-pointer d-flex align-items-center justify-content-between flex-grow-1">
+          <div class="">
+            <p class="clipboardTitle text-dark text-sm-md font-weight-bolder"></p>
+            <p class="clipboardContent mt-0 text-sm lh-90"></p>
+          </div>
+          <div class="cursor-pointer badge badge-info p-1" data-i18n="actionInterface_copyClipboard"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Send Favourites Tab -->
+  <div aria-labelledby="sendFavouritesTabLink" class="tabContent" style="display: none;">
+    <p class="h4 d-flex justify-content-center align-items-center font-weight-bolder mt-0 text-primary" data-i18n="actionInterface_giveFavs">
+    </p>
+    <div class="font-weight-bolder mt-3" data-i18n="actionInterface_checkNotifications"></div>
+    <div class="d-flex justify-content-around align-items-center">
+      <div class="text-sm text-center text-dark" data-i18n="actionInterface_sendNotifications"></div>
+      <div role="button" class="btn btn-dark btn-xs" id="checkSendNotifToFavourites" data-i18n="actionInterface_checkSendNotifToFavourites"></div>
+      <div id="sendNotifToFavouritesControl" class="custom-control custom-switch ml-n4 pt-2 d-none">
+        <input type="checkbox" class="custom-control-input" id="sendNotifToFavouritesCheckbox">
+        <label class="custom-control-label align-middle text-sm" id="sendNotifToFavouritesLabel" for="sendNotifToFavouritesCheckbox"></label>
+      </div>
+    </div>
+    <form id="sendFavouriteForm" class="">
+      <div class="font-weight-bolder mt-3" data-i18n="actionInterface_chooseFavOptions"></div>
+      <div class="text-sm mt-2 mb-1 text-dark" data-i18n="actionInterface_favToSendInput"></div>
+      <div class="d-flex align-items-center">
+        <div id="turnOffNotifsFavsControl" class="custom-control custom-switch ml-n4">
+          <input type="checkbox" class="custom-control-input" id="turnOffNotifsFavs">
+          <label class="custom-control-label align-middle text-sm" for="turnOffNotifsFavs">
+            <img class="font-icon align-middle pb-1 vinz-image" data-image-name="bell-slash-solid.svg" src="">
+            <span data-i18n="actionInterface_turnOffNotifsFavs"></span>
+            <div class="tooltip tooltip-left mb-1 text-sm ml-1" data-i18n-tooltip="actionInterface_turnOffNotifsFavsTooltip">
+              <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle mb-0" src="">
+            </div>
+          </label>
+        </div>
+      </div>
+      <div class="text-sm mt-2 mb-1 text-dark text-justify" data-i18n="actionInterface_sendFavsWarning"></div>
+      <div class="font-weight-bolder mt-3" data-i18n="actionInterface_launchFavAction"></div>
+      <div class="d-flex justify-content-center align-items-center mt-2">
+        <button id="sendFavouriteButton" type="submit" class="btn btn-primary btn-sm d-flex justify-content-center align-items-center py-2 can-be-disabled position-relative font-weight-500">
+          <div class="h4 mr-2">💘</div>
+          <span data-i18n="actionInterface_sendFavouriteButton"></span>
+          <div class="spinner-border text-white" role="status" style="position: absolute; left: 35px; display:none;"></div>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Sync Sales Tab -->
+  <div aria-labelledby="syncSalesTabLink" class="tabContent" style="display: none;">
+    <p class="h4 d-flex justify-content-center align-items-center font-weight-bolder mt-0 text-primary" data-i18n="actionInterface_syncSales">
+    </p>
+    <div id="syncSalesParameterNotCompleted" style="display: none;">
+      <div class="d-flex flex-column justify-content-center align-items-center mt-2" >
+        <span class="text-sm-md text-center font-weight-bolder" data-i18n="actionInterface_salesParameterNotCompleted"></span>
+        <a href="https://www.clemz.app/dashboard/sale_parameter/edit" target="_blank" >
+          <div class="btn btn-primary my-2" data-i18n="viewOnClemz"></div>
+        </a>
+        <div class="text-sm-md text-left mt-2 w-100 px-2 align-self-stretch" data-i18n="actionInterface_listOfUsages"></div>
+      </div>
+    </div>
+    
+    <div id="syncSalesActionsContainer">
+      <div class=" mt-4" data-i18n="actionInterface_salesLastSyncedAt"></div>
+      <div class="d-flex justify-content-center align-items-center mt-2">
+        <span class="text-xl">📆</span> 
+        <div class="d-flex flex-column justify-content-center align-items-center ml-3 lh-100">
+          <div id="userInfoSalesLastSyncedAt" class="font-weight-bolder ">???</div>
+          <div> 
+            <span id="userInfoTimeSinceLastSyncedAt" class=" text-sm">???</span>
+          </div>
+        </div>
+      </div>
+      <div id="automationsActivatedCountContainer" class="mt-3 d-flex align-items-center justify-content-between">
+        <div>
+          <b id="automationsActivatedCount">0</b><span data-i18n="actionInterface_automationsActivated"></span>
+        </div>
+        <button id="syncSalesParamsButton" class="badge btn-outline-primary cursor-pointer border text-sm can-be-disabled position-relative">
+          <span data-i18n="actionInterface_parameters"></span>
+          <div class="spinner-border spinner-border-sm text-dark" role="status" style="position: absolute; left: 4px; top:2px; display: none;"></div>
+        </button>
+      </div>
+      <div class="d-flex flex-column mt-5">
+        <button role="button" id="startSyncSalesButton" class="btn btn-xs btn-primary can-be-disabled" style="position: relative;">
+          💲<span data-i18n="actionInterface_startSyncSales"></span>
+          <div class="spinner-border text-white" role="status" style="position: absolute; right: 5%; top:30%; display:none;"></div>
+        </button>
+        <a href="https://www.clemz.app/dashboard/sales" target="_blank" class="btn btn-xs btn-outline-primary mt-2 d-flex justify-content-center align-items-center" data-i18n="actionInterface_mySalesOnClemz"></a>
+      </div>
+    </div>
+    
+  </div>
+
+  <!-- Explain Tabs Tab -->
+  <div aria-labelledby="explainTabsTabLink" class="tabContent" style="display: none;">
+    <p class="h4 d-flex justify-content-center align-items-center font-weight-bolder mt-0 text-primary" data-i18n="actionInterface_showCorrectTab"></p>
+    <div class="text-sm font-weight-normal text-center mt-0 lh-110" data-i18n="actionInterface_tabsDisplay"></div>
+    <div class="text-sm font-weight-normal text-center mb-1 lh-110" data-i18n="actionInterface_clickTab"></div>
+    <table>
+      <thead>
+        <tr class="border border-bottom text-md">
+          <th class="border-sm border-right border-bottom border-black" data-i18n="actionInterface_clemzTab"></th>
+          <th class="border-sm border-bottom border-black" data-i18n="actionInterface_vintedPage"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="border-bottom border-black">
+            <div class="text-primary text-sm my-1" data-open-tab="listsTabLink" data-open-tab-container="currentInterface" role="button">
+              <img class="font-icon text-primary align-middle pb-1 vinz-image" data-image-name="list-solid.svg" src=""> 
+              <span data-i18n="actionInterface_fillListsExplainLink"></span>
+            </div>
+            <div class="text-primary text-sm my-1" data-open-tab="repostTabLink" data-open-tab-container="currentInterface" role="button" >
+              <img class="font-icon text-primary align-middle pb-1 vinz-image" data-image-name="sync-alt-solid.svg" src="">
+              <span data-i18n="actionInterface_repostAdsExplainLink"></span>
+            </div>
+            <div class="text-primary text-sm my-1" data-open-tab="exchangeTabLink" data-open-tab-container="currentInterface" role="button">
+              <img class="font-icon text-primary align-middle pb-1 vinz-image" data-image-name="hand-holding-hand-solid.svg" src=""> 
+              <span data-i18n="actionInterface_exchangeViewsFavsExplainLink"></span>
+            </div>
+            <div class="text-primary text-sm my-1" data-open-tab="modifyTabLink" data-open-tab-container="currentInterface" role="button">
+              <img class="font-icon text-primary align-middle pb-1 vinz-image" data-image-name="edit-solid.svg" src=""> 
+              <span data-i18n="actionInterface_modifyAdsExplainLink"></span>
+            </div>
+            <div class="text-primary text-sm my-1" data-open-tab="myDressingTabLink" data-open-tab-container="currentInterface" role="button">
+              <img class="font-icon text-primary align-middle pb-1 vinz-image" data-image-name="tshirt-solid.svg" src="">
+              <span data-i18n="actionInterface_myClosetExplainLink"></span>
+            </div>
+          </td>
+          <td class="border-bottom border-black">
+            <div class="d-flex align-items-center">
+              <img class="font-icon vinz-image mr-1" data-image-name="long-arrow-alt-right-solid.svg" src="">
+              <a class="profileLink d-flex align-items-center text-md" href="">
+                <span data-i18n="actionInterface_closetPage"></span>
+                <img class="font-icon text-primary vinz-image ml-2" data-image-name="up-right-from-square-solid.svg" src="">
+              </a>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="border-bottom border-black">
+            <div class="text-primary text-sm my-1" data-open-tab="autoMessageTabLink" data-open-tab-container="currentInterface" role="button">
+              <img class="font-icon text-primary align-middle pb-1 vinz-image" data-image-name="comment-dollar-solid.svg" src=""> 
+              <span data-i18n="actionInterface_messagesToFavsExplainLink"></span>
+            </div>
+            <div class="text-primary text-sm my-1" data-open-tab="smartInboxTabLink" data-open-tab-container="currentInterface" role="button">
+              <img class="font-icon text-primary align-middle pb-1 vinz-image" data-image-name="envelope-circle-check-solid.svg" src="">
+              <span data-i18n="actionInterface_smartInboxExplainLink"></span>
+            </div>
+            <div class="text-primary text-sm my-1" data-open-tab="clipboardTabLink" data-open-tab-container="currentInterface" role="button" >
+              <img class="font-icon text-primary align-middle pb-1 vinz-image" data-image-name="clipboard-solid.svg" src="">
+              <span data-i18n="actionInterface_copyPaste"></span>
+            </div>
+          </td>
+          <td class="border-bottom border-black">
+            <div class="d-flex align-items-center">
+              <img class="font-icon vinz-image mr-1" data-image-name="long-arrow-alt-right-solid.svg" src="">
+              <a class="d-flex align-items-center text-md" href="/inbox/">
+                <span data-i18n="actionInterface_inbox"></span>
+                <img class="font-icon text-primary vinz-image ml-2" data-image-name="up-right-from-square-solid.svg" src="">
+              </a>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="border-bottom border-black" data-open-tab="sendFavouritesTabLink" data-open-tab-container="currentInterface" role="button">
+            <div class="text-primary text-sm my-1">
+              <img class="font-icon text-primary align-middle pb-1 vinz-image" data-image-name="hand-holding-heart-solid.svg" src="">
+              <span data-i18n="actionInterface_giveFavs"></span>
+            </div>
+          </td>
+          <td class="border-bottom border-black">
+            <div class="d-flex align-items-center">
+              <img class="font-icon vinz-image mr-1" data-image-name="long-arrow-alt-right-solid.svg" src="">
+              <span class="text-md text-dark" data-i18n="actionInterface_friendDressing"></span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="border-bottom border-black" data-open-tab="syncSalesTabLink" data-open-tab-container="currentInterface" role="button">
+            <div class="text-primary text-sm my-1">
+              <img class="font-icon text-primary align-middle pb-1 vinz-image" data-image-name="dollar-sign-solid.svg" src="">
+              <span data-i18n="actionInterface_syncSalesExplainLink"></span>
+            </div>
+          </td>
+          <td class="border-bottom border-black">
+            <div class="d-flex align-items-center">
+              <img class="font-icon vinz-image mr-1" data-image-name="long-arrow-alt-right-solid.svg" src="">
+              <a class="text-sm text-dark" href="/my_orders/">
+                <span data-i18n="actionInterface_ordersPage"></span>
+                <img class="font-icon text-primary vinz-image ml-2" data-image-name="up-right-from-square-solid.svg" src="">
+              </a>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Help Tab -->
+  <div aria-labelledby="helpTabLink" class="tabContent" style="display: none;">
+    <p class="h4 text-center font-weight-bolder text-info" data-i18n="actionInterface_help"></p>
+    <div class="d-flex flex-column">
+      <p class="font-weight-bold text-center" data-i18n="actionInterface_problemBug"></p>
+      <p class="font-weight-bold text-center mt-0" data-i18n="actionInterface_sendEmail"></p>
+      <div class="text-center">
+        <a class="h3 font-weight-bold text-info click-to-copy" id="" data-i18n="actionInterface_contactEmail"></a>
+      </div>
+      <a class="d-flex align-items-center justify-content-center text-sm text-info" href="https://www.clemz.app/about" target="_blank" >
+        (<span class="" data-i18n="actionInterface_whoIsClement"></span>)
+      </a>
+    </div>
+    <p class="text-center mt-4 text-sm text-dark" data-i18n="actionInterface_quickPages"></p>
+    <div class="d-flex justify-content-around mt-2">
+      <a class="btn btn-info d-flex flex-column align-items-center" href="https://www.clemz.app/documentation/resoudre-un-bug" target="_blank">
+        <img class="font-icon text-white vinz-image" data-image-name="readme.svg" src="">
+        <span class="mt-1 text-white" data-i18n="actionInterface_readDoc"></span>
+      </a>
+      <a class="btn btn-info d-flex flex-column align-items-center" href="https://www.clemz.app/documentation/faq" target="_blank" >
+        <img class="font-icon text-white vinz-image" data-image-name="question-solid.svg" src="">
+        <span class="mt-1 text-white" data-i18n="actionInterface_viewFAQ"></span>
+      </a>
+    </div>
+  </div>
+</div>  

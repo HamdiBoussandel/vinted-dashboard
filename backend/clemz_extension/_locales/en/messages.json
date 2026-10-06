@@ -1,0 +1,4171 @@
+{
+   "____Comment____": {
+      "message": "autoComplete"
+   },
+   "________COMMENT_FAV_PARAMS________": {
+      "message": "autoMessageFavParamsModal.HTML"
+   },
+   "________COMMENT_SYNC_SALES_PARAMS________": {
+      "message": "syncSalesParamsModal.HTML"
+   },
+   "________COMMENT________": {
+      "message": "syncSalesModal"
+   },
+   "________COMMENT________smallCluster": {
+      "message": "Small Cluster Warning"
+   },
+   "________COMMENT________tabWorker": {
+      "message": "tabWorkerMessage.HTML"
+   },
+   "actionInterface_Inbox": {
+      "message": "Inbox"
+   },
+   "actionInterface_account": {
+      "message": "Clemz account"
+   },
+   "actionInterface_accountIssue": {
+      "message": "Your Clemz account is \u003Cb class=\"text-danger\">not linked to any Vinted closet\u003C/b>. Change account or contact us"
+   },
+   "actionInterface_activeModificationChoice": {
+      "message": "🖼️ Current modification"
+   },
+   "actionInterface_addToList": {
+      "message": "3. Add selection to a list"
+   },
+   "actionInterface_addToListButton": {
+      "message": "+ add!"
+   },
+   "actionInterface_addWardrobeInfos": {
+      "message": "Closet to add to Clemz? click here on"
+   },
+   "actionInterface_allDressing": {
+      "message": "All my closet"
+   },
+   "actionInterface_articleReady": {
+      "message": "✅ This listing can be added\u003Cbr>to your lists. Click \"+ add\" 👇"
+   },
+   "actionInterface_autoMessagesTitle": {
+      "message": "Auto Messages"
+   },
+   "actionInterface_autoSettings": {
+      "message": "1. Set your automation"
+   },
+   "actionInterface_automationsActivated": {
+      "message": " automations enabled"
+   },
+   "actionInterface_bulkModify": {
+      "message": "Bulk edit \u003Ca class=\"text-sm ml-2 tooltip tooltip-left\" href=\"https://www.clemz.app/documentation/modifier-en-masse\" target=\"_blank\" data-tooltip=\"Click here to learn how to edit your listings\">\u003Cimg class=\"font-icon align-middle pb-1 vinz-image\" data-image-name=\"question-circle-solid.svg\" src=\"\">\u003C/a>"
+   },
+   "actionInterface_checkMyLists": {
+      "message": "4. Check my lists"
+   },
+   "actionInterface_checkNotifications": {
+      "message": "Check notification settings"
+   },
+   "actionInterface_checkSendNotifToFavourites": {
+      "message": "Check button"
+   },
+   "actionInterface_checkToDoList": {
+      "message": "1. Check the \u003Ca class=\"cursor-pointer\" id=\"showListsButton2\">\u003Cu>\"to do\" list\u003C/u>\u003C/a>"
+   },
+   "actionInterface_checkToDoList2": {
+      "message": "1. Check the \u003Ca class=\"cursor-pointer\" id=\"showListsButton3\">\u003Cu>\"to do\" list\u003C/u>\u003C/a>"
+   },
+   "actionInterface_checkUserFeedback": {
+      "message": "\u003Cb>Rating\u003C/b>: ignore if below \u003Cselect type=\"number\" id=\"checkUserFeedbackValue\" class=\"text-center fake-disabled rounded\" style=\"width: 50px; height: 20px;\">\u003Coption value=\"1\"selected>⭐\u003C/option>\u003Coption value=\"2\">2x⭐\u003C/option>\u003Coption value=\"3\">3x⭐\u003C/option>\u003Coption value=\"4\">4x⭐\u003C/option>\u003Coption value=\"5\">5x⭐\u003C/option>\u003C/select>"
+   },
+   "actionInterface_checkUserFeedbackTooltip": {
+      "message": "Don't contact if their rating is below X stars"
+   },
+   "actionInterface_chooseActionDressing": {
+      "message": "2. Choose an action"
+   },
+   "actionInterface_chooseActionModify": {
+      "message": "3. Choose an action"
+   },
+   "actionInterface_chooseFavOptions": {
+      "message": "1. Choose options"
+   },
+   "actionInterface_chooseOptions": {
+      "message": "2. Choose your options"
+   },
+   "actionInterface_chooseOptions2": {
+      "message": "2. Choose your options"
+   },
+   "actionInterface_clemzTab": {
+      "message": "Clemz tab"
+   },
+   "actionInterface_clickHere": {
+      "message": "👉 Click here"
+   },
+   "actionInterface_clickTab": {
+      "message": "Otherwise, \u003Cb>click a tab name below 👇\u003C/b>"
+   },
+   "actionInterface_closetActions": {
+      "message": "\u003Coption value=\"1\">🔍 Smart closet\u003C/option>\u003Coption value=\"2\">⏫ Save listings\u003C/option>"
+   },
+   "actionInterface_closetPage": {
+      "message": "Closet"
+   },
+   "actionInterface_completeDressing": {
+      "message": "🔍 Full closet displayed in 2 clicks"
+   },
+   "actionInterface_contactEmail": {
+      "message": "bonjour@clemz.app"
+   },
+   "actionInterface_contactUs": {
+      "message": "Problem? Question?"
+   },
+   "actionInterface_copyClipboard": {
+      "message": "copy"
+   },
+   "actionInterface_copyPaste": {
+      "message": "Copy / Paste"
+   },
+   "actionInterface_copyPasteTitle": {
+      "message": "Copy / Paste\u003Ca class=\"text-sm ml-2 tooltip tooltip-left d-flex align-items-center\" data-tooltip=\"Save here the texts you often copy-paste on Vinted\">\u003Cimg data-image-name=\"question-circle-solid.svg\" class=\"vinz-image font-icon align-middle\" src=\"\">\u003C/a>"
+   },
+   "actionInterface_copyPasteTooltip": {
+      "message": "Save here the texts you often copy-paste on Vinted"
+   },
+   "actionInterface_counterOffers": {
+      "message": "Counter-offers"
+   },
+   "actionInterface_createClipboard": {
+      "message": "➕ new"
+   },
+   "actionInterface_createModification": {
+      "message": "\u003Cu>🎨 Create on clemz.app\u003C/u>"
+   },
+   "actionInterface_customizedModificationChoice": {
+      "message": "🖌️ Modify on the fly"
+   },
+   "actionInterface_customizedModificationParams": {
+      "message": "Set parameters"
+   },
+   "actionInterface_deleteAds": {
+      "message": "💣 Delete listing(s)"
+   },
+   "actionInterface_disabled": {
+      "message": "disabled"
+   },
+   "actionInterface_discountTiers": {
+      "message": "Discount tiers"
+   },
+   "actionInterface_displaySmartInbox": {
+      "message": "Show Smart Inbox"
+   },
+   "actionInterface_enabled": {
+      "message": "enabled"
+   },
+   "actionInterface_exchangeFavs": {
+      "message": "B. Exchange favourites ❤️ \u003Ca class=\"text-sm mr-2 tooltip tooltip-left\" href=\"https://www.clemz.app/documentation/echanger-des-favoris\" target=\"_blank\" data-tooltip=\"Click here to learn how favourites exchange works\">\u003Cimg class=\"font-icon align-middle pb-1 vinz-image ml-2\" data-image-name=\"question-circle-solid.svg\" src=\"\">\u003C/a>"
+   },
+   "actionInterface_exchangeViews": {
+      "message": "A. Exchange views 👁️ \u003Ca class=\"text-sm mr-2 tooltip tooltip-left\" href=\"https://www.clemz.app/documentation/echanger-des-vues\" target=\"_blank\" data-tooltip=\"Click here to learn how view exchange works\">\u003Cimg class=\"font-icon align-middle pb-1 vinz-image ml-2\" data-image-name=\"question-circle-solid.svg\" src=\"\">\u003C/a>"
+   },
+   "actionInterface_exchangeViewsFavsExplainLink": {
+      "message": "Exchange views & favs"
+   },
+   "actionInterface_exchangeViewsFavsTitle": {
+      "message": "Exchange views & favourites"
+   },
+   "actionInterface_executionModeBadge": {
+      "message": "Human browsing"
+   },
+   "actionInterface_executionModeInfo": {
+      "message": "⚠️ Do not touch the browser while running — listings may be incomplete"
+   },
+   "actionInterface_executionModeLabel": {
+      "message": "Human-like browsing"
+   },
+   "actionInterface_executionModeTooltip": {
+      "message": "Clemz opens real Vinted pages, like a human would. Reduces detection risk but is slower."
+   },
+   "actionInterface_executionTransportFrame": {
+      "message": "same tab"
+   },
+   "actionInterface_executionTransportTab": {
+      "message": "new tabs"
+   },
+   "actionInterface_executionTransportTabWarning": {
+      "message": "⚠️ Requires the browser to stay in the foreground. Clemz will bring some tabs to focus during the process."
+   },
+   "actionInterface_favMessages": {
+      "message": "Fav messages"
+   },
+   "actionInterface_favMessagesSection": {
+      "message": "Favourites"
+   },
+   "actionInterface_favMessagesSectionTooltip": {
+      "message": "Click here to learn how to message users who favourite you"
+   },
+   "actionInterface_favToSendInput": {
+      "message": "Add favourite to \u003Cinput type=\"number\" min=\"0\" id=\"sendFavouritesCount\" class=\"text-center text-dark rounded\" style=\"width: 30px; height: 20px;\" placeholder=\"X\"> listings"
+   },
+   "actionInterface_fillListsExplainLink": {
+      "message": "Fill my lists"
+   },
+   "actionInterface_fillMyLists": {
+      "message": "Fill my lists\u003Ca class=\"text-sm ml-2 tooltip tooltip-left\" href=\"https://www.clemz.app/documentation/republier-des-articles#how\" target=\"_blank\" data-tooltip=\"Click here to learn how to fill your lists\">\u003Cimg class=\"font-icon align-middle pb-1 vinz-image\" data-image-name=\"question-circle-solid.svg\" src=\"\">\u003C/a>"
+   },
+   "actionInterface_fillMyListsTooltip": {
+      "message": "Click here to learn how to fill your lists"
+   },
+   "actionInterface_filterSort": {
+      "message": "⬆️⬇️ Filter & sort as you wish"
+   },
+   "actionInterface_friendDressing": {
+      "message": "Friend's closet"
+   },
+   "actionInterface_getViewsLikes": {
+      "message": "5. Get 👁️ and ❤️ \u003Cspan class=\"btn btn-xs btn-outline-primary ml-3\" data-open-tab=\"exchangeTabLink\" data-open-tab-container=\"currentInterface\" role=\"button\">see tab ➡️\u003C/span>"
+   },
+   "actionInterface_giveFavs": {
+      "message": "Give favourites"
+   },
+   "actionInterface_giveFavsTooltip": {
+      "message": "Click here to learn how to give favourites to a friend"
+   },
+   "actionInterface_giveReceiveFavs": {
+      "message": "💞 Give then receive favourites"
+   },
+   "actionInterface_giveReceiveViews": {
+      "message": "👀 Give then receive views"
+   },
+   "actionInterface_goOnVinted": {
+      "message": "⚠️To use Clemz⚠️\u003Cbr>⬇️\u003Cbr>\u003Cb>Go to the Vinted website\u003C/b>"
+   },
+   "actionInterface_goToProfile": {
+      "message": "🖐️To start the free trial🖐️\u003Cbr>\u003Cb>Go to your closet page\u003C/b>"
+   },
+   "actionInterface_help": {
+      "message": "Help"
+   },
+   "actionInterface_historyShort": {
+      "message": "history"
+   },
+   "actionInterface_ignorePastNotifications": {
+      "message": "Ignore all favourites \u003Cu>already\u003C/u> received"
+   },
+   "actionInterface_ignorePastNotificationsTooltip": {
+      "message": "Ignore favourites received currently and start continuous monitoring"
+   },
+   "actionInterface_ignorePastNotifications_short": {
+      "message": "New only"
+   },
+   "actionInterface_ignoredVinties": {
+      "message": "🙈 Ignored users"
+   },
+   "actionInterface_importItemWarning": {
+      "message": "\u003Cb>⚠️ \u003Cu class='text-danger'>Warning:\u003C/u>\u003C/b> this page allows you to \u003Cb>import listings from clemz.app to Vinted\u003C/b>, not just relist them. If they already exist in your closet, they might be \u003Cb class='text-danger'>considered duplicates by Vinted\u003C/b>."
+   },
+   "actionInterface_inStockListDropdown": {
+      "message": "📦 \"in stock\" list"
+   },
+   "actionInterface_itemsRange": {
+      "message": "\u003Cspan class=\"pr-1\">Listings from #\u003C/span> \u003Cinput type=\"number\" min=\"0\" id=\"itemsBegin\" class=\"text-center rounded\" style=\"width: 40px; height: 20px;\"> \u003Cspan class=\"px-1\">to #\u003C/span> \u003Cinput type=\"number\" min=\"0\" id=\"itemsEnd\" class=\"text-center rounded\" style=\"width: 40px; height: 20px;\">"
+   },
+   "actionInterface_itemsRangeTooltip": {
+      "message": "Listings between position X and Y (as if counting them from top to bottom)"
+   },
+   "actionInterface_lastRequestFavsDateTooltip": {
+      "message": "Date of last request and progress of favourite sends"
+   },
+   "actionInterface_lastRequestViewsDateTooltip": {
+      "message": "Date of last request and progress of view sends"
+   },
+   "actionInterface_launchDressing": {
+      "message": "Launch!"
+   },
+   "actionInterface_launchFavAction": {
+      "message": "2. Run action"
+   },
+   "actionInterface_launchSmartInboxAction": {
+      "message": "Go!"
+   },
+   "actionInterface_linkVintedProfile": {
+      "message": "🔗 Link Clemz to this Vinted closet"
+   },
+   "actionInterface_listOfUsages": {
+      "message": "\u003Cb>📊 Analytics & charts\u003C/b> – Visualize your performance\u003Cbr>\u003Cb>📦 Shipping labels\u003C/b> – Automatic generation + easy printing\u003Cbr>\u003Cb>💬 Messages and ⭐ automatic reviews\u003C/b> – on sales\u003Cbr>\u003Cb>📒 Accounting\u003C/b> – Revenue, VAT and accounting exports\u003Cbr>\u003Cb>🧾 Invoices\u003C/b> – Generation and automatic sending\u003Cbr>"
+   },
+   "actionInterface_loadMessages": {
+      "message": "\u003Cb>Messages:\u003C/b> \u003Cspan class=\"pr-1\">load the\u003C/span>\u003Cinput type=\"number\" min=\"0\" max=\"1000\" id=\"messageCount\" class=\"text-center rounded\" style=\"width: 40px; height: 20px;\" placeholder=\"XX\" required>\u003Cspan class=\"pl-1\">first\u003C/span>"
+   },
+   "actionInterface_loadMessagesTooltip": {
+      "message": "Number of Vinted messages to download (1-1000)"
+   },
+   "actionInterface_loginVinted": {
+      "message": "⚠️To use Clemz⚠️\u003Cbr>⬇️\u003Cbr>\u003Cb>Log in to your Vinted account\u003C/b>"
+   },
+   "actionInterface_logout": {
+      "message": "Logout"
+   },
+   "actionInterface_makeOffer": {
+      "message": "Offer"
+   },
+   "actionInterface_makeOfferTooltip": {
+      "message": "Along with the message, offer a discount. Price can be rounded or not"
+   },
+   "actionInterface_manageMessages": {
+      "message": "3. Manage messages"
+   },
+   "actionInterface_maxDiscount": {
+      "message": "Max discount"
+   },
+   "actionInterface_maxHoursInPast": {
+      "message": "\u003Cb>Read history\u003C/b> from \u003Cselect type=\"number\" id=\"maxHoursInPastValue\" class=\"text-center fake-disabled rounded\">\u003Coption value=\"1\"selected>1 hour\u003C/option>\u003Coption value=\"2\">2 hours\u003C/option>\u003Coption value=\"4\">4 hours\u003C/option>\u003Coption value=\"8\">8 hours\u003C/option>\u003Coption value=\"12\">12 hours\u003C/option>\u003Coption value=\"24\">1 day\u003C/option>\u003Coption value=\"48\">2 days\u003C/option>\u003Coption value=\"72\">3 days\u003C/option>\u003Coption value=\"96\">4 days\u003C/option>\u003Coption value=\"120\">5 days\u003C/option>\u003Coption value=\"144\">6 days\u003C/option>\u003C/select>"
+   },
+   "actionInterface_maxHoursInPastTooltip": {
+      "message": "Only read favourites from the last hours / days"
+   },
+   "actionInterface_menu": {
+      "message": "Menu"
+   },
+   "actionInterface_messagesToFavsExplainLink": {
+      "message": "Auto Messages"
+   },
+   "actionInterface_minCounterStep": {
+      "message": "Tolerance"
+   },
+   "actionInterface_modificationUsage": {
+      "message": "Using them is \u003Cspan class='font-weight-bold'>highly\u003C/span> recommended"
+   },
+   "actionInterface_modifyAds": {
+      "message": "✍️ Edit listing(s)"
+   },
+   "actionInterface_modifyAdsExplainLink": {
+      "message": "Edit listings"
+   },
+   "actionInterface_modifyClipboard": {
+      "message": "⚙️ edit/del"
+   },
+   "actionInterface_modifyPhotos": {
+      "message": "3. How to edit your photos \u003Ca class=\"text-sm tooltip tooltip-left\" href=\"https://www.clemz.app/documentation/modifier-les-photos\" target=\"_blank\" data-tooltip=\"Click here to learn how photo editing works\">\u003Cimg class=\"font-icon align-middle pb-1 vinz-image ml-1\" data-image-name=\"question-circle-solid.svg\" src=\"\">\u003C/a>"
+   },
+   "actionInterface_modifyPrice": {
+      "message": "Price :"
+   },
+   "actionInterface_modifyPriceAnd": {
+      "message": "and"
+   },
+   "actionInterface_modifyPriceDecrease": {
+      "message": "decrease ↘️"
+   },
+   "actionInterface_modifyPriceIncrease": {
+      "message": "increase ↗️"
+   },
+   "actionInterface_modifyPriceNoDecimalRound": {
+      "message": "round 1€"
+   },
+   "actionInterface_modifyPriceNoRounding": {
+      "message": "no rounding"
+   },
+   "actionInterface_modifyPriceOneDecimalRound": {
+      "message": "round 0.1€"
+   },
+   "actionInterface_modifyPriceSet": {
+      "message": "set price 💲"
+   },
+   "actionInterface_modifyToDoList": {
+      "message": "Edits apply to the \"📥 to do\" list"
+   },
+   "actionInterface_modifyVisibility": {
+      "message": "\u003Cb class=\"\">Visibility:\u003C/b> \u003Cselect id=\"modifyVisibilityType\" class=\"fake-disabled rounded\">\u003Coption value=\"hide\" selected>👻 Hide\u003C/option>\u003Coption value=\"unhide\">👀 Unhide\u003C/option>\u003C/select> listings"
+   },
+   "actionInterface_moveClipboard": {
+      "message": "⬆️⬇️ move"
+   },
+   "actionInterface_mutualExclusion_sendViewsRunning": {
+      "message": "Cannot start Messages to favourites while views are being sent. Please stop sending views first."
+   },
+   "actionInterface_myClosetExplainLink": {
+      "message": "My closet"
+   },
+   "actionInterface_myDashboard": {
+      "message": "My dashboard"
+   },
+   "actionInterface_myDressingTitle": {
+      "message": "My closet"
+   },
+   "actionInterface_mySalesOnClemz": {
+      "message": "My sales on clemz.app"
+   },
+   "actionInterface_mySavedItems": {
+      "message": "My backup 👚👖"
+   },
+   "actionInterface_needHelp": {
+      "message": "Need help?"
+   },
+   "actionInterface_newTrial": {
+      "message": "6 months not using Clemz\u003Cbr>\u003Cspan class=\"text-danger\" >=> New trial possible 🎁\u003C/span>"
+   },
+   "actionInterface_noActiveModification": {
+      "message": "⚠️ No \"current modification\""
+   },
+   "actionInterface_noModificationChoice": {
+      "message": "🚫 Uploaded photos not modified"
+   },
+   "actionInterface_noRecentSync": {
+      "message": "no recent sync"
+   },
+   "actionInterface_noRounding": {
+      "message": "no rounding"
+   },
+   "actionInterface_noSubscription": {
+      "message": "None"
+   },
+   "actionInterface_no_photo_modification_risk_high": {
+      "message": "🛑❌ Without modification, Vinted will identify the relisting!"
+   },
+   "actionInterface_no_photo_modification_risk_link": {
+      "message": "\u003Cu>+ info here\u003C/u>"
+   },
+   "actionInterface_no_photo_modification_risk_low": {
+      "message": "✅ currently, Vinted barely penalizes unmodified relists"
+   },
+   "actionInterface_no_photo_modification_risk_medium": {
+      "message": "⚠️ Without modification, Vinted might identify the relisting."
+   },
+   "actionInterface_notConfigured": {
+      "message": "Incomplete configuration"
+   },
+   "actionInterface_notIncluded": {
+      "message": "Not incl."
+   },
+   "actionInterface_notifMinAge": {
+      "message": "\u003Cb>Received\u003C/b> at least \u003Cinput type=\"number\" id=\"notifMinAgeValue\" class=\"text-center fake-disabled rounded\" style=\"width: 30px; height: 20px;\" value=\"0\"> \u003Cselect id=\"notifMinAgePeriod\" class=\"text-center fake-disabled rounded\" style=\"width: 40px; height: 20px;\">\u003Coption value=\"minutes\" selected>minutes\u003C/option>\u003Coption value=\"hours\">hours\u003C/option>\u003Coption value=\"days\">days\u003C/option>\u003C/select>ago"
+   },
+   "actionInterface_notifMinAgePerioddays": {
+      "message": "days"
+   },
+   "actionInterface_notifMinAgePeriodhours": {
+      "message": "hours"
+   },
+   "actionInterface_notifMinAgePeriodminutes": {
+      "message": "minutes"
+   },
+   "actionInterface_notifMinAgeTooltip": {
+      "message": "Wait some time after receiving the notification to process it"
+   },
+   "actionInterface_offerMessagesSection": {
+      "message": "Offers"
+   },
+   "actionInterface_offerMessagesSectionTooltip": {
+      "message": "Click here to learn how automatic offers work"
+   },
+   "actionInterface_oneByOneOption": {
+      "message": "\u003Cb class=\"\">\u003Cspan class=\"text-sm-md text-dark\">1\u003C/span> by 1:\u003C/b> process the 1st listing then stop"
+   },
+   "actionInterface_oneByOneTooltip": {
+      "message": "Only do the 1st listing from the list, then stop. Helps you check each listing."
+   },
+   "actionInterface_or": {
+      "message": "or"
+   },
+   "actionInterface_ordersPage": {
+      "message": "My orders"
+   },
+   "actionInterface_pacingCustomWarning": {
+      "message": "Very short pauses increase detection risk."
+   },
+   "actionInterface_pacingHumanInfo": {
+      "message": "Delays vary naturally to avoid detection."
+   },
+   "actionInterface_pacingLabel": {
+      "message": "Pacing"
+   },
+   "actionInterface_pacingModalTitle": {
+      "message": "Repost pacing"
+   },
+   "actionInterface_pacingModeHuman": {
+      "message": "Natural"
+   },
+   "actionInterface_pacingModeSimple": {
+      "message": "Simple"
+   },
+   "actionInterface_pacingPresetCustom": {
+      "message": "Custom"
+   },
+   "actionInterface_pacingPresetMedium": {
+      "message": "Medium (~1 min/item)"
+   },
+   "actionInterface_pacingPresetMediumModify": {
+      "message": "Medium (~30 sec/item)"
+   },
+   "actionInterface_pacingPresetSlow": {
+      "message": "Slow (~2 min/item)"
+   },
+   "actionInterface_pacingPresetSlowModify": {
+      "message": "Slow (~1 min 30/item)"
+   },
+   "actionInterface_pacingPresetSlower": {
+      "message": "Slower (~4 min/item)"
+   },
+   "actionInterface_pacingPresetSlowerModify": {
+      "message": "Slower (~3 min/item)"
+   },
+   "actionInterface_pacingRadioHuman": {
+      "message": "Natural pacing"
+   },
+   "actionInterface_pacingRadioOff": {
+      "message": "No pacing"
+   },
+   "actionInterface_pacingRadioSimple": {
+      "message": "Simple spacing"
+   },
+   "actionInterface_pacingSettingsButton": {
+      "message": "⚙️ Settings"
+   },
+   "actionInterface_pacingShortMedium": {
+      "message": "Medium"
+   },
+   "actionInterface_pacingShortSlow": {
+      "message": "Slow"
+   },
+   "actionInterface_pacingShortSlower": {
+      "message": "Slower"
+   },
+   "actionInterface_pacingSummaryHuman": {
+      "message": "🛡️ Natural: $preset$",
+      "placeholders": {
+         "preset": {
+            "content": "$1"
+         }
+      }
+   },
+   "actionInterface_pacingSummaryHumanCustom": {
+      "message": "🛡️ Natural: Custom ~$value$s",
+      "placeholders": {
+         "value": {
+            "content": "$1"
+         }
+      }
+   },
+   "actionInterface_pacingSummaryOff": {
+      "message": "No pacing"
+   },
+   "actionInterface_pacingSummarySimple": {
+      "message": "⏳ Spacing: $value$ sec",
+      "placeholders": {
+         "value": {
+            "content": "$1"
+         }
+      }
+   },
+   "actionInterface_parameters": {
+      "message": "⚙ Parameters"
+   },
+   "actionInterface_paymentFailed": {
+      "message": "Payment failed"
+   },
+   "actionInterface_paymentFailedMessage": {
+      "message": "Your subscription payment failed. \u003Cbr>\u003Cbr>\u003Cb>Fix it via your Dashboard\u003C/b>\u003Cbr> to keep using Clemz."
+   },
+   "actionInterface_profileInstructions": {
+      "message": "(Click Vinted menu ↗️,\u003Cbr> then \"\u003Cb>My profile\u003C/b>\")"
+   },
+   "actionInterface_protectionLabel": {
+      "message": "Protection"
+   },
+   "actionInterface_protectionModalTitle": {
+      "message": "Anti-detection protection"
+   },
+   "actionInterface_randomizeFavs": {
+      "message": "\u003Cb class=\"text-dark\">Random:\u003C/b> final total varies"
+   },
+   "actionInterface_randomizeFavsTooltip": {
+      "message": "e.g. if 20 favourites requested, your listings get between 11 and 20"
+   },
+   "actionInterface_readDoc": {
+      "message": "Read docs"
+   },
+   "actionInterface_readingOptions": {
+      "message": "Which favourites to read?"
+   },
+   "actionInterface_receiveFavs": {
+      "message": "\u003Cb class=\"text-dark\">Request:\u003C/b> \u003Cspan class=\"pr-1\">Get up to\u003C/span> \u003Cselect id=\"exchangeFavouritesCount\" class=\"rounded mx-1\">\u003Coption value=\"10\" selected=\"\">10\u003C/option>\u003C/select> \u003Cspan>favourites\u003C/span>"
+   },
+   "actionInterface_recentFavRequest": {
+      "message": "Recent ❤️ request:"
+   },
+   "actionInterface_recentViewRequest": {
+      "message": "Recent 👁️ request:"
+   },
+   "actionInterface_refresh": {
+      "message": "refresh"
+   },
+   "actionInterface_refreshInfo": {
+      "message": "Refresh data"
+   },
+   "actionInterface_regularize": {
+      "message": "Fix it 💳"
+   },
+   "actionInterface_remainingFavMessages": {
+      "message": "Left today:"
+   },
+   "actionInterface_remainingReposts": {
+      "message": "Remaining:"
+   },
+   "actionInterface_repostAction": {
+      "message": "♻️ (re)Post listings"
+   },
+   "actionInterface_repostAdsExplainLink": {
+      "message": "Relist listings"
+   },
+   "actionInterface_repostAdsTitle": {
+      "message": "Relist listings \u003Ca class=\"text-sm ml-2 tooltip tooltip-left\" href=\"https://www.clemz.app/documentation/republier-des-articles\" target=\"_blank\" data-tooltip=\"Click here to learn how to relist properly\">\u003Cimg class=\"font-icon align-middle pb-1 vinz-image\" data-image-name=\"question-circle-solid.svg\" src=\"\">\u003C/a>"
+   },
+   "actionInterface_repostToDoList": {
+      "message": "Relisting will use the \"📥 to do\" list"
+   },
+   "actionInterface_republications": {
+      "message": "Relists"
+   },
+   "actionInterface_restorePhotos": {
+      "message": "\u003Cb class=\"\">Photos:\u003C/b> restore saved photos"
+   },
+   "actionInterface_restorePhotosTooltip": {
+      "message": "Clemz puts back the saved photos on each listing"
+   },
+   "actionInterface_roundingEuro": {
+      "message": "round 1"
+   },
+   "actionInterface_roundingHalfUnit": {
+      "message": "round 0.5"
+   },
+   "actionInterface_roundingTenCents": {
+      "message": "round 0.1"
+   },
+   "actionInterface_salesLastSyncedAt": {
+      "message": "Last complete synchronization :"
+   },
+   "actionInterface_salesParameterNotCompleted": {
+      "message": "⚠️ Before you can synchronize your sales, \u003Cb class='text-success'>complete your sale parameters\u003C/b> ⚙️"
+   },
+   "actionInterface_saveItemAction": {
+      "message": "💾 Turn into draft"
+   },
+   "actionInterface_savedItemsCount": {
+      "message": "=> \u003Cspan id=\"userInfoItemsCount\" class=\"font-weight-bold text-primary\">??\u003C/span> listings"
+   },
+   "actionInterface_seeActiveModification": {
+      "message": "See current modification"
+   },
+   "actionInterface_selectArticles": {
+      "message": "2. Select displayed listings"
+   },
+   "actionInterface_selectTopArticles": {
+      "message": "=> Select top"
+   },
+   "actionInterface_selectTopArticlesButton": {
+      "message": "ok"
+   },
+   "actionInterface_selectTopMessages": {
+      "message": "=> Select the"
+   },
+   "actionInterface_selectTopMessagesButton": {
+      "message": "ok"
+   },
+   "actionInterface_selectedCount": {
+      "message": "(0 ✅)"
+   },
+   "actionInterface_selectedMessages": {
+      "message": "Selected: \u003Cspan id=\"selectedMessageCount\" class=\"text-primary font-weight-bolder\">0\u003C/span> ✅"
+   },
+   "actionInterface_sendEmail": {
+      "message": "Send an email to:"
+   },
+   "actionInterface_sendFavouriteButton": {
+      "message": "Give favourites to this closet"
+   },
+   "actionInterface_sendFavsWarning": {
+      "message": "⚠️\u003Cb>Attention\u003C/b>, be reasonable with the number of favourites sent at once. Vinted might catch you..."
+   },
+   "actionInterface_sendNotifications": {
+      "message": "Send notifications when\u003Cbr>I give a favourite"
+   },
+   "actionInterface_sentTexts": {
+      "message": "✍️ Sent texts"
+   },
+   "actionInterface_showCorrectTab": {
+      "message": "Find the right tab"
+   },
+   "actionInterface_showTutorial": {
+      "message": "🛟 How to use Clemz ❔"
+   },
+   "actionInterface_smartDressing": {
+      "message": "Smart closet \u003Ca class=\"text-sm tooltip tooltip-bottom\" href=\"https://www.clemz.app/documentation/smart-dressing\" target=\"_blank\" data-tooltip=\"Click here to see how to display/filter your closet easily\">\u003Cimg class=\"font-icon align-middle pb-1 vinz-image\" data-image-name=\"question-circle-solid.svg\" src=\"\">\u003C/a> \u003Cspan class=\"mx-3\">or\u003C/span> Save listings \u003Ca class=\"text-sm tooltip tooltip-left\" href=\"https://www.clemz.app/documentation/sauver-mes-annonces\" target=\"_blank\" data-tooltip=\"Click here to learn how to save your listings\">\u003Cimg class=\"font-icon align-middle pb-1 vinz-image\" data-image-name=\"question-circle-solid.svg\" src=\"\">\u003C/a>"
+   },
+   "actionInterface_smartInboxActionsDelete": {
+      "message": "Delete messages 🗑️"
+   },
+   "actionInterface_smartInboxActionsMarkBlue": {
+      "message": "Tag with 🔷"
+   },
+   "actionInterface_smartInboxActionsMarkGreen": {
+      "message": "Tag with 🟢"
+   },
+   "actionInterface_smartInboxActionsMarkRed": {
+      "message": "Tag with 🟥"
+   },
+   "actionInterface_smartInboxActionsMarkYellow": {
+      "message": "Tag with 💛"
+   },
+   "actionInterface_smartInboxActionsRemove": {
+      "message": "Remove tag 🏳️"
+   },
+   "actionInterface_smartInboxExplainLink": {
+      "message": "Smart Inbox"
+   },
+   "actionInterface_smartInboxSettings": {
+      "message": "1. Settings"
+   },
+   "actionInterface_smartInboxTitle": {
+      "message": "Smart Inbox\u003Ca class=\"text-sm ml-2 tooltip tooltip-left d-flex align-items-center\" data-tooltip=\"Click here to learn how to use Smart Inbox\" href=\"https://www.clemz.app/documentation/smart-messagerie\" target=\"_blank\"> \u003Cimg data-image-name=\"question-circle-solid.svg\" class=\"vinz-image font-icon align-middle\" src=\"\">\u003C/a>"
+   },
+   "actionInterface_smartInboxTooltip": {
+      "message": "Click here to learn how to use Smart Inbox"
+   },
+   "actionInterface_spaceOutModifications": {
+      "message": "\u003Cb>Space \u003C/b> modifications by "
+   },
+   "actionInterface_spaceOutModificationsTooltip": {
+      "message": "Reduce chances of Vinted detection by adding pauses (advised: ~10sec)"
+   },
+   "actionInterface_spaceOutReposts": {
+      "message": "\u003Cb>Space\u003C/b> out each by "
+   },
+   "actionInterface_spaceOutRepostsTooltip": {
+      "message": "Reduce the chances of being detected by Vinted by adding pauses (recommended: ~20 sec)"
+   },
+   "actionInterface_startFreeTrial": {
+      "message": "🎁 Start free trial"
+   },
+   "actionInterface_startMessages": {
+      "message": "Start messages"
+   },
+   "actionInterface_startSelection": {
+      "message": "Start selection"
+   },
+   "actionInterface_startSmartDressing": {
+      "message": "1. Launch a \u003Ca class=\"cursor-pointer\" data-open-tab=\"myDressingTabLink\" data-open-tab-container=\"currentInterface\">\u003Cu>smart closet\u003C/u>\u003C/a>\u003Cspan class=\"text-sm\">(optional)\u003C/span>"
+   },
+   "actionInterface_startSyncSales": {
+      "message": "Launch synchronization"
+   },
+   "actionInterface_subscribeClemz": {
+      "message": "🚀 Subscribe to Clemz"
+   },
+   "actionInterface_subscription": {
+      "message": "Subscription"
+   },
+   "actionInterface_syncSales": {
+      "message": "Synchronize sales\u003Ca class=\"text-sm ml-2 tooltip tooltip-left\" href=\"https://www.clemz.app/documentation/synchroniser-ses-ventes\" target=\"_blank\" data-tooltip=\"Click here to learn about sales synchronization\">\u003Cimg class=\"font-icon align-middle pb-1 vinz-image\" data-image-name=\"question-circle-solid.svg\" src=\"\">\u003C/a>"
+   },
+   "actionInterface_syncSalesExplainLink": {
+      "message": "Synchronize sales"
+   },
+   "actionInterface_tabsDisplay": {
+      "message": "Tabs appear based on the Vinted page visited."
+   },
+   "actionInterface_targetItems": {
+      "message": "1. Which listings to target?"
+   },
+   "actionInterface_toDoList": {
+      "message": "My 📥 \"to-do\" list"
+   },
+   "actionInterface_toDoListDropdown": {
+      "message": "📥 \"to-do\" list"
+   },
+   "actionInterface_topArticles": {
+      "message": "listings"
+   },
+   "actionInterface_topMessages": {
+      "message": "from top"
+   },
+   "actionInterface_turnOffNotifsFavs": {
+      "message": "Disable notifications for this run"
+   },
+   "actionInterface_turnOffNotifsFavsTooltip": {
+      "message": "Temporarily disable notifications for this run. Reactivate later"
+   },
+   "actionInterface_tutorialsClemz": {
+      "message": "Clemz tutorials"
+   },
+   "actionInterface_unlimitedFavMessages": {
+      "message": "unlimited"
+   },
+   "actionInterface_unselectAll": {
+      "message": "=> Deselect all"
+   },
+   "actionInterface_unselectAllButton": {
+      "message": "ok"
+   },
+   "actionInterface_unselectAllMessages": {
+      "message": "=> Deselect all"
+   },
+   "actionInterface_unselectAllMessagesButton": {
+      "message": "ok"
+   },
+   "actionInterface_validity": {
+      "message": "Validity:"
+   },
+   "actionInterface_validityTooltip": {
+      "message": "Valid until that date at 23:59. Relists reset overnight."
+   },
+   "actionInterface_version_number": {
+      "message": "version: \u003Cspan id='versionNumber' class='ml-1'>???\u003C/span>"
+   },
+   "actionInterface_viewFAQ": {
+      "message": "See FAQ"
+   },
+   "actionInterface_viewList": {
+      "message": "view list"
+   },
+   "actionInterface_viewMyLists": {
+      "message": "📋 View my lists"
+   },
+   "actionInterface_vintedPage": {
+      "message": "Vinted page"
+   },
+   "actionInterface_wardrobes": {
+      "message": "Closet(s)"
+   },
+   "actionInterface_whoIsClement": {
+      "message": "Who is behind Clemz? 👋"
+   },
+   "actionInterface_whyModify": {
+      "message": "\u003Cu>📖 Why?\u003C/u>"
+   },
+   "actionInterface_writeToContactEmail": {
+      "message": "Write to"
+   },
+   "activitySpecificAlert_infoBadge": {
+      "message": "🛑 Clemz info 🛑"
+   },
+   "apiCalls_2FAErrorMessage": {
+      "message": "Vinted wants 2FA: \u003Ca href=\"https://www.clemz.app/documentation/resoudre-un-bug#double-authentification\" target=\"_blank\">read here\u003C/a>"
+   },
+   "apiCalls_MessagesFinished": {
+      "message": "\u003Cp class=\"text-center\">⚠️Messages to favourites: \u003Cspan class=\"text-danger font-weight-bolder\">$autoMessageIncluded$ max/day\u003C/span>\u003Cbr>\u003Cbr>New ones tomorrow (after midnight)\u003C/p>",
+      "placeholders": {
+         "autoMessageIncluded": {
+            "content": "$1"
+         }
+      }
+   },
+   "apiCalls_botAdditionnalMessage": {
+      "message": "To unblock, see \u003Ca href='https://www.clemz.app/documentation/resoudre-un-bug#bot-identified' target='_blank'>Clemz’s doc\u003C/a>"
+   },
+   "apiCalls_botErrorMessage": {
+      "message": "\u003Cb>Vinted blocks you, suspecting a bot\u003C/b>"
+   },
+   "apiCalls_captchaAdditionalMessage": {
+      "message": "To unblock, see \u003Ca href='https://www.clemz.app/documentation/republier-des-articles#avoid-captcha' target='_blank'>Clemz’s doc\u003C/a>"
+   },
+   "apiCalls_captchaErrorMessage": {
+      "message": "\u003Cb>Vinted blocks you with a Captcha\u003C/b>"
+   },
+   "apiCalls_catalogErrorMessage": {
+      "message": "\u003Cbr>=> Vinted changed its catalog \u003Ca href=\"https://www.clemz.app/documentation/resoudre-un-bug#size-catalog-issue\" target=\"_blank\">read here\u003C/a>"
+   },
+   "apiCalls_errorFetchingFavorites": {
+      "message": "\u003Cb>Error reading your favourites\u003C/b>"
+   },
+   "apiCalls_errorFetchingUser": {
+      "message": "Error fetching user #$USERID$",
+      "placeholders": {
+         "userId": {
+            "content": "$1"
+         }
+      }
+   },
+   "apiCalls_errorGivingFavorites": {
+      "message": "\u003Cb>Error giving favourites\u003C/b>"
+   },
+   "apiCalls_notAuthorized": {
+      "message": "Action not allowed"
+   },
+   "apiCalls_notEnoughMessages": {
+      "message": "Not enough messages"
+   },
+   "apiCalls_notEnoughReposts": {
+      "message": "Not enough relists"
+   },
+   "apiCalls_refreshAndRetry": {
+      "message": "refresh the page and retry"
+   },
+   "apiCalls_repostsFinished": {
+      "message": "\u003Cp class=\"text-center\">⚠️Your \u003Cspan class=\"text-danger font-weight-bolder\">$maxRepostLeft$ relists\u003C/span>\u003Cbr>this month are used up.\u003C/p>",
+      "placeholders": {
+         "maxRepostLeft": {
+            "content": "$1"
+         }
+      }
+   },
+   "apiCalls_sizeErrorMessage": {
+      "message": "\u003Cbr>=> Vinted changed its sizes \u003Ca href=\"https://www.clemz.app/documentation/resoudre-un-bug#size-catalog-issue\" target=\"_blank\">read here\u003C/a>"
+   },
+   "apiCalls_textSuccessfullyMoved": {
+      "message": "Text moved"
+   },
+   "apiCalls_userLoginRequired": {
+      "message": "\u003Cb>Vinted Rejection\u003C/b>\u003Cbr>Vinted indicates you are not logged into any wardrobe on the domain $1"
+   },
+   "apiCalls_vintedBug": {
+      "message": "(Vinted's server is down. Wait then try again)"
+   },
+   "apiCalls_vintedRefusal": {
+      "message": "(Vinted rejects the action)"
+   },
+   "apiCalls_vintedSays": {
+      "message": "Vinted listed the following errors: "
+   },
+   "apiCalls_vintedTooManyCalls": {
+      "message": "(Too many calls to Vinted)"
+   },
+   "attentionBanner_text": {
+      "message": "conversation(s) to read"
+   },
+   "autoComplete_asNewItem": {
+      "message": "Make it a new item in my backup (and do not change the imported item)"
+   },
+   "autoComplete_asNewItemTooltip": {
+      "message": "You want to fill the form to make a completely different new listing. The original imported listing will not change in your backup."
+   },
+   "autoComplete_cannotDrive": {
+      "message": "This item cannot go into the form."
+   },
+   "autoComplete_checkingDuplicate": {
+      "message": "Checking for a duplicate"
+   },
+   "autoComplete_chooseItemButton": {
+      "message": "Choose from my \"to-do\" list"
+   },
+   "autoComplete_confirmImport": {
+      "message": "\u003Cb>Fill the form with this listing?\u003C/b>\u003Cbr>(costs 1 relist)"
+   },
+   "autoComplete_confirmOverwrite": {
+      "message": "This form already has content. Filling it will overwrite it."
+   },
+   "autoComplete_doNotTouch": {
+      "message": "Do not touch the page while it fills."
+   },
+   "autoComplete_done": {
+      "message": "Form filled. Save or publish when you want."
+   },
+   "autoComplete_duplicateWarning": {
+      "message": "\u003Cb class=\"text-danger\">⚠️ This listing to import already exists in this closet\u003C/b>. You may create a duplicate \u003Ca href=\"$url$\" target=\"_blank\">\u003Cu>view the listing\u003C/u>\u003C/a>",
+      "placeholders": {
+         "url": {
+            "content": "$1"
+         }
+      }
+   },
+   "autoComplete_fieldsAll": {
+      "message": "🔁 Replace all"
+   },
+   "autoComplete_fieldsGaps": {
+      "message": "✏️ Fill the empty fields"
+   },
+   "autoComplete_fieldsGroupTitle": {
+      "message": "1. The form fields"
+   },
+   "autoComplete_fieldsKeep": {
+      "message": "✋ Do not touch"
+   },
+   "autoComplete_fillButton": {
+      "message": "Fill"
+   },
+   "autoComplete_fillFormButton": {
+      "message": "📝 Fill the form"
+   },
+   "autoComplete_introEdit": {
+      "message": "This item was found in your backup (\u003Ca href=\"$url$\" target=\"_blank\">\u003Cu>see here\u003C/u>\u003C/a>). Import its content from clemz.app?",
+      "placeholders": {
+         "url": {
+            "content": "$1"
+         }
+      }
+   },
+   "autoComplete_introNew": {
+      "message": "Clemz fills the form for you"
+   },
+   "autoComplete_linkAdvice": {
+      "message": "You will import the next item and link it to your backup.\u003Cbr>2 important tips:\u003Cul class=\"mb-0 pl-3 mt-1\">\u003Cli>\u003Cb>Do not use this feature to make a new item\u003C/b> or check the option \"Make it a new item\", otherwise your backup will no longer match\u003C/li>\u003Cli>\u003Cb>Make sure you do not create duplicates\u003C/b>, especially if the item is already in your closet\u003C/li>\u003C/ul>"
+   },
+   "autoComplete_noImportedItems": {
+      "message": "No listing in your \"to-do\" list is imported from clemz.app\u003Cbr>\u003Cbr>\u003Ca href=\"https://www.clemz.app/documentation/sauver-mes-annonces#import-clemz-vinted\" target=\"_blank\">\u003Cu>How to add one?\u003C/u>\u003C/a>"
+   },
+   "autoComplete_noSavedPhotos": {
+      "message": "No photos saved on Clemz: current photos stay."
+   },
+   "autoComplete_otherPageMessage": {
+      "message": "For this feature, open:\u003Cbr>- the page to create a new listing (\u003Ca href=\"/items/new\">\u003Cu>here\u003C/u>\u003C/a>)\u003Cbr>- the page to edit an already saved listing"
+   },
+   "autoComplete_photosGroupTitle": {
+      "message": "2. The photos"
+   },
+   "autoComplete_photosHelpTooltip": {
+      "message": "Click here to learn how photo editing works"
+   },
+   "autoComplete_photosKeep": {
+      "message": "✋ Do not touch"
+   },
+   "autoComplete_photosReplace": {
+      "message": "📷 Replace with Clemz photos"
+   },
+   "autoComplete_pickTitle": {
+      "message": "Imported items from the \"to-do\" list"
+   },
+   "autoComplete_searchingSavedItem": {
+      "message": "Looking for the item in your backup…"
+   },
+   "autoComplete_started": {
+      "message": "Keep this tab open in front of you."
+   },
+   "autoComplete_stepChoose": {
+      "message": "1. Choose an imported listing"
+   },
+   "autoComplete_stepLaunch": {
+      "message": "3. Start Autocomplete"
+   },
+   "autoComplete_stepPhotos": {
+      "message": "2. Choose the options"
+   },
+   "autoComplete_tabTitle": {
+      "message": "Autocomplete"
+   },
+   "autoComplete_unknownItem": {
+      "message": "Clemz does not know this item."
+   },
+   "autoMessageConfirmLaunch_blockerNotice": {
+      "message": "At least one auto message type is misconfigured. \u003Cb>Complete its settings or disable it to launch.\u003C/b>"
+   },
+   "autoMessageConfirmLaunch_excludedVinties": {
+      "message": "Excluded vinties: $COUNT$",
+      "placeholders": {
+         "COUNT": {
+            "content": "$1"
+         }
+      }
+   },
+   "autoMessageConfirmLaunch_favMessages": {
+      "message": "Messages: $COUNT1$ first · $COUNT2$ second",
+      "placeholders": {
+         "COUNT1": {
+            "content": "$1"
+         },
+         "COUNT2": {
+            "content": "$2"
+         }
+      }
+   },
+   "autoMessageConfirmLaunch_favNoMessages": {
+      "message": "No messages (offer only)"
+   },
+   "autoMessageConfirmLaunch_highOfferShort": {
+      "message": "High discount"
+   },
+   "autoMessageConfirmLaunch_history": {
+      "message": "History"
+   },
+   "autoMessageConfirmLaunch_memoryKeep": {
+      "message": "\u003Cb>Use memory\u003C/b> — skip processed favourites (faster)"
+   },
+   "autoMessageConfirmLaunch_memoryReset": {
+      "message": "\u003Cb>Start from scratch\u003C/b> — recheck all favourites (slower)"
+   },
+   "autoMessageConfirmLaunch_memoryTitle": {
+      "message": "🧠 $COUNT$ favourites in memory (since $DATE$)",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         },
+         "date": {
+            "content": "$2"
+         }
+      }
+   },
+   "autoMessageConfirmLaunch_minAge": {
+      "message": "Min age"
+   },
+   "autoMessageConfirmLaunch_minRating": {
+      "message": "Min rating"
+   },
+   "autoMessageConfirmLaunch_offerMessagePoolCounts": {
+      "message": "$COUNT1$ accept · $COUNT2$ counter-offer · $COUNT3$ final offer",
+      "placeholders": {
+         "COUNT1": {
+            "content": "$1"
+         },
+         "COUNT2": {
+            "content": "$2"
+         },
+         "COUNT3": {
+            "content": "$3"
+         }
+      }
+   },
+   "autoMessageConfirmLaunch_offerNoMessages": {
+      "message": "No messages (offer only)"
+   },
+   "autoMessageConfirmLaunch_start": {
+      "message": "Launch"
+   },
+   "autoMessageConfirmLaunch_title": {
+      "message": "Settings summary"
+   },
+   "autoMessageEditExcludedVintiesModal_copyList": {
+      "message": "Copy list"
+   },
+   "autoMessageEditExcludedVintiesModal_inputPlaceholder": {
+      "message": "Add user or list of users"
+   },
+   "autoMessageEditExcludedVintiesModal_subtitle": {
+      "message": "The \u003Cspan id=\"excludedVintiesCount\" class=\"text-dark font-weight-bold\">\u003C/span> users below won't get messages even if they favourite your listings."
+   },
+   "autoMessageEditExcludedVintiesModal_title": {
+      "message": "Users not to contact"
+   },
+   "autoMessageEditTextsModal_firstMessage": {
+      "message": "1st message"
+   },
+   "autoMessageEditTextsModal_firstMessagePlaceholder": {
+      "message": "Thanks for the favourite 😊\n\nFeel free to ask any question."
+   },
+   "autoMessageEditTextsModal_secondMessage": {
+      "message": "2nd message"
+   },
+   "autoMessageEditTextsModal_secondMessageEmpty": {
+      "message": "\u003Cu>ℹ️Tip :\u003C/u> \u003Cb>leave empty\u003C/b> to contact more customers despite Vinted's limitations"
+   },
+   "autoMessageEditTextsModal_secondMessagePlaceholder": {
+      "message": "If you like more than one listing, make a bundle 🎉!\n\nHave a good day"
+   },
+   "autoMessageEditTextsModal_secondMessageSubtitle": {
+      "message": "(if empty, 1 message per 24h)"
+   },
+   "autoMessageEditTextsModal_title": {
+      "message": "Message texts"
+   },
+   "autoMessageInterface_activated": {
+      "message": "ongoing"
+   },
+   "autoMessageInterface_attentionLarge": {
+      "message": "\u003Cb>⚠️Attention⚠️\u003C/b>\u003Cspan> If your computer sleeps, Clemz stops!\u003C/span>"
+   },
+   "autoMessageInterface_attentionSmall": {
+      "message": "\u003Cb>⚠️Attention⚠️\u003C/b> \u003Cbr>\u003Cspan> Keep browser active\u003Cbr> + no sleep or Clemz stops!\u003C/span>"
+   },
+   "autoMessageInterface_checkSurveillance": {
+      "message": "Remotely check that monitoring is active"
+   },
+   "autoMessageInterface_clemzDashboard": {
+      "message": "2) your \u003Ca href=\"https://www.clemz.app/dashboard/home\" target=\"_blank\" class=\"\">Clemz dashboard\u003C/a>"
+   },
+   "autoMessageInterface_clemzWorkingForYou": {
+      "message": "Clemz is working for you"
+   },
+   "autoMessageInterface_continuousMonitoring": {
+      "message": "Automatic messages"
+   },
+   "autoMessageInterface_counterOfferUnit": {
+      "message": "counter-offer(s)"
+   },
+   "autoMessageInterface_dashboardLink": {
+      "message": "View activities"
+   },
+   "autoMessageInterface_favShort": {
+      "message": "Favourites"
+   },
+   "autoMessageInterface_followActions": {
+      "message": "How to check Clemz’s actions?"
+   },
+   "autoMessageInterface_ignored": {
+      "message": "🙈ignored"
+   },
+   "autoMessageInterface_messages": {
+      "message": "✍️texts"
+   },
+   "autoMessageInterface_messagesUnit": {
+      "message": "message(s)"
+   },
+   "autoMessageInterface_nextCycleIn": {
+      "message": "Next cycle in:"
+   },
+   "autoMessageInterface_offerAcceptedUnit": {
+      "message": "accepted"
+   },
+   "autoMessageInterface_offerShort": {
+      "message": "Offers"
+   },
+   "autoMessageInterface_pipelineInactive": {
+      "message": "disabled"
+   },
+   "autoMessageInterface_pipelineOngoing": {
+      "message": "ongoing"
+   },
+   "autoMessageInterface_pipelinePaused": {
+      "message": "paused"
+   },
+   "autoMessageInterface_pipelineRateLimited": {
+      "message": "throttled until $TIME$",
+      "placeholders": {
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "autoMessageInterface_pipelineThrottledLink": {
+      "message": "Why?"
+   },
+   "autoMessageInterface_pipelineWaiting": {
+      "message": "coming up"
+   },
+   "autoMessageInterface_pipelineWaitingUntil": {
+      "message": "waiting until $TIME$",
+      "placeholders": {
+         "time": {
+            "content": "$1"
+         }
+      }
+   },
+   "autoMessageInterface_sentLabel": {
+      "message": "Sent:"
+   },
+   "autoMessageInterface_settings": {
+      "message": "Settings:"
+   },
+   "autoMessageInterface_summaryMessages": {
+      "message": "Summary of messages sent by Clemz"
+   },
+   "autoMessageInterface_vintedMessaging": {
+      "message": "1) \u003Ca href=\"/inbox\">Vinted Inbox\u003C/a>: see sent messages"
+   },
+   "autoMessageMemoryModal_favoritesTreated": {
+      "message": "🧠 Favourites processed 🧠\u003Cbr>in memory"
+   },
+   "autoMessageMemoryModal_memoryContext": {
+      "message": "Clemz stored \u003Cb id=\"totalNotification\">\u003C/b>&nbsp;favourites in memory. Oldest dates back to \u003Cb id=\"oldestNotification\">\u003C/b>."
+   },
+   "autoMessageMemoryModal_resetMemoryButton": {
+      "message": "From scratch"
+   },
+   "autoMessageMemoryModal_resetMemoryListItem": {
+      "message": "\u003Cb>Start from scratch\u003C/b> and recheck all favourites (slower)"
+   },
+   "autoMessageMemoryModal_useMemoryButton": {
+      "message": "Use memory"
+   },
+   "autoMessageMemoryModal_useMemoryListItem": {
+      "message": "\u003Cb>Use memory\u003C/b> and skip these processed favourites (faster)"
+   },
+   "autoMessageNewTabMessage_clemzWorksHere": {
+      "message": "Clemz is working here!"
+   },
+   "autoMessageNewTabMessage_clemzWorksHereTabTitle": {
+      "message": "Clemz - do not close"
+   },
+   "autoMessageNewTabMessage_doNotClose": {
+      "message": "⚠️ Do not close this tab"
+   },
+   "autoMessageNewTabMessage_ignoreTab": {
+      "message": "➡️ Ignore this tab and go back to Vinted/clemz.app"
+   },
+   "autoMessageNewTabMessage_unlessNotUsing": {
+      "message": "(unless you're done with Vinted)"
+   },
+   "autoMessageNewTabMessage_unlessOneHour": {
+      "message": "(unless it doesn't close itself before \u003Cspan class=\"font-weight-bolder text-primary\" id=\"maxClosingTime\">1 hour\u003C/span>)"
+   },
+   "autoMessageTab_disconnected": {
+      "message": "You are not logged in to your Vinted account."
+   },
+   "autoMessage_autoOffers": {
+      "message": "Auto Offers"
+   },
+   "autoMessage_changesSaved": {
+      "message": "\u003Cb>Changes saved\u003C/b>$ADDITIONALTEXT$",
+      "placeholders": {
+         "additionaltext": {
+            "content": "$1"
+         }
+      }
+   },
+   "autoMessage_checkingConversations": {
+      "message": "Checking conversations..."
+   },
+   "autoMessage_clemzErrorSendingMessages": {
+      "message": "\u003Cb>Clemz error sending messages\u003C/b>\u003Cbr>Try again or email bonjour@clemz.app"
+   },
+   "autoMessage_configError_no_accept_messages": {
+      "message": "Add at least one accept message"
+   },
+   "autoMessage_configError_no_counter_offer_messages": {
+      "message": "Add at least one counter-offer message"
+   },
+   "autoMessage_configError_no_final_offer_messages": {
+      "message": "Add at least one final offer message"
+   },
+   "autoMessage_configError_no_first_messages": {
+      "message": "Add at least one first message"
+   },
+   "autoMessage_configError_no_max_counters": {
+      "message": "Set the maximum number of counter-offers"
+   },
+   "autoMessage_configError_no_max_discount_percentage": {
+      "message": "Set the maximum discount percentage"
+   },
+   "autoMessage_configError_no_messages_and_no_offer": {
+      "message": "Add at least one message or enable the offer option"
+   },
+   "autoMessage_connectionLostFetchingFavorites": {
+      "message": "\u003Cb>Connection lost with Vinted\u003C/b> reading favourites"
+   },
+   "autoMessage_cumulative_counterOffersSent": {
+      "message": "$COUNT$ counter-offer(s) sent",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "autoMessage_cumulative_favMessagesSent": {
+      "message": "$COUNT$ message(s) sent",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "autoMessage_cumulative_offersAccepted": {
+      "message": "$COUNT$ offer(s) accepted",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "autoMessage_cycleSummary_fav": {
+      "message": "$COUNT$ Favourite messages",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "autoMessage_cycleSummary_offers": {
+      "message": "$COUNT$ Automated offers",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "autoMessage_cycleSummary_title": {
+      "message": "Sent this cycle"
+   },
+   "autoMessage_dailyMessageLimit": {
+      "message": "\u003Cp class=\"text-center\">⚠️Your plan allows \u003Cspan class=\"text-danger font-weight-bolder\">$MESSAGECOUNT$ msgs/day\u003C/span>\u003Cbr>Try again tomorrow\u003C/p>",
+      "placeholders": {
+         "messagecount": {
+            "content": "$1"
+         }
+      }
+   },
+   "autoMessage_disconnected": {
+      "message": "You seem to be disconnected from your Vinted account. Clemz will try again but if the problem persists, empty your cookies and restart."
+   },
+   "autoMessage_emptyFirstMessage": {
+      "message": "\u003Cb>Message #1 is empty.\u003C/b>\u003Cbr>Use \"Sent texts...\" button to complete it."
+   },
+   "autoMessage_errorCheckingConversations": {
+      "message": "\u003Cb>Error checking conversations\u003C/b>\u003Cbr>Will retry next cycle"
+   },
+   "autoMessage_errorFetchingMessages": {
+      "message": "\u003Cb>Error reading messages\u003C/b>\u003Cbr>Try again or email bonjour@clemz.app."
+   },
+   "autoMessage_errorScanningInbox": {
+      "message": "\u003Cb>Error scanning inbox\u003C/b>\u003Cbr>Will retry next cycle"
+   },
+   "autoMessage_excludedVintiesCount": {
+      "message": "\u003Cbr>$VINTIECOUNT$ ignored user(s).",
+      "placeholders": {
+         "vintiecount": {
+            "content": "$1"
+         }
+      }
+   },
+   "autoMessage_fetchingConversations": {
+      "message": "Fetching conversations ($PERCENT$%)",
+      "placeholders": {
+         "percent": {
+            "content": "$1"
+         }
+      }
+   },
+   "autoMessage_fetchingFavorites": {
+      "message": "Getting favourites"
+   },
+   "autoMessage_firstMessageEmpty": {
+      "message": "\u003Cbr>Message #1 is empty => Needs to be completed to use messages to favourites."
+   },
+   "autoMessage_highOfferWarning": {
+      "message": "🔔🔔🔔 Warning! 🔔🔔🔔\nYou're applying a big discount\n ===> - $MAKEOFFERVALUE$$MAKEOFFERTYPE$ \u003C==\nAre you sure this isn't a mistake?",
+      "placeholders": {
+         "makeOfferType": {
+            "content": "$2"
+         },
+         "makeOfferValue": {
+            "content": "$1"
+         }
+      }
+   },
+   "autoMessage_invalidDiscountValue": {
+      "message": "\u003Cb>Invalid discount\u003C/b>\u003Cbr>Choose a valid number"
+   },
+   "autoMessage_invalidNotifMinAge": {
+      "message": "\u003Cb>Invalid minimum time since reception\u003C/b>\u003Cbr>Please modify"
+   },
+   "autoMessage_listCopied": {
+      "message": "\u003Cb>List copied.\u003C/b> Your turn to paste it."
+   },
+   "autoMessage_messagesSentSuccess": {
+      "message": "\u003Cb>$1 messages sent!\u003C/b>\u003Cbr>Check them in Vinted inbox."
+   },
+   "autoMessage_messagingFavorites": {
+      "message": "Message to favourites"
+   },
+   "autoMessage_noHashtagInMessages": {
+      "message": "\u003Cb>Careful!\u003C/b> Don’t put hashtags (#) in messages or Vinted might flag spam!"
+   },
+   "autoMessage_noMessagesSent": {
+      "message": "\u003Cb>No messages sent.\u003C/b>\u003Cbr>Reading gave no result."
+   },
+   "autoMessage_noMessagesSentDirectFavorites": {
+      "message": "\u003Cb>You chose to only message new, future favourites.\u003C/b>\u003Cbr>=> no messages now."
+   },
+   "autoMessage_noPipelineActive": {
+      "message": "\u003Cb>No action enabled\u003C/b>. Enable and configure at least one automatic action type before launching."
+   },
+   "autoMessage_noUrlInMessages": {
+      "message": "\u003Cb>Careful!\u003C/b> Don’t put links (URLs) in messages or Vinted might flag spam!"
+   },
+   "autoMessage_offersGroupe": {
+      "message": "Offers - group $CURRENT$/$TOTAL$",
+      "placeholders": {
+         "current": {
+            "content": "$1"
+         },
+         "total": {
+            "content": "$2"
+         }
+      }
+   },
+   "autoMessage_processStopped": {
+      "message": "Process stopped"
+   },
+   "autoMessage_processingOffers": {
+      "message": "Processing offers ($PERCENT$%)",
+      "placeholders": {
+         "percent": {
+            "content": "$1"
+         }
+      }
+   },
+   "autoMessage_readingFavorites": {
+      "message": "Reading favourites 🧐"
+   },
+   "autoMessage_readingHistory": {
+      "message": "Reading history"
+   },
+   "autoMessage_registeringConversations": {
+      "message": "Registering conversations"
+   },
+   "autoMessage_scanningInbox": {
+      "message": "Scanning inbox..."
+   },
+   "autoMessage_secondMessageEmpty": {
+      "message": "\u003Cbr>Message #2 is empty => Only 1 message will be sent within 24h (not 2)"
+   },
+   "autoMessage_sendingFavoritesPercent": {
+      "message": "Sending messages: $PERCENT$%",
+      "placeholders": {
+         "percent": {
+            "content": "$1"
+         }
+      }
+   },
+   "autoMessage_temporization": {
+      "message": "Temporizing (Vinted limitation)\u003Cbr>\u003Cdiv class=\"text-center\">\u003Ca href=\"https://www.clemz.app/documentation/messages-aux-favoris#restrictions-tips\" target=\"_blank\">\u003Cu>Read more about this limitation\u003C/u>\u003C/a>\u003C/div>"
+   },
+   "autoMessage_tooManyErrors": {
+      "message": "\u003Cb>Too many errors reading favourites\u003C/b>\u003Cbr>Clemz stopped. Try again later."
+   },
+   "autoMessage_upgradeSubscriptionModalData": {
+      "message": "\u003Cp class=\"text-center\">⚠️Your current plan \u003Cspan class=\"text-danger font-weight-bolder\">has no favourites-messages\u003C/span>\u003Cbr>\u003Cbr>See plans \u003Ca href=\"https://www.clemz.app/pricing\" target=\"_blank\">here\u003C/a>\u003C/p>"
+   },
+   "autoMessage_upgradeSubscriptionModalDataMaxReached": {
+      "message": "\u003Cp class=\"text-center\">⚠️Auto messages: \u003Cspan class=\"text-danger font-weight-bolder\">$MESSAGEINCLUDED$ max/day\u003C/span> reached.\u003Cbr>No new messages will be sent today...\u003C/p>",
+      "placeholders": {
+         "messageIncluded": {
+            "content": "$1"
+         }
+      }
+   },
+   "autoMessage_vintedErrorFetchingFavorites": {
+      "message": "\u003Cb>Vinted error\u003C/b> reading favourites"
+   },
+   "autoMessage_vintedErrorFetchingFavoritesRetry": {
+      "message": "\u003Cb>Vinted error reading favourites\u003C/b>\u003Cbr>Will retry"
+   },
+   "autoMessage_vintedErrorFetchingNotifications": {
+      "message": "\u003Cb>Vinted error\u003C/b> reading notifications"
+   },
+   "autoMessage_vintedErrorProcessingMessage": {
+      "message": "\u003Cb>Vinted error\u003C/b> sending a message"
+   },
+   "autoMessage_vintedErrorfetchingMessages": {
+      "message": "\u003Cb>Vinted error\u003C/b> reading your messages"
+   },
+   "autoMessage_vintieNameInProgress": {
+      "message": "\u003Cb>You’re typing a name\u003C/b>\u003Cbr>Hit SPACE to add it, then save."
+   },
+   "autoMessage_vintieNameTooShort": {
+      "message": "\u003Cb>The username is too short.\u003C/b>\u003Cbr>It must contain at least 4 characters."
+   },
+   "autoMessage_wrongWardrobeDetected": {
+      "message": "\u003Cb>Vinted bug\u003C/b>: Clemz received incorrect notifications. It will retry in a few minutes, otherwise restart it manually."
+   },
+   "background_communicationError": {
+      "message": "\u003Cb>Communication error with clemz.app\u003C/b>\u003Cbr>Email bonjour@clemz.app if needed"
+   },
+   "background_connectionProblem": {
+      "message": "\u003Cb>Connection issue\u003C/b>\u003Cbr>Clemz can’t connect to clemz.app\u003Cbr>Try later or email \u003Cb>bonjour@clemz.app\u003C/b>"
+   },
+   "background_disconnectionSuccess": {
+      "message": "Logout completed"
+   },
+   "background_disconnectionWithError": {
+      "message": "Logged out (despite error)"
+   },
+   "background_reconnectError": {
+      "message": "Error - please log in again"
+   },
+   "blockedByCaptchaModal_captchaBlockTitle": {
+      "message": "⚠️ Captcha block 🧩"
+   },
+   "blockedByCaptchaModal_clearCookies": {
+      "message": "Either \u003Cb>clear your browser cookies\u003C/b> via the browser menu ↗️"
+   },
+   "blockedByCaptchaModal_howToAvoidCaptchas": {
+      "message": "\u003Cb>How to avoid captchas?\u003C/b>\u003Cbr>\u003Ca href=\"https://www.clemz.app/documentation/republier-des-articles#avoid-captcha\" target=\"_blank\">Read here\u003C/a>"
+   },
+   "blockedByCaptchaModal_immediatelySolve": {
+      "message": "Then, \u003Cb>force Vinted to show a captcha\u003C/b> and solve it:"
+   },
+   "blockedByCaptchaModal_itsEasyToRemove": {
+      "message": "\u003Cb class=\"text-success\">No worries!\u003C/b> It's easy to solve. Either:"
+   },
+   "blockedByCaptchaModal_privateMode": {
+      "message": "Or \u003Cb>use \"Private browsing\"\u003C/b>. But first, go to \"chrome://extensions/\" → \"Details\" under Clemz → allow in incognito.\u003Cbr>(\u003Cb>Remember to close incognito windows daily\u003C/b> so cookies reset.)"
+   },
+   "blockedByCaptchaModal_solveCaptcha": {
+      "message": "Solve it, done."
+   },
+   "blockedByCaptchaModal_stepCreateDraft": {
+      "message": "\u003Cb>Create a Vinted draft listing\u003C/b> via \"Sell your items\". Minimal data: just a title."
+   },
+   "blockedByCaptchaModal_stepEditDraft": {
+      "message": "\u003Cb>Then edit that draft\u003C/b> by opening it and clicking \"Edit\"."
+   },
+   "blockedByCaptchaModal_vintedBlocksTemporary": {
+      "message": "\u003Cb class=\"text-danger\">Vinted is blocking you temporarily, suspecting a bot.\u003C/b>"
+   },
+   "blockedByCaptchaModal_whenYouSave": {
+      "message": "When you save or edit, \u003Cb>Vinted will captcha\u003C/b> you."
+   },
+   "botChallengeModal_clickContinue": {
+      "message": "Now back here, click \"Continue\""
+   },
+   "botChallengeModal_clickLink": {
+      "message": "\u003Ca href=\"\" id=\"challengeLink\" target=\"_blank\" class=\"font-weight-bolder\">\u003Cu>Click this link\u003C/u>\u003C/a> to open in new tab"
+   },
+   "botChallengeModal_howToAvoidBeingIdentifiedBot": {
+      "message": "\u003Cb>🛟If you see this often,\u003C/b> \u003Ca href=\"https://www.clemz.app/documentation/resoudre-un-bug#bot-identified\" target=\"_blank\">\u003Cu>read here\u003C/u>\u003C/a> to avoid being flagged as a bot."
+   },
+   "botChallengeModal_proveHuman": {
+      "message": "To prove you're human:"
+   },
+   "botChallengeModal_vintedBlockTitle": {
+      "message": "👮 Vinted block 👮"
+   },
+   "botChallengeModal_vintedSuspectsBot": {
+      "message": "Vinted suspects a bot."
+   },
+   "botChallengeModal_waitPageLoad": {
+      "message": "\u003Cb class=\"text-danger\">Wait for complete loading\u003C/b> then close that tab"
+   },
+   "cancel": {
+      "message": "Cancel"
+   },
+   "cancelling": {
+      "message": "cancelling..."
+   },
+   "captchaGetSoundAlert": {
+      "message": "\u003Cb>👉 Want a sound alert when a captcha appears?\u003C/b>\u003Cbr>\u003Ca href='https://www.clemz.app/documentation/messages-aux-favoris#sound-alerts' target='_blank'>Read this article\u003C/a> to learn how"
+   },
+   "captchaResolvingModal_howToAvoidCaptchas": {
+      "message": "\u003Cb>👉How to avoid captchas?\u003C/b>\u003Cbr>\u003Ca href=\"https://www.clemz.app/documentation/republier-des-articles#avoid-captcha\" target=\"_blank\">Read here\u003C/a>"
+   },
+   "captchaResolvingModal_suspectsRobot": {
+      "message": "ℹ️ Vinted suspects a bot. \u003Cb class=\"text-success\">No worries!\u003C/b> Solve the captcha above 👆👆"
+   },
+   "clemzList_addedCount": {
+      "message": "✅ $1 item(s) added",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "clemzList_alreadyInList": {
+      "message": "✔️ ($1 item(s) already in the list)",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "clemzList_button": {
+      "message": "📋 List clemz.app"
+   },
+   "clemzList_chainButton": {
+      "message": "Save then add to the list"
+   },
+   "clemzList_missingImportedIntro": {
+      "message": "These imported items are no longer on Clemz (archived or deleted):"
+   },
+   "clemzList_missingIntro": {
+      "message": "❌ \u003Cb>$1 item(s) are not on clemz.app\u003C/b>. Save them then try again:",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "clemzList_newListOption": {
+      "message": "➕ New list"
+   },
+   "clemzList_newListPlaceholder": {
+      "message": "New list name"
+   },
+   "clemzList_pickerTitle": {
+      "message": "Add to a list on clemz.app"
+   },
+   "clemzList_reportTitle": {
+      "message": "Added to the list “$1”",
+      "placeholders": {
+         "listTitle": {
+            "content": "$1"
+         }
+      }
+   },
+   "clemzList_seeMyLists": {
+      "message": "See my lists"
+   },
+   "clemzList_selectArticles": {
+      "message": "Select items to add to one of your lists on clemz.app (\u003Ca href=\"https://www.clemz.app/dashboard/item_lists\" target=\"_blank\">see My Lists\u003C/a>)"
+   },
+   "clemzList_send": {
+      "message": "📤add to list"
+   },
+   "close": {
+      "message": "Close"
+   },
+   "communicationErrorClemz": {
+      "message": "\u003Cb>Communication error\u003C/b> with clemz.app\u003Cbr>Try again"
+   },
+   "communicationErrorVinted": {
+      "message": "\u003Cb>Vinted error\u003C/b>\u003Cbr>Try again"
+   },
+   "confirm": {
+      "message": "Confirm"
+   },
+   "connectionErrorVinted": {
+      "message": "\u003Cb>Connection lost with Vinted\u003C/b>\u003Cbr>Try again"
+   },
+   "continue": {
+      "message": "Continue"
+   },
+   "delete": {
+      "message": "Delete"
+   },
+   "disconnectedFromClemz": {
+      "message": "\u003Cb>Please reconnect\u003C/b>"
+   },
+   "disconnectedWarning": {
+      "message": "\u003Cb>You seem logged out of your Vinted account\u003C/b>\u003Cbr>=> Log in again (e.g. \u003Ca href=\"/member/register/select_type?ref_url=%2F\">\u003Cu>using this link\u003C/u>\u003C/a>)"
+   },
+   "documentationModal_clickOnFunctionality": {
+      "message": "\u003Cb>👇Click👇 each feature\u003C/b>\u003Cbr>and use Clemz to its full potential"
+   },
+   "documentationModal_echangerDesFavoris": {
+      "message": "\u003Ca href=\"https://www.clemz.app/documentation/echanger-des-favoris\" style=\"text-decoration: underline !important;\" target=\"_blank\">💞 Exchange favourites\u003C/a>: get favourites for a boost."
+   },
+   "documentationModal_echangerDesVues": {
+      "message": "\u003Ca href=\"https://www.clemz.app/documentation/echanger-des-vues\" style=\"text-decoration: underline !important;\" target=\"_blank\">👀 Exchange views\u003C/a>: get views for visibility."
+   },
+   "documentationModal_featuresOf": {
+      "message": "\u003Cimg id=\"tutorialLogo\" src=\"\" style=\"height: 25px; width: auto;\">'s features"
+   },
+   "documentationModal_howToRepost": {
+      "message": "⬅️ How to relist?"
+   },
+   "documentationModal_messagesAuxFavoris": {
+      "message": "\u003Ca href=\"https://www.clemz.app/documentation/messages-aux-favoris\" style=\"text-decoration: underline !important;\" target=\"_blank\">📨 Messages to favourites\u003C/a>: auto-send to people who put a favourite."
+   },
+   "documentationModal_modifierEnMasse": {
+      "message": "\u003Ca href=\"https://www.clemz.app/documentation/modifier-en-masse\" style=\"text-decoration: underline !important;\" target=\"_blank\">✍️ Bulk edit\u003C/a>: edit a group of listings in a few clicks."
+   },
+   "documentationModal_modifierLesPhotos": {
+      "message": "\u003Ca href=\"https://www.clemz.app/documentation/modifier-les-photos\" style=\"text-decoration: underline !important;\" target=\"_blank\">📸 Edit photos\u003C/a>: stop Vinted from spotting your relists."
+   },
+   "documentationModal_sauverMesAnnonces": {
+      "message": "\u003Ca href=\"https://www.clemz.app/documentation/sauver-mes-annonces\" style=\"text-decoration: underline !important;\" target=\"_blank\">⏫ Save listings\u003C/a>: have a backup on Clemz, just in case."
+   },
+   "documentationModal_smartDressing": {
+      "message": "\u003Ca href=\"https://www.clemz.app/documentation/smart-dressing\" style=\"text-decoration: underline !important;\" target=\"_blank\">🔍 Smart Closet\u003C/a>: see, sort, and filter in one click"
+   },
+   "documentationModal_smartMessagerie": {
+      "message": "\u003Ca href=\"https://www.clemz.app/documentation/smart-messagerie\" style=\"text-decoration: underline !important;\" target=\"_blank\">📫 Smart Inbox\u003C/a>: easily filter, delete, or mark messages"
+   },
+   "documentationModal_synchroniserVentes": {
+      "message": "\u003Ca href=\"https://www.clemz.app/documentation/synchroniser-ses-ventes\" style=\"text-decoration: underline !important;\" target=\"_blank\">💲 Synchronize sales\u003C/a>: sync your sales with Clemz to analyse them, simplify your shipping labels, do your accounting, issue invoices, etc."
+   },
+   "draft": {
+      "message": "Draft"
+   },
+   "draftFirstLetter": {
+      "message": "D"
+   },
+   "emptyMainList": {
+      "message": "\u003Cb>\"To do\" list empty: fill it up\u003C/b> \u003Cbr>(via the tab \u003Cimg class=\"font-icon text-primary ml-1\" src=\"$url$\"> \u003Cspan class=\"text-primary\">Fill my lists\u003C/span>)",
+      "placeholders": {
+         "url": {
+            "content": "$1"
+         }
+      }
+   },
+   "error": {
+      "message": "Error"
+   },
+   "errorClemz": {
+      "message": "\u003Cb>Error from Clemz\u003C/b>\u003Cbr>Try again or contact bonjour@clemz.app"
+   },
+   "errorNoSpace": {
+      "message": "\u003Cb>Your device is running out of storage\u003C/b>\u003Cbr>Free up disk space and try again"
+   },
+   "errorStage": {
+      "message": "XXX ERROR XXX"
+   },
+   "errorWorkerTabCreation": {
+      "message": "\u003Cb>Work tab couldn't open\u003C/b>\u003Cbr>Close some tabs or restart Chrome, then relaunch."
+   },
+   "extensionDescription": {
+      "message": "Clemz: automate your closet and increase your sales"
+   },
+   "extensionName": {
+      "message": "Clemz - automate your closet"
+   },
+   "favParamsModal_connectionRequired": {
+      "message": "The wardrobe \u003Cb>$1\u003C/b> is not one of your active wardrobes. You cannot edit its parameters.\u003Cbr>\u003Ca href=\"https://www.clemz.app/dashboard/user?open_modal=wardrobesModal\" target=\"_blank\">\u003Cu>See my active wardrobes\u003C/u>\u003C/a>"
+   },
+   "favParamsModal_customFor": {
+      "message": "Custom for $1"
+   },
+   "favParamsModal_defaultParams": {
+      "message": "Default parameters"
+   },
+   "favParamsModal_discountMode": {
+      "message": "\u003Cb>Discount\u003C/b> mode"
+   },
+   "favParamsModal_excludedVinties": {
+      "message": "🙈 Excluded Vinties"
+   },
+   "favParamsModal_firstMessages": {
+      "message": "💬 1st messages"
+   },
+   "favParamsModal_messagesSection": {
+      "message": "Messages & Excluded Vinties"
+   },
+   "favParamsModal_modeSimple": {
+      "message": "single"
+   },
+   "favParamsModal_modeTiers": {
+      "message": "tiers"
+   },
+   "favParamsModal_secondMessages": {
+      "message": "💬 2nd messages"
+   },
+   "favParamsModal_simplePrefix": {
+      "message": "of"
+   },
+   "favParamsModal_tiersCount": {
+      "message": "$1 tier(s) configured"
+   },
+   "favParamsModal_tiersLabel": {
+      "message": "Tiers"
+   },
+   "favParamsModal_tiersNotConfigured": {
+      "message": "Not configured yet"
+   },
+   "favParamsModal_title": {
+      "message": "Favourite Messages Parameters"
+   },
+   "forbiddenFeature": {
+      "message": "\u003Cb>Feature unavailable\u003C/b>\u003Cbr>Your Clemz account is not linked to any Vinted closet"
+   },
+   "hidden": {
+      "message": "Hidden"
+   },
+   "hiddenFirstLetter": {
+      "message": "H"
+   },
+   "humanPacing_pacingPause": {
+      "message": "Pacing pause"
+   },
+   "ignore": {
+      "message": "Ignore"
+   },
+   "incompleteItemsModal_choice1": {
+      "message": "\u003Cb class=\"text-success\">Search for them in your clemz.app backup\u003C/b>: If Clemz finds them, it will transform them into importable items on Vinted."
+   },
+   "incompleteItemsModal_choice2": {
+      "message": "\u003Cb class=\"text-danger\">Ignore them\u003C/b>: Clemz will not relist them."
+   },
+   "incompleteItemsModal_choices": {
+      "message": "You have 2 choices:"
+   },
+   "incompleteItemsModal_description": {
+      "message": "Incomplete items (icon 🌓) of your list could not be fully retrieved due to a Vinted limitation (\u003Ca href=\"https://www.clemz.app/documentation/republier-des-articles#incomplete-listings\" target=\"_blank\">\u003Cu>more info here\u003C/u>\u003C/a>). Often, they are \u003Cb class=\"\">sold items\u003C/b>"
+   },
+   "incompleteItemsModal_notRepubliable": {
+      "message": "listings can't be relisted as is"
+   },
+   "incompleteItemsModal_title": {
+      "message": "Your list contains incomplete items 🌓"
+   },
+   "incompleteItemsModal_tryToImport": {
+      "message": "Try to import them"
+   },
+   "interface_confirmMessageDeletion": {
+      "message": "🛑 Delete this text?\n \"$clipboardContent$\" ?",
+      "placeholders": {
+         "clipboardContent": {
+            "content": "$1"
+         }
+      }
+   },
+   "interface_enterEmailPlaceholder": {
+      "message": "Enter an email"
+   },
+   "interface_enterPasswordPlaceholder": {
+      "message": "Enter a password"
+   },
+   "interface_errorModifying": {
+      "message": "\u003Cb>Error\u003C/b> editing"
+   },
+   "interface_errorReadingInfo": {
+      "message": "\u003Cb>Error\u003C/b> reading info"
+   },
+   "interface_howToSaveText": {
+      "message": "Click \"➕ new\" to store a text you use often"
+   },
+   "interface_howToUseText": {
+      "message": "Then copy & paste it in Vinted"
+   },
+   "interface_ignore": {
+      "message": "ignore"
+   },
+   "interface_invalidRepostActionSelected": {
+      "message": "\u003Cb>Error: Invalid action\u003C/b>\u003Cbr>Please change the action in the dropdown"
+   },
+   "interface_localMemoryCleared": {
+      "message": "Local memory cleared"
+   },
+   "interface_moveTextInstruction": {
+      "message": "To reorder a text, change its number on the left"
+   },
+   "interface_noOptionUsed": {
+      "message": "❌ No option used"
+   },
+   "interface_noTextSaved": {
+      "message": "-- No saved text --"
+   },
+   "interface_notifMinAge": {
+      "message": "Notifs received since"
+   },
+   "interface_notificationsDisabled": {
+      "message": "disabled"
+   },
+   "interface_notificationsEnabled": {
+      "message": "enabled"
+   },
+   "interface_offer": {
+      "message": "discount"
+   },
+   "interface_processStopped": {
+      "message": "The process stopped"
+   },
+   "interface_textCopied": {
+      "message": "\u003Cb>Text copied.\u003C/b> Your turn to paste it."
+   },
+   "interface_textDeleted": {
+      "message": "Text deleted"
+   },
+   "interface_upToDateTooltip": {
+      "message": "You are up to date 👌"
+   },
+   "interface_updateAvailableTooltip": {
+      "message": "An update is available (click)"
+   },
+   "interface_updateRequiredTooltip": {
+      "message": "Update is required"
+   },
+   "interface_vintedPasswordPlaceholder": {
+      "message": "Clemz password (not Vinted)"
+   },
+   "itemsFromOtherWardrobeRemoved": {
+      "message": "\u003Cb>Items from another closet\u003C/b>\u003Cbr>$count$ item(s) removed from the list (don't mix listings and closets in your lists)",
+      "placeholders": {
+         "count": {
+            "content": "$1"
+         }
+      }
+   },
+   "jobDone": {
+      "message": "Job's done! 🦾"
+   },
+   "linkWardrobe_profileNotOnPage": {
+      "message": "\u003Cb>Could not fetch it\u003C/b>\u003Cbr>Open your closet, then try again"
+   },
+   "listsLegendModal_majorError": {
+      "message": "\u003Cb>MAJOR ERROR\u003C/b> while relisting. Relaunch quickly!"
+   },
+   "listsLegendModal_minorError": {
+      "message": "\u003Cb>Minor error\u003C/b> while relisting. Click icon for info"
+   },
+   "listsLegendModal_partialItem": {
+      "message": "\u003Cb>Incomplete article\u003C/b> Clemz couldn't retrieve the article in full: \u003Ca href=\"https://www.clemz.app/documentation/republier-des-articles#incomplete-listings\" target=\"_blank\">\u003Cu>click here for more info\u003C/u>\u003C/a>."
+   },
+   "listsLegendModal_title": {
+      "message": "Legend - icons"
+   },
+   "listsModal_completeList": {
+      "message": "Fill lists"
+   },
+   "listsModal_doneList": {
+      "message": "✅done"
+   },
+   "listsModal_editList": {
+      "message": "✏️ edit"
+   },
+   "listsModal_empty": {
+      "message": "❌ empty"
+   },
+   "listsModal_emptyList": {
+      "message": "-- Empty list --"
+   },
+   "listsModal_fillLists": {
+      "message": "Fill my lists"
+   },
+   "listsModal_goBack": {
+      "message": "&#8656; back"
+   },
+   "listsModal_goToVinted": {
+      "message": "Go to my Vinted"
+   },
+   "listsModal_legend": {
+      "message": "Legend"
+   },
+   "listsModal_mainList": {
+      "message": "📥\"to do\""
+   },
+   "listsModal_organize": {
+      "message": "↕️order"
+   },
+   "listsModal_putArticlesToLater": {
+      "message": "Put listings here \u003Cbr> to handle later"
+   },
+   "listsModal_putArticlesToRepost": {
+      "message": "Put listings here \u003Cbr> to relist"
+   },
+   "listsModal_putBackInLists": {
+      "message": "✏️ put back in lists"
+   },
+   "listsModal_remove": {
+      "message": "🗑️ remove"
+   },
+   "listsModal_repost": {
+      "message": "Relist"
+   },
+   "listsModal_republishedAppearHere": {
+      "message": "Relisted or edited listings\u003Cbr>will appear here"
+   },
+   "listsModal_save": {
+      "message": "Save"
+   },
+   "listsModal_sideList": {
+      "message": "📦\"in stock\""
+   },
+   "listsModal_toMain": {
+      "message": "⬅️ to \"to do\""
+   },
+   "listsModal_toStock": {
+      "message": "➡️ to \"in stock\""
+   },
+   "loginInterface_aboutClemz": {
+      "message": "Who is behind Clemz? 👋"
+   },
+   "loginInterface_clearStorageButton": {
+      "message": "Clear saved data"
+   },
+   "loginInterface_email": {
+      "message": "Email"
+   },
+   "loginInterface_forgotPasswordLink": {
+      "message": "Forgot password"
+   },
+   "loginInterface_helpTitle": {
+      "message": "Help"
+   },
+   "loginInterface_loginButton": {
+      "message": "Log in"
+   },
+   "loginInterface_passwordLabel": {
+      "message": "Password"
+   },
+   "loginInterface_passwordPlaceholder": {
+      "message": "Clemz password (not Vinted)"
+   },
+   "loginInterface_problemBug": {
+      "message": "A problem? A bug?"
+   },
+   "loginInterface_problemQuestion": {
+      "message": "Problem? Question?"
+   },
+   "loginInterface_quickPages": {
+      "message": "Otherwise, skim these 2 pages. \u003Cbr>They solve 90% of issues."
+   },
+   "loginInterface_readDocButton": {
+      "message": "Read docs"
+   },
+   "loginInterface_sendEmailTo": {
+      "message": "Send an email to:"
+   },
+   "loginInterface_showPasswordLabel": {
+      "message": "show password"
+   },
+   "loginInterface_signUpButton": {
+      "message": "Sign up"
+   },
+   "loginInterface_viewFaqButton": {
+      "message": "See FAQ"
+   },
+   "loginInterface_writeTo": {
+      "message": "Write to"
+   },
+   "majorErrorItemModificationModal_clickForDetails": {
+      "message": "Click here for details"
+   },
+   "majorErrorItemModificationModal_continueAction": {
+      "message": "\u003Cb class=\"text-success\">\"Continue\"\u003C/b>: Clemz will do the requested action\u003C/b>"
+   },
+   "majorErrorItemModificationModal_continueButton": {
+      "message": "Continue ➡️"
+   },
+   "majorErrorItemModificationModal_deleteFromList": {
+      "message": "\u003Cb class=\"text-success\">\"Remove from my list\"\u003C/b>: do this once you’ve fixed the issue"
+   },
+   "majorErrorItemModificationModal_deleteFromListButton": {
+      "message": "Remove from my list ❌"
+   },
+   "majorErrorItemModificationModal_errorInList": {
+      "message": "🛑 The list has an error 🛑"
+   },
+   "majorErrorItemModificationModal_ignoreAction": {
+      "message": "\u003Cb class=\"text-danger\">\"Ignore\"\u003C/b>: keep it in the list as a reminder. No action."
+   },
+   "majorErrorItemModificationModal_ignoreButton": {
+      "message": "Ignore"
+   },
+   "majorErrorItemModificationModal_importButton": {
+      "message": "Import from Clemz 📥"
+   },
+   "majorErrorItemModificationModal_importFromClemz": {
+      "message": "\u003Cb class=\"text-success\">\"Import from Clemz\"\u003C/b>: import the item from Clemz (⚠️check you won't create duplicates)"
+   },
+   "majorErrorItemModificationModal_linkForArticle": {
+      "message": "(click the image for the listing)"
+   },
+   "majorErrorItemModificationModal_notRepublished": {
+      "message": "couldn't be relisted due to error. Clemz says to fix your closet by:"
+   },
+   "majorErrorItemModificationModal_whatToDo": {
+      "message": "🖐️ What to do with this listing?"
+   },
+   "manageClipboards_modifyText": {
+      "message": "Edit text"
+   },
+   "manageClipboards_textSuccessfullySaved": {
+      "message": "Text saved"
+   },
+   "manageLists_addingArticlesToList": {
+      "message": "Add $articleCount$ listings to a list",
+      "placeholders": {
+         "articleCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "manageLists_additionToListCompleted": {
+      "message": "Listings added"
+   },
+   "manageLists_articlesAddedToOtherList": {
+      "message": "Moved to the other list"
+   },
+   "manageLists_articlesDeletedFromList": {
+      "message": "Removed from list"
+   },
+   "manageLists_articlesReorganized": {
+      "message": "Listings reordered"
+   },
+   "manageLists_boostedArticle": {
+      "message": "Listing\nBumped"
+   },
+   "manageLists_clemzCheckingEachArticle": {
+      "message": "Clemz checks each listing..."
+   },
+   "manageLists_clemzCheckingSelection": {
+      "message": "Clemz checks your selection"
+   },
+   "manageLists_clemzConnexionErrorFetchingItem": {
+      "message": "\u003Cb>Connection lost with Clemz\u003C/b> reading item $articleString$",
+      "placeholders": {
+         "articleString": {
+            "content": "$1"
+         }
+      }
+   },
+   "manageLists_doneTooltip": {
+      "message": "$verb$ on: $date$",
+      "placeholders": {
+         "date": {
+            "content": "$2"
+         },
+         "verb": {
+            "content": "$1"
+         }
+      }
+   },
+   "manageLists_doneVerbAutoComplete": {
+      "message": "Auto-completed"
+   },
+   "manageLists_doneVerbDefault": {
+      "message": "Done"
+   },
+   "manageLists_doneVerbDelete": {
+      "message": "Deleted"
+   },
+   "manageLists_doneVerbModify": {
+      "message": "Edited"
+   },
+   "manageLists_doneVerbRepost": {
+      "message": "Relisted"
+   },
+   "manageLists_doneVerbSave": {
+      "message": "Saved"
+   },
+   "manageLists_doneVerbSaveDraft": {
+      "message": "Saved (draft)"
+   },
+   "manageLists_emptyListConfirmation": {
+      "message": "🛑 Are you SURE you want to empty the list? 🛑"
+   },
+   "manageLists_errorFetchingItem": {
+      "message": "Error reading $articleString$",
+      "placeholders": {
+         "articleString": {
+            "content": "$1"
+         }
+      }
+   },
+   "manageLists_errorOnArticleListRefreshed": {
+      "message": "Error on item - list refreshed"
+   },
+   "manageLists_howToMoveItem": {
+      "message": "To reorder listings, change their number on the left"
+   },
+   "manageLists_importedFromClemzTooltip": {
+      "message": "Listing imported from clemz.app"
+   },
+   "manageLists_incompleteItem": {
+      "message": "- listing added \"🌓incomplete\" (\u003Ca href=\"https://www.clemz.app/documentation/republier-des-articles#incomplete-listings\" target=\"_blank\">\u003Cu>more info\u003C/u>\u003C/a>)"
+   },
+   "manageLists_itemAlreadyPresent": {
+      "message": "- listing already in list so updated"
+   },
+   "manageLists_itemCannotBeFetched": {
+      "message": "- some listings could not be fetched"
+   },
+   "manageLists_itemNotOwned": {
+      "message": "- items not added because they are not from your closet"
+   },
+   "manageLists_itemsNotAddedBecause": {
+      "message": "\u003Cb>Information adding listings to the list:\u003C/b>"
+   },
+   "manageLists_memoryError": {
+      "message": "\u003Cb>Memory error\u003C/b>\u003Cbr>Too big list. Try fewer listings or empty list first."
+   },
+   "manageLists_noArticleSelected": {
+      "message": "No listing selected"
+   },
+   "manageLists_partialItem": {
+      "message": "Listing\nIncomplete"
+   },
+   "manageLists_returnToVinted": {
+      "message": "\u003Cb>Go back to Vinted\u003C/b> to use this"
+   },
+   "manageLists_selectArticlesToChangeList": {
+      "message": "Select listings to move them"
+   },
+   "manageLists_selectArticlesToDelete": {
+      "message": "Select listings to remove"
+   },
+   "manageLists_tooManyRequests": {
+      "message": "\u003Cb>Too many Vinted requests\u003C/b>\u003Cbr>Wait 1-2 min, then retry (Vinted may block if too many)."
+   },
+   "manageLists_vintedConnexionErrorFetchingItem": {
+      "message": "\u003Cb>Connection lost with Vinted\u003C/b> reading item $articleString$",
+      "placeholders": {
+         "articleString": {
+            "content": "$1"
+         }
+      }
+   },
+   "manageWardrobesModal_addWardrobeButton": {
+      "message": "👉 Add this closet to Clemz"
+   },
+   "manageWardrobesModal_dashboardInfo": {
+      "message": "Manage active closets on \u003Ca href=\"https://www.clemz.app/dashboard/user\" target=\"_blank\">\u003Cu>your dashboard\u003C/u>\u003C/a>"
+   },
+   "manageWardrobesModal_documentationInfo": {
+      "message": "\u003Ca href=\"https://www.clemz.app/documentation/demarrage-rapide#closets\" target=\"_blank\">\u003Cu>Learn here\u003C/u>\u003C/a> how to link your closets to Clemz"
+   },
+   "manageWardrobesModal_linkWardrobeSuccessfull": {
+      "message": "\u003Cb>Closet added successfully (but not activated).\u003C/b>\u003Cbr>You can activate this closet from \u003Ca href=\"https://www.clemz.app/dashboard/user?open_modal=wardrobesModal\" target=\"_blank\">\u003Cu>your Clemz settings\u003C/u>\u003C/a>."
+   },
+   "manageWardrobesModal_linkedWardrobes": {
+      "message": "Active closet(s) on Clemz:"
+   },
+   "manageWardrobesModal_linkedWardrobesTooltip": {
+      "message": "Click here to learn how to link your closets to Clemz"
+   },
+   "manageWardrobesModal_title": {
+      "message": "Manage closets"
+   },
+   "manageWardrobesModal_updateWardrobeButton": {
+      "message": "🔄️ Update this closet's info on Clemz"
+   },
+   "manageWardrobesModal_wardrobeAlreadyLinkedWarning": {
+      "message": "ℹ️ Closet already active on your account"
+   },
+   "modify": {
+      "message": "Modify"
+   },
+   "modifyArticles_bugFetchingPhotos": {
+      "message": "Bug reading a saved photo. Retry"
+   },
+   "modifyArticles_bugPostingPhotos": {
+      "message": "Bug uploading a saved photo to Vinted. Retry"
+   },
+   "modifyArticles_clemzConnexionError": {
+      "message": "\u003Cb>Connection lost with Clemz\u003C/b> editing \"$articleName$\"",
+      "placeholders": {
+         "articleName": {
+            "content": "$1"
+         }
+      }
+   },
+   "modifyArticles_deleteWarning": {
+      "message": "\u003Cdiv class=\"mt-3 text-center\">\u003Cb>🛑 Deletion is \u003Cu>FINAL\u003C/u> 🛑\u003C/b>\u003Cbr>=> \u003Cb class=\"text-danger\">$articlesCount$\u003C/b> will be removed\u003C/div>",
+      "placeholders": {
+         "articlesCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "modifyArticles_deletingItem": {
+      "message": "deleting listing"
+   },
+   "modifyArticles_deletionComplete": {
+      "message": "Deletion completed"
+   },
+   "modifyArticles_fetchingPhotos": {
+      "message": "Reading saved photos"
+   },
+   "modifyArticles_incompleteArticles": {
+      "message": "\u003Cdiv class=\"mt-3\">- \u003Cb>$incompleteArticlesCount$ incomplete listings\u003C/b> in your list will not be edited (modification impossible). \u003Ca href=\"https://www.clemz.app/documentation/republier-des-articles#incomplete-listings\" target=\"_blank\">Read more\u003C/a>\u003C/div>",
+      "placeholders": {
+         "incompleteArticlesCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "modifyArticles_infoBeforeDelete": {
+      "message": "\u003Cdiv class=\"mt-3 mb-4 font-weight-bolder\">Before \u003Cb class=\"text-danger\">DELETING\u003C/b>, read this:\u003C/div>"
+   },
+   "modifyArticles_infoBeforeModify": {
+      "message": "\u003Cdiv class=\"mt-3 mb-4 font-weight-bolder\">Before editing, read this:\u003C/div>"
+   },
+   "modifyArticles_invalidWaitTime": {
+      "message": "\u003Cb>Invalid wait time\u003C/b>\u003Cbr>Enter a whole number > 0"
+   },
+   "modifyArticles_missingArticlesMessage": {
+      "message": "\u003Cdiv class=\"mt-3\">- $missingArticlesCount$ listings removed because they no longer exist\u003C/div>",
+      "placeholders": {
+         "missingArticlesCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "modifyArticles_missingItemsCount": {
+      "message": "➡️ $missingItemsCount$ listings no longer exist\u003Cbr>",
+      "placeholders": {
+         "missingItemsCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "modifyArticles_modificationComplete": {
+      "message": "Edit completed"
+   },
+   "modifyArticles_modifyPriceEmptyFields": {
+      "message": "\u003Cb>Edit price:\u003C/b> fill all fields"
+   },
+   "modifyArticles_modifyPricePercentageError": {
+      "message": "\u003Cb>Edit price:\u003C/b> can't \"set\" a price in %"
+   },
+   "modifyArticles_modifyPriceValueError": {
+      "message": "\u003Cb>Edit price:\u003C/b> invalid value"
+   },
+   "modifyArticles_modifyPriceWarning": {
+      "message": "\u003Cdiv class=\"mt-3\">- ⚠️ Changing prices by \u003Cb>$modifyPriceValue$ $modifyPriceType$\u003C/b>\u003C/div>",
+      "placeholders": {
+         "modifyPriceType": {
+            "content": "$2"
+         },
+         "modifyPriceValue": {
+            "content": "$1"
+         }
+      }
+   },
+   "modifyArticles_modifyVisibilityEmptyFields": {
+      "message": "\u003Cb>Edit visibility:\u003C/b> pick your setting"
+   },
+   "modifyArticles_modifyingItem": {
+      "message": "editing listing"
+   },
+   "modifyArticles_noArticlesToDelete": {
+      "message": "\u003Cdiv class=\"mt-3 text-center\">\u003Cb>No listings left to delete!\u003Cbr>👉 Rebuild your list 👈\u003C/b>\u003C/div>"
+   },
+   "modifyArticles_noArticlesToModify": {
+      "message": "\u003Cdiv class=\"mt-3 text-center\">\u003Cb>No listings left to edit!\u003Cbr>👉 Rebuild your list 👈\u003C/b>\u003C/div>"
+   },
+   "modifyArticles_noModification": {
+      "message": "No change on this listing"
+   },
+   "modifyArticles_noModificationSelected": {
+      "message": "\u003Cb>No edit chosen\u003C/b> => nothing to do"
+   },
+   "modifyArticles_noPhotoError": {
+      "message": "No photo => can’t edit"
+   },
+   "modifyArticles_noSavedPhotoArticles": {
+      "message": "\u003Cdiv class=\"mt-3\">- \u003Cb>$noSavedPhotoArticlesCount$\u003C/b> not found in \u003Ca href=\"https://www.clemz.app/dashboard/items\" target=\"_blank\">your clemz.app backup\u003C/a>:\u003Cbr>\u003Cspan class='text-sm ml-3'>(ℹ️ if that’s unexpected, \u003Ca href='https://www.clemz.app/documentation/sauver-mes-annonces#link' target='_blank'>read here\u003C/a>)\u003C/span>\u003C/div>\u003Col class=\"pl-4 mt-1\" style=\"height: 60px; overflow-y: auto;\">",
+      "placeholders": {
+         "noSavedPhotoArticlesCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "modifyArticles_noSavedPhotos": {
+      "message": "No saved photos for this listing on clemz.app"
+   },
+   "modifyArticles_nonModifiedItemsCount": {
+      "message": "➡️ $nonModifiedItemsCount$ listings not edited\u003Cbr>",
+      "placeholders": {
+         "nonModifiedItemsCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "modifyArticles_notDeletedArticles": {
+      "message": "➡️ $itemsNotdeletedCount$ not deleted\u003Cbr>\u003Cdiv class=\"border rounded mt-3 p-2 border-sm border-danger\">Click (⚠️/🆘) in your \"to do\" for details\u003C/div>",
+      "placeholders": {
+         "itemsNotdeletedCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "modifyArticles_notModifiedArticles": {
+      "message": "$missingItemsMessage$$nonModifiedItemsMessage$\u003Cdiv class=\"border rounded mt-3 p-2 border-sm border-danger\">Click (⚠️/🆘) in your \"to do\" list for details\u003C/div>",
+      "placeholders": {
+         "missingItemsMessage": {
+            "content": "$2"
+         },
+         "nonModifiedItemsMessage": {
+            "content": "$1"
+         }
+      }
+   },
+   "modifyArticles_photoReadError": {
+      "message": "\u003Cb>Photo read error\u003C/b> ($articleName$)",
+      "placeholders": {
+         "articleName": {
+            "content": "$1"
+         }
+      }
+   },
+   "modifyArticles_promotedArticlesDelete": {
+      "message": "\u003Cdiv class=\"mt-3\">- $promotedArticlesCount$ \u003Cb>Bumped\u003C/b> listing(s) will be deleted\u003C/div>",
+      "placeholders": {
+         "promotedArticlesCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "modifyArticles_reservedArticlesDelete": {
+      "message": "\u003Cdiv class=\"mt-3\">- $reservedArticlesCount$ \u003Cb>On hold\u003C/b> listing(s) will be deleted\u003C/div>",
+      "placeholders": {
+         "reservedArticlesCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "modifyArticles_setPriceWarning": {
+      "message": "\u003Cdiv class=\"mt-3\">- ⚠️ Setting all to \u003Cb>$modifyPriceValue$ $modifyPriceType$\u003C/b>\u003C/div>",
+      "placeholders": {
+         "modifyPriceType": {
+            "content": "$2"
+         },
+         "modifyPriceValue": {
+            "content": "$1"
+         }
+      }
+   },
+   "modifyArticles_soldArticles": {
+      "message": "\u003Cdiv class=\"mt-3\">- \u003Cb>$soldArticlesCount$ listing(s) Sold\u003C/b> in your list will not be edited (modification impossible)\u003C/div>",
+      "placeholders": {
+         "soldArticlesCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "modifyArticles_vintedConnexionError": {
+      "message": "\u003Cb>Connection lost with Vinted\u003C/b> ($articleName$)",
+      "placeholders": {
+         "articleName": {
+            "content": "$1"
+         }
+      }
+   },
+   "modifyArticles_vintedDeleteError": {
+      "message": "Vinted error deleting listing"
+   },
+   "modifyArticles_vintedError": {
+      "message": "\u003Cb>Vinted error\u003C/b> on \"$articleName$\"\u003Cbr>",
+      "placeholders": {
+         "articleName": {
+            "content": "$1"
+         }
+      }
+   },
+   "modifyArticles_vintedModifyError": {
+      "message": "Vinted error editing listing"
+   },
+   "modifyArticles_vintedVisibilityError": {
+      "message": "Vinted error changing visibility"
+   },
+   "modifyArticles_waitBetweenModifications": {
+      "message": "Pause between modifications"
+   },
+   "modifyPhotoTestParamsModal_differentFonts": {
+      "message": "✒️ \u003Ca href=\"https://www.clemz.app/documentation/modifier-les-photos#fonts-list\" target=\"_blank\">Available fonts\u003C/a>"
+   },
+   "modifyPhotoTestParamsModal_differentOptions": {
+      "message": "🌈 \u003Ca href=\"https://www.clemz.app/documentation/modifier-les-photos#how\" target=\"_blank\">Various options\u003C/a>"
+   },
+   "modifyPhotoTestParamsModal_example": {
+      "message": " (example)"
+   },
+   "modifyPhotoTestParamsModal_exploreCatalog": {
+      "message": "🎨 Explore Clemz’s modifications:"
+   },
+   "modifyPhotoTestParamsModal_frameModels": {
+      "message": "🖼️ \u003Ca href=\"https://www.clemz.app/documentation/modifier-les-photos#frame-models-list\" target=\"_blank\">Frame models\u003C/a>"
+   },
+   "modifyPhotoTestParamsModal_modifiedPhoto": {
+      "message": "Modified photo "
+   },
+   "modifyPhotoTestParamsModal_originalPhoto": {
+      "message": "Original photo"
+   },
+   "modifyPhotoTestParamsModal_previewWarning": {
+      "message": "*\u003Cu class=\"font-weight-bolder\">Note:\u003C/u> For a real sample, place in your \"📥 to do\" list an item saved on Clemz."
+   },
+   "modifyPhotosParams_addBackground": {
+      "message": "Add a background"
+   },
+   "modifyPhotosParams_addFrame": {
+      "message": "Add a frame"
+   },
+   "modifyPhotosParams_addInFrame": {
+      "message": "Add in frame:"
+   },
+   "modifyPhotosParams_addSticker": {
+      "message": "Add a sticker"
+   },
+   "modifyPhotosParams_addText": {
+      "message": "Add text"
+   },
+   "modifyPhotosParams_alwaysPortrait": {
+      "message": "Always portrait"
+   },
+   "modifyPhotosParams_autoTexts": {
+      "message": "auto texts "
+   },
+   "modifyPhotosParams_backgroundModelsTooltip": {
+      "message": "Click here for available backgrounds"
+   },
+   "modifyPhotosParams_backgroundWarning": {
+      "message": "⚠️ Only if the original photo has \u003Cbr> a \u003Cb class=\"text-underline text-danger\">transparent⚠️\u003C/b> background"
+   },
+   "modifyPhotosParams_chooseModel": {
+      "message": "Choose model"
+   },
+   "modifyPhotosParams_chooseModelBackgroundChunk": {
+      "message": "Choose model \u003Cdiv class=\"text-sm ml-2\">\u003Cselect id=\"backgroundName\" class=\"rounded fake-disabled text-sm\">\u003C/select>\u003C/div>\u003Ca href=\"https://www.clemz.app/documentation/modifier-les-photos#background-models-list\" target=\"_blank\" class=\"text-sm ml-3 tooltip tooltip-top\" data-i18n-tooltip=\"modifyPhotosParams_backgroundModelsTooltip\">\u003Cimg data-image-name=\"question-circle-solid.svg\" class=\"vinz-image font-icon align-middle mb-0 \" src=\"\"> models\u003C/a>"
+   },
+   "modifyPhotosParams_chosenColor": {
+      "message": "Chosen color ⬆️"
+   },
+   "modifyPhotosParams_copyPasteEmojiTooltip": {
+      "message": "Click here to copy-paste emojis"
+   },
+   "modifyPhotosParams_createBackground": {
+      "message": "create background"
+   },
+   "modifyPhotosParams_createBackgroundTooltip": {
+      "message": "Click here to see how to create backgrounds"
+   },
+   "modifyPhotosParams_createFrame": {
+      "message": "create a frame"
+   },
+   "modifyPhotosParams_createFrameTooltip": {
+      "message": "Click here to see how to create frames"
+   },
+   "modifyPhotosParams_createSticker": {
+      "message": "create a sticker"
+   },
+   "modifyPhotosParams_createStickersTooltip": {
+      "message": "Click here to see how to create stickers"
+   },
+   "modifyPhotosParams_crop": {
+      "message": "Crop:"
+   },
+   "modifyPhotosParams_degrees": {
+      "message": "degrees"
+   },
+   "modifyPhotosParams_fillSpace": {
+      "message": "Fill space"
+   },
+   "modifyPhotosParams_findEmoji": {
+      "message": "find an emoji"
+   },
+   "modifyPhotosParams_fonts": {
+      "message": "fonts "
+   },
+   "modifyPhotosParams_fontsTooltip": {
+      "message": "Click here for available fonts"
+   },
+   "modifyPhotosParams_frameColorToApply": {
+      "message": "Frame color:"
+   },
+   "modifyPhotosParams_frameOrientation": {
+      "message": "Frame orientation:"
+   },
+   "modifyPhotosParams_framesModelsTooltip": {
+      "message": "Click here for available frames"
+   },
+   "modifyPhotosParams_howItWorks": {
+      "message": "How does it work? \u003Ca href=\"https://www.clemz.app/documentation/modifier-les-photos\" target=\"_blank\" class=\"\">👉 Read here 👈\u003C/a>"
+   },
+   "modifyPhotosParams_letters": {
+      "message": "Letters:"
+   },
+   "modifyPhotosParams_medium": {
+      "message": "Medium"
+   },
+   "modifyPhotosParams_models": {
+      "message": "models"
+   },
+   "modifyPhotosParams_myBackgrounds": {
+      "message": "My backgrounds"
+   },
+   "modifyPhotosParams_myFrames": {
+      "message": "My frames"
+   },
+   "modifyPhotosParams_myStickers": {
+      "message": "My stickers"
+   },
+   "modifyPhotosParams_no": {
+      "message": "no"
+   },
+   "modifyPhotosParams_oneEmoji": {
+      "message": "One emoji "
+   },
+   "modifyPhotosParams_originalColor": {
+      "message": "Original color"
+   },
+   "modifyPhotosParams_photoEntire": {
+      "message": "Entire photo"
+   },
+   "modifyPhotosParams_position": {
+      "message": "Position:"
+   },
+   "modifyPhotosParams_preview": {
+      "message": "see preview"
+   },
+   "modifyPhotosParams_putAColor": {
+      "message": "Apply a color"
+   },
+   "modifyPhotosParams_rotateOrCrop": {
+      "message": "Rotate or Crop"
+   },
+   "modifyPhotosParams_singleColorFrame": {
+      "message": "Mono-color frame"
+   },
+   "modifyPhotosParams_size": {
+      "message": "Size:"
+   },
+   "modifyPhotosParams_sizeLarge": {
+      "message": "Large"
+   },
+   "modifyPhotosParams_sizeLargeDoublePlus": {
+      "message": "Large++"
+   },
+   "modifyPhotosParams_sizeLargePlus": {
+      "message": "Large+"
+   },
+   "modifyPhotosParams_sizeMedium": {
+      "message": "Medium"
+   },
+   "modifyPhotosParams_sizeSmall": {
+      "message": "Small"
+   },
+   "modifyPhotosParams_textAdaptTooltip": {
+      "message": "Click here to see how to adapt text to each listing"
+   },
+   "modifyPhotosParams_textBackground": {
+      "message": "Text background:"
+   },
+   "modifyPhotosParams_textPlaceholder": {
+      "message": "Enter text (no emojis allowed!)"
+   },
+   "modifyPhotosParams_thick": {
+      "message": "Thick"
+   },
+   "modifyPhotosParams_thickDoublePlus": {
+      "message": "Thick++"
+   },
+   "modifyPhotosParams_thickPlus": {
+      "message": "Thick+"
+   },
+   "modifyPhotosParams_thickness": {
+      "message": "Thickness:"
+   },
+   "modifyPhotosParams_thin": {
+      "message": "Thin"
+   },
+   "modifyPhotosParams_turn": {
+      "message": "Rotate:"
+   },
+   "modifyPhotosParams_turnIfLandscape": {
+      "message": "Rotate if landscape"
+   },
+   "modifyPhotosParams_yes": {
+      "message": "yes"
+   },
+   "newClipboardModal_createNewText": {
+      "message": "Create a new text"
+   },
+   "newClipboardModal_textContentLabel": {
+      "message": "Text content"
+   },
+   "newClipboardModal_textContentPlaceholder": {
+      "message": "Thanks for the favourite 😊\n\nFeel free to ask if you have any question!"
+   },
+   "newClipboardModal_textTitleLabel": {
+      "message": "\u003Cspan class=\"font-weight-bolder\">Text title\u003C/span> (to find it easily)"
+   },
+   "newClipboardModal_textTitlePlaceholder": {
+      "message": "\"Reply for a favourite\""
+   },
+   "newTrialStartingModal_anyIssues": {
+      "message": "Need help? Email: \u003Ca type=\"button\" class=\"text-danger font-weight-bold click-to-copy\">bonjour@clemz.app\u003C/a>"
+   },
+   "newTrialStartingModal_bulkEdit": {
+      "message": "📝 \u003Cb>Bulk modification\u003C/b> \u003Ca class=\"text-xs\" href=\"https://www.clemz.app/documentation/modifier-en-masse\" target=\"_blank\">\u003Cimg class=\"font-icon align-middle pb-1 vinz-image\" data-image-name=\"question-circle-solid.svg\" src=\"\">\u003C/a>"
+   },
+   "newTrialStartingModal_endDate": {
+      "message": "End date:"
+   },
+   "newTrialStartingModal_favsPerArticle": {
+      "message": "❤️ \u003Cspan class=\"text-primary\" id=\"max-favs-per-request\">\u003C/span> favourites/listing \u003Ca class=\"text-xs\" href=\"https://www.clemz.app/documentation/echanger-des-favoris\" target=\"_blank\">\u003Cimg class=\"font-icon align-middle pb-1 vinz-image\" data-image-name=\"question-circle-solid.svg\" src=\"\">\u003C/a>"
+   },
+   "newTrialStartingModal_howToRepost": {
+      "message": "How to relist?"
+   },
+   "newTrialStartingModal_messagesPerDay": {
+      "message": "📨 \u003Cspan class=\"text-primary\" id=\"auto-message-included\">\u003C/span> msgs/day to favourites \u003Ca class=\"text-xs\" href=\"https://www.clemz.app/documentation/messages-aux-favoris\" target=\"_blank\">\u003Cimg class=\"font-icon align-middle pb-1 vinz-image\" data-image-name=\"question-circle-solid.svg\" src=\"\">\u003C/a>"
+   },
+   "newTrialStartingModal_reposts": {
+      "message": "♻️ \u003Cspan class=\"text-primary\" id=\"repost-included\">\u003C/span> relists \u003Ca class=\"text-xs\" href=\"https://www.clemz.app/documentation/republier-des-articles\" target=\"_blank\">\u003Cimg class=\"font-icon align-middle pb-1 vinz-image\" data-image-name=\"question-circle-solid.svg\" src=\"\">\u003C/a>"
+   },
+   "newTrialStartingModal_saveDressing": {
+      "message": "⏫ \u003Cb>Save closet\u003C/b> \u003Ca class=\"text-xs\" href=\"https://www.clemz.app/documentation/sauver-mes-annonces\" target=\"_blank\">\u003Cimg class=\"font-icon align-middle pb-1 vinz-image\" data-image-name=\"question-circle-solid.svg\" src=\"\">\u003C/a>"
+   },
+   "newTrialStartingModal_smartDressing": {
+      "message": "🔍 \u003Cb>Smart Closet\u003C/b> \u003Ca class=\"text-xs\" href=\"https://www.clemz.app/documentation/smart-dressing\" target=\"_blank\">\u003Cimg class=\"font-icon align-middle pb-1 vinz-image\" data-image-name=\"question-circle-solid.svg\" src=\"\">\u003C/a>"
+   },
+   "newTrialStartingModal_smartMessagerie": {
+      "message": "📫 \u003Cb>Smart Inbox\u003C/b> \u003Ca class=\"text-xs\" href=\"https://www.clemz.app/documentation/smart-messagerie\" target=\"_blank\">\u003Cimg class=\"font-icon align-middle pb-1 vinz-image\" data-image-name=\"question-circle-solid.svg\" src=\"\">\u003C/a>"
+   },
+   "newTrialStartingModal_syncSales": {
+      "message": "💲 \u003Cb>Synchronize sales\u003C/b> \u003Ca class=\"text-xs\" href=\"https://www.clemz.app/documentation/synchroniser-ses-ventes\" target=\"_blank\">\u003Cimg class=\"font-icon align-middle pb-1 vinz-image\" data-image-name=\"question-circle-solid.svg\" src=\"\">\u003C/a>"
+   },
+   "newTrialStartingModal_trialIsFree": {
+      "message": "👉 The trial is \u003Cb>free, no commitment\u003C/b>.\u003Cbr>No payment after\u003Cbr>(We don’t have your card 🙂)"
+   },
+   "newTrialStartingModal_viewsPerArticle": {
+      "message": "👁️ \u003Cspan class=\"text-primary\" id=\"max-views-per-request\">\u003C/span> views/listing \u003Ca class=\"text-xs\" href=\"https://www.clemz.app/documentation/echanger-des-vues\" target=\"_blank\">\u003Cimg class=\"font-icon align-middle pb-1 vinz-image\" data-image-name=\"question-circle-solid.svg\" src=\"\">\u003C/a>"
+   },
+   "newTrialStartingModal_yourFreeTrialStarted": {
+      "message": "🎁 Your free trial \u003Cbr>just started 🚀"
+   },
+   "noRepostBeforeRequestFavsModal_continuePrompt": {
+      "message": "Do you want to continue?"
+   },
+   "noRepostBeforeRequestFavsModal_favsGivenOnly": {
+      "message": "\u003Cb class=\"text-danger\">But favourites are only given on listings created \u003Cu>the same day\u003C/u> as the request.\u003C/b>"
+   },
+   "noRepostBeforeRequestFavsModal_iKnowContinue": {
+      "message": "I know, continue"
+   },
+   "noRepostBeforeRequestFavsModal_manualPublishNote": {
+      "message": "➡️ If you published manually (\u003Cu>without Clemz\u003C/u>), ignore this"
+   },
+   "noRepostBeforeRequestFavsModal_noRepostToday": {
+      "message": "You haven't relisted with Clemz today."
+   },
+   "noRepostBeforeRequestFavsModal_republishAdvice": {
+      "message": "➡️ It’s best to relist listings \u003Cu>BEFORE\u003C/u> requesting favourites"
+   },
+   "noRepostBeforeRequestFavsModal_riskNoFavs": {
+      "message": "⚠️ You might not get\u003Cbr>any favourites 💞"
+   },
+   "noRepostBeforeRequestFavsModal_stop": {
+      "message": "🖐️ STOP 🖐️"
+   },
+   "none": {
+      "message": "None"
+   },
+   "offerParamsModal_acceptMessages": {
+      "message": "✅ Acceptance messages"
+   },
+   "offerParamsModal_checkUserFeedback": {
+      "message": "\u003Cb>Rating\u003C/b>: ignore if below \u003Cselect type=\"number\" id=\"offerCheckUserFeedbackValue\" class=\"text-center fake-disabled rounded\" style=\"width: 50px; height: 20px;\">\u003Coption value=\"1\"selected>⭐\u003C/option>\u003Coption value=\"2\">2x⭐\u003C/option>\u003Coption value=\"3\">3x⭐\u003C/option>\u003Coption value=\"4\">4x⭐\u003C/option>\u003Coption value=\"5\">5x⭐\u003C/option>\u003C/select>"
+   },
+   "offerParamsModal_checkUserFeedbackTooltip": {
+      "message": "Don't negotiate if the buyer's rating is below X stars"
+   },
+   "offerParamsModal_configureTiersLink": {
+      "message": "Configure on clemz.app"
+   },
+   "offerParamsModal_counterOfferMessages": {
+      "message": "💬 Counter-offer messages"
+   },
+   "offerParamsModal_discountMode": {
+      "message": "\u003Cb>Discount\u003C/b> mode"
+   },
+   "offerParamsModal_finalOfferMessages": {
+      "message": "💬 Final offer messages"
+   },
+   "offerParamsModal_invalidMaxCounterOffers": {
+      "message": "Number of counter-offers must be at least 1"
+   },
+   "offerParamsModal_invalidMaxDiscount": {
+      "message": "Max discount must be between 1 and 99%"
+   },
+   "offerParamsModal_invalidMinCounterStep": {
+      "message": "Minimum step must be greater than 0"
+   },
+   "offerParamsModal_maxCounterOffers": {
+      "message": "\u003Cb>Max\u003C/b> counter-offers"
+   },
+   "offerParamsModal_maxCounterOffersTooltip": {
+      "message": "Maximum number of counter-offers before sending the final price"
+   },
+   "offerParamsModal_maxDiscount": {
+      "message": "\u003Cb>Max\u003C/b> discount"
+   },
+   "offerParamsModal_maxDiscountTooltip": {
+      "message": "Maximum discount percentage you accept compared to the listed price"
+   },
+   "offerParamsModal_maxHoursInPast": {
+      "message": "\u003Cb>Read history\u003C/b> from \u003Cselect type=\"number\" id=\"offerMaxHoursInPastValue\" class=\"text-center fake-disabled rounded\">\u003Coption value=\"1\"selected>1 hour\u003C/option>\u003Coption value=\"2\">2 hours\u003C/option>\u003Coption value=\"4\">4 hours\u003C/option>\u003Coption value=\"8\">8 hours\u003C/option>\u003Coption value=\"12\">12 hours\u003C/option>\u003Coption value=\"24\">1 day\u003C/option>\u003Coption value=\"48\">2 days\u003C/option>\u003Coption value=\"72\">3 days\u003C/option>\u003Coption value=\"96\">4 days\u003C/option>\u003Coption value=\"120\">5 days\u003C/option>\u003Coption value=\"144\">6 days\u003C/option>\u003C/select>"
+   },
+   "offerParamsModal_maxHoursInPastTooltip": {
+      "message": "Only process offers from the last hours / days"
+   },
+   "offerParamsModal_minCounterStep": {
+      "message": "\u003Cb>Tolerance\u003C/b>"
+   },
+   "offerParamsModal_minCounterStepTooltip": {
+      "message": "Smallest price difference worth negotiating over. Minimum step between two counter-offers, and acceptance threshold if the offer is close to the minimum price. Optional (leave empty to disable)."
+   },
+   "offerParamsModal_modeSimple": {
+      "message": "Single discount"
+   },
+   "offerParamsModal_modeTiers": {
+      "message": "Discount tiers"
+   },
+   "offerParamsModal_rounding": {
+      "message": "\u003Cb>Rounding\u003C/b>"
+   },
+   "offerParamsModal_simplePrefix": {
+      "message": "of"
+   },
+   "offerParamsModal_tiersCount": {
+      "message": "$1 tier(s) configured"
+   },
+   "offerParamsModal_tiersLabel": {
+      "message": "Tiers"
+   },
+   "offerParamsModal_tiersNotConfigured": {
+      "message": "Not configured yet"
+   },
+   "offerParamsModal_title": {
+      "message": "Offer Messages Parameters"
+   },
+   "onWardrobePageOnly": {
+      "message": "You are connected to closet \u003Cb>$1\u003C/b> and you cannot select items outside of your Vinted closet page (\u003Ca href=\"$2/member/$1\" class=\"text-primary font-weight-bolder\">=> click here to go \u003C=\u003C/a>)"
+   },
+   "paramsModal_minPriceHint": {
+      "message": "A min price per item can be set on clemz.app"
+   },
+   "paramsModal_minPriceReadLink": {
+      "message": "read"
+   },
+   "progressInterface_closeButton": {
+      "message": "❌ Close"
+   },
+   "progressInterface_closetButton": {
+      "message": "👗 My closet"
+   },
+   "progressInterface_errorTitle": {
+      "message": "Error"
+   },
+   "progressInterface_humanNavWarning": {
+      "message": "📵 Human Nav: Do not touch your device during the activity, risk of incomplete listings"
+   },
+   "progressInterface_minimizeButton": {
+      "message": "🔽 Minimize"
+   },
+   "progressInterface_refreshBrowser": {
+      "message": "=> refresh your browser"
+   },
+   "progressInterface_refreshButton": {
+      "message": "♻️ Refresh"
+   },
+   "progressInterface_showListsButton": {
+      "message": "📋 My lists"
+   },
+   "readStopMessage": {
+      "message": "Got it — don't show again"
+   },
+   "repostArticles_ViewItems": {
+      "message": "View listings"
+   },
+   "repostArticles_alreadyLiveImportedWarning": {
+      "message": "\u003Cb>⚠️ $articleCount$ listing(s) to import already exist in this closet\u003C/b>. We replaced them in your list to avoid a duplicate: they will be relisted, not imported",
+      "placeholders": {
+         "articleCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_articleNotEligible": {
+      "message": "\u003Cb>The top listing (1-by-1 option) is not eligible for $processWording$\u003Cbr>👉 Check your \"to do\" list 👈\u003C/b>",
+      "placeholders": {
+         "processWording": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_confirmProcess": {
+      "message": "👉 Confirm $processWording$ of\u003Cbr>\u003Cb>$articleCount$ listing(s)\u003C/b> in your list?",
+      "placeholders": {
+         "articleCount": {
+            "content": "$2"
+         },
+         "processWording": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_connectionLossVinted": {
+      "message": "\u003Cb>Connection lost with Vinted\u003C/b> for \"$articleTitle$\"",
+      "placeholders": {
+         "articleTitle": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_deletingOldArticle": {
+      "message": "removing old listing"
+   },
+   "repostArticles_draftCreationError": {
+      "message": "Error creating draft."
+   },
+   "repostArticles_draftCreationErrorArticle": {
+      "message": "\u003Cb>Error creating draft for \"$articleTitle$\"\u003C/b>",
+      "placeholders": {
+         "articleTitle": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_draftIncomplete": {
+      "message": "Draft saved but incomplete or incorrect — edit it on Vinted: $1"
+   },
+   "repostArticles_errorAfterDeletion": {
+      "message": "Reposting stopped after the old listing was deleted but before the new one was created. But your item is saved on clemz.app: you can import it by clicking the button below"
+   },
+   "repostArticles_errorAfterDraftCreation": {
+      "message": "Reposting stopped midway. The old listing was deleted and a draft of the new listing should have been created: check your wardrobe. Otherwise your item is saved \u003Ca href=\"https://www.clemz.app/dashboard/items?text_search=vinted_id:$articleId$\" target=\"_blank\">\u003Cu>here on clemz\u003C/u>\u003C/a>. To import it to Vinted \u003Ca href=\"https://www.clemz.app/documentation/sauver-mes-annonces#import-clemz-vinted\" target=\"_blank\">\u003Cu>read this\u003C/u>\u003C/a>.",
+      "placeholders": {
+         "articleId": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_errorDeletingArticle": {
+      "message": "Error removing old listing. Try again later"
+   },
+   "repostArticles_errorDeletingArticleTitle": {
+      "message": "\u003Cb>Error removing listing\u003C/b> \"$articleTitle$\". Listing skipped",
+      "placeholders": {
+         "articleTitle": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_errorReadingDraft": {
+      "message": "A draft was created but Clemz cannot read it. Check if a draft of the new listing exists in your wardrobe. Otherwise your item is saved \u003Ca href=\"https://www.clemz.app/dashboard/items?text_search=$articleTitle$\" target=\"_blank\">\u003Cu>here on clemz\u003C/u>\u003C/a>. To import it to Vinted \u003Ca href=\"https://www.clemz.app/documentation/sauver-mes-annonces#import-clemz-vinted\" target=\"_blank\">\u003Cu>read this\u003C/u>\u003C/a>",
+      "placeholders": {
+         "articleTitle": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_errorReadingDraftArticle": {
+      "message": "\u003Cb>Error creating the draft for \"$articleTitle$\".\u003C/b>\u003Cbr>Publish the new draft manually",
+      "placeholders": {
+         "articleTitle": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_errorReadingPhoto": {
+      "message": "Bug reading a photo on Vinted. Try again"
+   },
+   "repostArticles_errorReadingPhotoArticle": {
+      "message": "\u003Cb>Error reading a photo\u003C/b> ($articleTitle$)",
+      "placeholders": {
+         "articleTitle": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_forbiddenWithoutSubscription": {
+      "message": "\u003Cb>Subscription required\u003C/b>\u003Cbr>=> Subscribe \u003Ca href=\"https://www.clemz.app/users/pricing\" target=\"_blank\">here\u003C/a> to use this feature"
+   },
+   "repostArticles_humanNavWarning": {
+      "message": "⚠️ Do not touch the browser — risk of incomplete listings"
+   },
+   "repostArticles_identificationRiskAdvice": {
+      "message": "\u003Cb>Tip:\u003C/b> use a \"\u003Cb>current modification\u003C/b>\" or heavier changes (\u003Ca href=\"https://www.clemz.app/documentation/modifier-les-photos#current-modification\" target=\"_blank\">\u003Cu>read more\u003C/u>\u003C/a>)"
+   },
+   "repostArticles_identificationRiskNoParameter": {
+      "message": "\u003Cb class=\"text-danger\">🛑 High detection risk by Vinted🛑\u003C/b>. You haven’t set any photo modification parameter. Photos will be posted as is from the Clemz backup."
+   },
+   "repostArticles_identificationRiskTooLittleChange": {
+      "message": "\u003Cb class=\"text-danger\">🛑 Detection risk 🛑\u003C/b>. Not enough photo changes. Vinted might drop them.\u003Cbr>\u003Ca href='https://www.clemz.app/documentation/modifier-les-photos#avoid-detection' target='_blank' class='text-underline'>\u003Cu>Read tips\u003C/u>\u003C/a>."
+   },
+   "repostArticles_importantInformationBeforeProcessing": {
+      "message": "Important \u003Cspan class=\"text-danger\">info\u003C/span> before\u003Cbr>$processWording$:",
+      "placeholders": {
+         "processWording": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_importedItemsProgressStage": {
+      "message": "Checking we do not create duplicates"
+   },
+   "repostArticles_importedItemsProgressTitle": {
+      "message": "$articleCount$ imported item(s)",
+      "placeholders": {
+         "articleCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_importedItemsWarning": {
+      "message": "\u003Cb>⚠️ $articleCount$ listings come from your clemz.app backup\u003C/b>. Ensure they’re not duplicates in your closet or Vinted might see them.",
+      "placeholders": {
+         "articleCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_incompleteSaveButton": {
+      "message": "Save these $articleCount$ listings now",
+      "placeholders": {
+         "articleCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_incompleteSaveIgnored": {
+      "message": "\u003Cb class=\"text-danger\">They'll be ignored\u003C/b> since Clemz can only edit saved photos."
+   },
+   "repostArticles_incompleteSaveTitle": {
+      "message": "\u003Cb>\u003Cu>🛑 Incomplete backup 🛑:\u003C/u> \u003Cspan class=\"text-danger\">$articleCount$ listings\u003C/span> not found on clemz.app\u003C/b> (\u003Ca href=\"https://www.clemz.app/dashboard/items?email=$userEmail$\" target=\"_blank\" class=\"text-underline\">check here\u003C/a>)",
+      "placeholders": {
+         "articleCount": {
+            "content": "$1"
+         },
+         "userEmail": {
+            "content": "$2"
+         }
+      }
+   },
+   "repostArticles_incompleteSaveWarning": {
+      "message": "⚠️ If you already saved them, they might have lost their \"link.\" \u003Ca href=\"https://www.clemz.app/documentation/sauver-mes-annonces#link\" target=\"_blank\">Read how to fix\u003C/a>"
+   },
+   "repostArticles_invalidAngleExceed": {
+      "message": "\u003Cb>Invalid angle\u003C/b>\u003Cbr>Max ±180°"
+   },
+   "repostArticles_invalidAngleZero": {
+      "message": "\u003Cb>Invalid angle\u003C/b>\u003Cbr>A 0° rotation is no real change. Vinted will detect it."
+   },
+   "repostArticles_invalidBackground": {
+      "message": "\u003Cb>Invalid background\u003C/b>\u003Cbr>Pick a non-empty background"
+   },
+   "repostArticles_invalidEmoji": {
+      "message": "\u003Cb>Invalid emoji\u003C/b>\u003Cbr>Use an existing emoji"
+   },
+   "repostArticles_invalidEmptyText": {
+      "message": "\u003Cb>Invalid text\u003C/b>\u003Cbr>Don’t leave it empty."
+   },
+   "repostArticles_invalidFrame": {
+      "message": "\u003Cb>Invalid frame\u003C/b>\u003Cbr>Pick a non-empty frame"
+   },
+   "repostArticles_invalidSticker": {
+      "message": "\u003Cb>Invalid sticker\u003C/b>\u003Cbr>Pick a non-empty sticker"
+   },
+   "repostArticles_invalidTextWithEmoji": {
+      "message": "\u003Cb>Invalid text\u003C/b>\u003Cbr>No emojis allowed in text. Use stickers."
+   },
+   "repostArticles_invalidWaitTime": {
+      "message": "\u003Cb>Invalid wait time\u003C/b>\u003Cbr>Enter a whole number > 0"
+   },
+   "repostArticles_listingRestricted": {
+      "message": "\u003Cb>Vinted restriction\u003C/b>"
+   },
+   "repostArticles_listingRestrictedInfo": {
+      "message": "Your closet seems restricted by Vinted. Try again later."
+   },
+   "repostArticles_manualPostArticle": {
+      "message": "Error publishing listing : 👉do it manually."
+   },
+   "repostArticles_manualPostArticleUrl": {
+      "message": "\u003Cb>Error publishing \u003Ca href=\"https://$hostname$/items/$articleId$/edit\" target=\"_blank\">new listing\u003C/a>\u003C/b>. 👉Publish the draft manually.",
+      "placeholders": {
+         "articleId": {
+            "content": "$2"
+         },
+         "hostname": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_missingItemsCount": {
+      "message": "➡️ $missingItemsCount$ listings no longer exist\u003Cbr>",
+      "placeholders": {
+         "missingItemsCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_modificationAlreadyUsedDate": {
+      "message": "used on $date$",
+      "placeholders": {
+         "date": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_modificationAlreadyUsedIgnored": {
+      "message": "\u003Cb class=\"text-danger\">They'll be ignored\u003C/b> because Vinted might recognize old photos. Pick a different \"current modification.\""
+   },
+   "repostArticles_modificationAlreadyUsedTitle": {
+      "message": "\u003Cu>🛑 This \"current modification\" was used before 🛑\u003C/u>:\u003Cbr>\u003Cspan class=\"text-danger\">$articleCount$ listings\u003C/span> used it in last 6 months",
+      "placeholders": {
+         "articleCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_modificationPreview": {
+      "message": "Preview of the photo modification you chose:"
+   },
+   "repostArticles_noArticleToRepost": {
+      "message": "No listing to relist"
+   },
+   "repostArticles_noCurrentModification": {
+      "message": "\u003Cb>Error: current modification not found.\u003C/b>\u003Cbr>\u003Ca href=\"https://www.clemz.app/dashboard/photo_modifications\" target=\"_blank\" class=\"font-weight-bold\">Check on clemz.app (clique ici)\u003C/a>"
+   },
+   "repostArticles_noEligibleArticles": {
+      "message": "\u003Cb>No listing left eligible for $processWording$ in your list!\u003Cbr>(👆 see above 👆)\u003C/b>",
+      "placeholders": {
+         "processWording": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_noModificationPreview": {
+      "message": "\u003Cb>🚫 No photo modification:\u003C/b> Clemz will relist your saved photos as is"
+   },
+   "repostArticles_noPhotoError": {
+      "message": "No photo => can't relist"
+   },
+   "repostArticles_noPhotoErrorArticle": {
+      "message": "\u003Cb>Error: no photo\u003C/b> ($articleTitle$) => can't relist",
+      "placeholders": {
+         "articleTitle": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_nonRepostedArticles": {
+      "message": "$missingItemsMessage$$soldInMeantimeMessage$$nonRepostedItemsMessage$\u003Cdiv class=\"border rounded mt-3 p-2 border-sm border-danger\">Click (⚠️/🆘) in your \"to do\" list for details\u003C/div>",
+      "placeholders": {
+         "missingItemsMessage": {
+            "content": "$2"
+         },
+         "nonRepostedItemsMessage": {
+            "content": "$1"
+         },
+         "soldInMeantimeMessage": {
+            "content": "$3"
+         }
+      }
+   },
+   "repostArticles_nonRepostedItemsCount": {
+      "message": "➡️ $itemsNotRepostedCount$ listings not relisted\u003Cbr>",
+      "placeholders": {
+         "itemsNotRepostedCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_notEnoughReposts": {
+      "message": "Not enough relists"
+   },
+   "repostArticles_notEnoughRepostsExplanation": {
+      "message": "\u003Cp class=\"text-center\">⚠️Your \u003Cspan class=\"text-danger font-weight-bolder\">$repostLeft$ relists left\u003C/span> aren’t enough to relist \u003Cb>$articleCount$\u003C/b>.\u003C/p>",
+      "placeholders": {
+         "articleCount": {
+            "content": "$2"
+         },
+         "repostLeft": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_outcomeUnknown": {
+      "message": "Check if the \u003Ca href=\"$itemUrl$\" target=\"_blank\">\u003Cu>listing is still on Vinted\u003C/u>\u003C/a>. If it is gone, it is saved on \u003Ca href=\"https://www.clemz.app/dashboard/items?text_search=$articleTitle$\" target=\"_blank\">\u003Cu>clemz.app - here\u003C/u>\u003C/a>.",
+      "placeholders": {
+         "articleTitle": {
+            "content": "$1"
+         },
+         "itemUrl": {
+            "content": "$2"
+         }
+      }
+   },
+   "repostArticles_parametersSaved": {
+      "message": "Parameters saved"
+   },
+   "repostArticles_preparingNewAd": {
+      "message": "preparing new listing"
+   },
+   "repostArticles_preparingPhotos": {
+      "message": "preparing photos"
+   },
+   "repostArticles_promotedArticlesNotProcessed": {
+      "message": "\u003Cb>$promotedArticlesCount$ on hold or bumped\u003C/b> in your list not processed ($processWording$ not possible)",
+      "placeholders": {
+         "processWording": {
+            "content": "$2"
+         },
+         "promotedArticlesCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_publishingCopy": {
+      "message": "posting new version"
+   },
+   "repostArticles_readingArticle": {
+      "message": "reading listing"
+   },
+   "repostArticles_repost1by1Finished": {
+      "message": "One-by-one relist complete"
+   },
+   "repostArticles_repostFinished": {
+      "message": "Relist completed"
+   },
+   "repostArticles_reposting": {
+      "message": "relisting♻️"
+   },
+   "repostArticles_republishWithoutSpacing": {
+      "message": "\u003Cb>⏳ You’re relisting $articleCount$ listings back-to-back\u003C/b>. 30s spacing is safer from Vinted detection",
+      "placeholders": {
+         "articleCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_saveToVinzAppError": {
+      "message": "Error saving item to clemz.app. Try again."
+   },
+   "repostArticles_saveToVinzAppErrorArticle": {
+      "message": "\u003Cb>Error saving item\u003C/b> \"$articleTitle$\" to clemz.app",
+      "placeholders": {
+         "articleTitle": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_savingAsDraft": {
+      "message": "saving as draft💾"
+   },
+   "repostArticles_savingDraft": {
+      "message": "saving listing"
+   },
+   "repostArticles_seeList": {
+      "message": "See new list"
+   },
+   "repostArticles_seeParameters": {
+      "message": "See parameters"
+   },
+   "repostArticles_selectPhotoModification": {
+      "message": "\u003Cb>Error:\u003C/b> select a photo modification below"
+   },
+   "repostArticles_sendingPhotos": {
+      "message": "sending photos"
+   },
+   "repostArticles_soldInMeantimeCount": {
+      "message": "➡️ $soldInMeantimeCount$ listings sold in the meantime\u003Cbr>",
+      "placeholders": {
+         "soldInMeantimeCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_waitBetweenReposts": {
+      "message": "Pause between listings"
+   },
+   "repostArticles_workerLost": {
+      "message": "Your browser stopped the tab Clemz was working in."
+   },
+   "repostTutorial_howToRepost": {
+      "message": "How to relist with \u003Cimg id=\"tutorialLogo\" src=\"\" style=\"height: 25px; width: auto;\">?"
+   },
+   "repostTutorial_ifVideoDoesntLoad": {
+      "message": "If the video won't load, click \u003Ca href=\"https://www.youtube.com/shorts/DDE9jHHbR9Y\" target=\"_blank\">here\u003C/a>"
+   },
+   "repostTutorial_moreFeatures": {
+      "message": "🦾 More Clemz features ➡️"
+   },
+   "requestFavsWarning_distributesFavs": {
+      "message": "➡️ \u003Cb>Clemz will distribute \u003Cu>hundreds of favourites\u003C/u>\u003C/b> automatically. They will:"
+   },
+   "requestFavsWarning_fillFavsList": {
+      "message": "⚠️ \u003Cb>Fill your favourites list \u003Cspan class=\"text-danger\">making it useless for your shopping\u003C/span>\u003C/b>.\u003Cbr>⚠️ \u003Cb>Generate \u003Cspan class=\"text-danger\">tons of notifications\u003C/span>. \u003Ca href=\"https://www.clemz.app/documentation/echanger-des-favoris#reduce-notifications\" target=\"_blank\" style=\"text-decoration: underline !important;\">How to stop them\u003C/a>.\u003C/b>"
+   },
+   "requestFavsWarning_firstParagraph": {
+      "message": "To get favourites, you must first give some. But \u003Cb class=\"text-danger\">🖐️CAREFUL🖐️\u003C/b>"
+   },
+   "requestFavsWarning_giveFavs": {
+      "message": "💘 Give favourites"
+   },
+   "requestFavsWarning_rulesLink": {
+      "message": "Full rules on favourite exchange \u003Ca href=\"https://www.clemz.app/documentation/echanger-des-favoris#rules\" target=\"_blank\" style=\"text-decoration: underline !important;\">here\u003C/a>."
+   },
+   "requestFavsWarning_title": {
+      "message": "🥰 Want some favourites?"
+   },
+   "requestFavs_distributionComplete": {
+      "message": "Distribution completed"
+   },
+   "requestFavs_giveFavs": {
+      "message": "💘 Give favourites"
+   },
+   "requestFavs_requestCreated": {
+      "message": "💞 Request created 💞"
+   },
+   "requestFavs_requestFavs": {
+      "message": "Ask for favourites"
+   },
+   "requestFavs_sendingFavs": {
+      "message": "Clemz is giving favourites"
+   },
+   "requestViewsInfo_alreadyCreatedParagraph": {
+      "message": "\u003Cb>You already have a running request\u003C/b>.\u003Cbr>Here’s its time + how many views so far:"
+   },
+   "requestViewsInfo_attention": {
+      "message": "\u003Cb>⚠️Warning⚠️\u003C/b> \u003Cbr>\u003Cspan> Keep browser open\u003Cbr> + no sleep or Clemz stops!\u003C/span>"
+   },
+   "requestViewsInfo_createRequestAfterSend": {
+      "message": "\u003Cb class=\"\">👀 Create a view request\u003C/b> \u003Cu>immediately after\u003C/u> sending"
+   },
+   "requestViewsInfo_createViewsRequest": {
+      "message": "👀 Create view request 👀"
+   },
+   "requestViewsInfo_ongoingParagraph": {
+      "message": "To receive views, you must first give some. \u003Cb>Clemz sends them in the background\u003C/b>. 🦾"
+   },
+   "requestViewsInfo_readyParagraph": {
+      "message": "Now you can request views below"
+   },
+   "requestViewsInfo_rulesLink": {
+      "message": "➡️ Full rules on exchanging views \u003Ca href=\"https://www.clemz.app/documentation/echanger-des-vues\" target=\"_blank\" style=\"text-decoration: underline !important;\">here\u003C/a>."
+   },
+   "requestViewsInfo_sendViews": {
+      "message": "Send views 👁️"
+   },
+   "requestViewsInfo_sendViewsButton": {
+      "message": "👉 Send views 👁️"
+   },
+   "requestViewsInfo_startSendViewsParagraph": {
+      "message": "\u003Cb>To receive views, you must first give them\u003C/b>.\u003Cbr>⚠️Slower is safer 🐌\u003Cbr>"
+   },
+   "requestViewsInfo_timeLeft": {
+      "message": "Time left: ~\u003Cb id=\"minutes-left\">XXX\u003C/b> min"
+   },
+   "requestViewsInfo_title": {
+      "message": "🤩 Ask for views"
+   },
+   "requestViews_requestCreated": {
+      "message": "👀 Request created 👀"
+   },
+   "requestViews_requestViews": {
+      "message": "Ask for views"
+   },
+   "reserved": {
+      "message": "Reserved"
+   },
+   "reservedFirstLetter": {
+      "message": "R"
+   },
+   "restrictionWarningModal_badge": {
+      "message": "🛑 Vinted restriction 🛑"
+   },
+   "restrictionWarningModal_learnMore": {
+      "message": "👉 \u003Ca href=\"https://www.clemz.app/documentation/republier-des-articles#deceive\" target=\"_blank\">\u003Cu>This article\u003C/u>\u003C/a> from the documentation gives advice on the topic"
+   },
+   "restrictionWarningModal_message": {
+      "message": "To lower restriction risk, you can:\u003Cul class=\"pl-3 mb-0\">\u003Cli>Turn on the \u003Cb>Human-like browsing\u003C/b> and \u003Cb>Natural pacing\u003C/b> options (slow / slower)\u003C/li>\u003Cli>\u003Cb>Reduce daily relists\u003C/b> (depends on closet size — 20-30 on average for example)\u003C/li>\u003Cli>\u003Cb>Delete then re-import via Clemz\u003C/b> instead of relisting directly\u003C/li>\u003C/ul>"
+   },
+   "restrictionWarningModal_openSettings": {
+      "message": "See these options"
+   },
+   "restrictionWarningModal_refund": {
+      "message": "👉 \u003Ca href=\"https://www.clemz.app/dashboard/restriction\" target=\"_blank\">\u003Cu>This page\u003C/u>\u003C/a> is here if you cannot avoid the restrictions despite all our advice"
+   },
+   "restrictionWarningModal_title": {
+      "message": "⚠️Your closet was restricted recently👮"
+   },
+   "restrictionWarningTab_message": {
+      "message": "⚠️ \u003Cb class=\"text-danger\">Restriction risk:\u003C/b> turn on Human-like browsing and Natural pacing. \u003Ca href=\"https://www.clemz.app/documentation/republier-des-articles#deceive\" target=\"_blank\">\u003Cu>+ info here\u003C/u>\u003C/a>"
+   },
+   "save": {
+      "message": "Save"
+   },
+   "see": {
+      "message": "See"
+   },
+   "selectArticles_selectItemsMessage": {
+      "message": "== Click listings to select =="
+   },
+   "selectArticles_vinzAppWrongAccount": {
+      "message": "The Clemz accounts on clemz.app (\u003Cb>$1\u003C/b>) and on the extension (\u003Cb>$2\u003C/b>) do not match. Please log in with the correct account."
+   },
+   "sendFavourites_distributionComplete": {
+      "message": "Completed\u003Cbr> \u003Cb>$itemsFavedCount$\u003C/b> newly fav-ed\u003Cbr> \u003Cb>$itemsAlreadyFavedCount$\u003C/b> were already fav-ed",
+      "placeholders": {
+         "itemsAlreadyFavedCount": {
+            "content": "$2"
+         },
+         "itemsFavedCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "sendFavourites_dressingDetectionError": {
+      "message": "\u003Cb>Can't detect this closet\u003C/b>\u003Cbr>Refresh or contact bonjour@clemz.app"
+   },
+   "sendFavourites_dressingPageRequired": {
+      "message": "\u003Cb>Action for a closet page\u003C/b>\u003Cbr>Can't do this here"
+   },
+   "sendFavourites_emptyFavouritesCount": {
+      "message": "\u003Cb>No favourite count\u003C/b>\u003Cbr>Enter a valid number"
+   },
+   "sendFavourites_excessiveFavouritesCount": {
+      "message": "\u003Cb>Too many favourites\u003C/b>\u003Cbr>We recommend sending $maxFavourites$ favourites at a time. Vinted might catch you...",
+      "placeholders": {
+         "maxFavourites": {
+            "content": "$1"
+         }
+      }
+   },
+   "sendFavourites_fetchingItems": {
+      "message": "Clemz gets the listings\u003Cbr>($percentageFetched$ %)",
+      "placeholders": {
+         "percentageFetched": {
+            "content": "$1"
+         }
+      }
+   },
+   "sendFavourites_giveFavourites": {
+      "message": "Give favourites"
+   },
+   "sendFavourites_ownDressingError": {
+      "message": "\u003Cb>This is your own closet\u003C/b>\u003Cbr>Must be a different user’s closet"
+   },
+   "sendViewsInterface_mutualExclusion_autoMessageRunning": {
+      "message": "Cannot send views while Messages to favourites is running. Please stop it first."
+   },
+   "sendViewsInterface_processError": {
+      "message": "\u003Cb>Error sending views\u003C/b>\u003Cbr>Something is preventing it from progressing normally. Close your browser completely then try again"
+   },
+   "sendViewsInterface_sendingInProgress": {
+      "message": "Sending in progress"
+   },
+   "sendViewsInterface_title": {
+      "message": "👀 Sending views"
+   },
+   "smallCluster_referralLink": {
+      "message": "Referral program →"
+   },
+   "smallCluster_warningMessage": {
+      "message": "Your Vinted country has few active Clemz users for now. Exchanges may be slower or incomplete. Contact us for \u003Cb>a special price\u003C/b> and \u003Cb>refer your friends\u003C/b> for more views and favorites!"
+   },
+   "smallCluster_warningTitle": {
+      "message": "🚨 Limited exchanges in your country 🚨"
+   },
+   "smartDressingHeader_addAdvancedFilters": {
+      "message": "+ Advanced filters"
+   },
+   "smartDressingHeader_allArticles": {
+      "message": "\u003Ci>All\u003C/i>"
+   },
+   "smartDressingHeader_articlesText": {
+      "message": "listing(s)"
+   },
+   "smartDressingHeader_defaultOrder": {
+      "message": "Default"
+   },
+   "smartDressingHeader_drafts": {
+      "message": "Drafts"
+   },
+   "smartDressingHeader_duplicates": {
+      "message": "⚠️ duplicates?"
+   },
+   "smartDressingHeader_favs": {
+      "message": "❤️ Favourites"
+   },
+   "smartDressingHeader_filterByTitlePlaceholder": {
+      "message": "Filter by word"
+   },
+   "smartDressingHeader_forSale": {
+      "message": "For sale"
+   },
+   "smartDressingHeader_hidden": {
+      "message": "Hidden"
+   },
+   "smartDressingHeader_noResults": {
+      "message": "= No listing matches your filters ="
+   },
+   "smartDressingHeader_nonUploaded": {
+      "message": "❗ not saved"
+   },
+   "smartDressingHeader_partialSmartDressing": {
+      "message": "partial (items \u003Cspan id=\"itemsBeginNumber\">\u003C/span> to \u003Cspan id=\"itemsEndNumber\">\u003C/span>)"
+   },
+   "smartDressingHeader_price": {
+      "message": "💲 Price"
+   },
+   "smartDressingHeader_removeFilters": {
+      "message": "- Filters"
+   },
+   "smartDressingHeader_reserved": {
+      "message": "On hold"
+   },
+   "smartDressingHeader_resetFilters": {
+      "message": "Reset filters"
+   },
+   "smartDressingHeader_smartDressingTitle": {
+      "message": "Smart Closet"
+   },
+   "smartDressingHeader_sold": {
+      "message": "Sold"
+   },
+   "smartDressingHeader_sort": {
+      "message": "\u003Cu>Sort:\u003C/u>"
+   },
+   "smartDressingHeader_specialAll": {
+      "message": "All"
+   },
+   "smartDressingHeader_specialFiltersButton": {
+      "message": "Special filters"
+   },
+   "smartDressingHeader_typesOfArticles": {
+      "message": "Types of listings"
+   },
+   "smartDressingHeader_uploaded": {
+      "message": "🦾 saved"
+   },
+   "smartDressingHeader_viewLegend": {
+      "message": "See legend"
+   },
+   "smartDressingHeader_views": {
+      "message": "👁️ Views"
+   },
+   "smartDressingLegend_boostedArticle": {
+      "message": "Bumped listing on Vinted"
+   },
+   "smartDressingLegend_descriptionIcons": {
+      "message": "Description icons"
+   },
+   "smartDressingLegend_inStockList": {
+      "message": "Listing is in \"in stock\" list"
+   },
+   "smartDressingLegend_inToDoList": {
+      "message": "Listing is in \"to do\" list"
+   },
+   "smartDressingLegend_numFavs": {
+      "message": "Number of favourites"
+   },
+   "smartDressingLegend_numViews": {
+      "message": "Number of views"
+   },
+   "smartDressingLegend_photoIcons": {
+      "message": "Photo icons"
+   },
+   "smartDressingLegend_savedOnClemz": {
+      "message": "Listing saved on clemz.app"
+   },
+   "smartDressingLegend_topRightPhotos": {
+      "message": "(top-right of photos)"
+   },
+   "smartDressingLegend_underArticle": {
+      "message": "(under the listing)"
+   },
+   "smartDressing_actionOnDressing": {
+      "message": "Must be launched on a closet"
+   },
+   "smartDressing_brand": {
+      "message": "brand"
+   },
+   "smartDressing_created": {
+      "message": "Created"
+   },
+   "smartDressing_displayLimit": {
+      "message": "\u003Cp class='h4 font-weight-bold'>⚠️Limit: 500 listings max⚠️\u003Cbr>\u003C/p> For older listings:\n1) Filter to fewer than 500,\u003Cbr>2) or reverse sort to see the bottom"
+   },
+   "smartDressing_displayingItems": {
+      "message": "Clemz displays them"
+   },
+   "smartDressing_dressingReady": {
+      "message": "Your closet is ready!"
+   },
+   "smartDressing_favoritesCount": {
+      "message": "Fav count"
+   },
+   "smartDressing_fetchingItems": {
+      "message": "Clemz fetches your listings..."
+   },
+   "smartDressing_price": {
+      "message": "price"
+   },
+   "smartDressing_seeOnBackup": {
+      "message": "See on my clemz.app backup"
+   },
+   "smartDressing_selectTargetItems": {
+      "message": "\u003Cb>Select which listings to target\u003C/b>\u003Cbr>Click one of the 3 buttons below"
+   },
+   "smartDressing_selectionInProgress": {
+      "message": "Selection in progress: refresh or clear selection first."
+   },
+   "smartDressing_size": {
+      "message": "size"
+   },
+   "smartDressing_smartDressing": {
+      "message": "Smart closet"
+   },
+   "smartDressing_viewsCount": {
+      "message": "Views count"
+   },
+   "smartDressing_vintedErrorFetchingItems": {
+      "message": "\u003Cb>Vinted error\u003C/b> reading your listings"
+   },
+   "smartDressing_wrongTabMessage": {
+      "message": "You must be in your \"Closet\" tab (not \"Reviews\" or \"About\")."
+   },
+   "smartInboxHeader_addAdvancedFilters": {
+      "message": "+ Advanced\u003Cbr>filters"
+   },
+   "smartInboxHeader_all": {
+      "message": "All"
+   },
+   "smartInboxHeader_brand": {
+      "message": "Tag🏳️:"
+   },
+   "smartInboxHeader_dateLabel": {
+      "message": "Date:"
+   },
+   "smartInboxHeader_dateLess": {
+      "message": "less than"
+   },
+   "smartInboxHeader_dateMore": {
+      "message": "more than"
+   },
+   "smartInboxHeader_days": {
+      "message": "days"
+   },
+   "smartInboxHeader_messagesText": {
+      "message": " message(s)"
+   },
+   "smartInboxHeader_msgTitlePlaceholder": {
+      "message": "Message title/User name"
+   },
+   "smartInboxHeader_noAd": {
+      "message": "❌ No listing"
+   },
+   "smartInboxHeader_noFilter": {
+      "message": "No filter"
+   },
+   "smartInboxHeader_noResults": {
+      "message": "= No message matches your filters ="
+   },
+   "smartInboxHeader_none": {
+      "message": "None"
+   },
+   "smartInboxHeader_removeFilters": {
+      "message": "- Filters"
+   },
+   "smartInboxHeader_resetFilters": {
+      "message": "Reset filters"
+   },
+   "smartInboxHeader_searchWordTooltip": {
+      "message": "The title of a conversation is chosen by Vinted. Sometimes it's the title of the listing, sometimes the last exchanged message."
+   },
+   "smartInboxHeader_smartInboxTitle": {
+      "message": "Smart Inbox"
+   },
+   "smartInboxHeader_sort": {
+      "message": "Sort:"
+   },
+   "smartInboxHeader_specialFilters": {
+      "message": "Special filters"
+   },
+   "smartInboxHeader_unread": {
+      "message": "📬 Unread"
+   },
+   "smartInboxHeader_vintieGone": {
+      "message": "😵 User gone"
+   },
+   "smartInboxLegend_dateXdaysDesc": {
+      "message": "Messages more than X days old / less than X days old"
+   },
+   "smartInboxLegend_dateXdaysLabel": {
+      "message": "Date - X days"
+   },
+   "smartInboxLegend_missingAccountDesc": {
+      "message": "Messages from a user whose account was deleted"
+   },
+   "smartInboxLegend_missingAccountLabel": {
+      "message": "😵 User gone"
+   },
+   "smartInboxLegend_noArticleDesc": {
+      "message": "Messages not linked to a listing or listing deleted from Vinted's databases"
+   },
+   "smartInboxLegend_noArticleLabel": {
+      "message": "❌ No listing"
+   },
+   "smartInboxLegend_specialFilters": {
+      "message": "Special filters"
+   },
+   "smartInboxLegend_unreadDesc": {
+      "message": "Unread messages"
+   },
+   "smartInboxLegend_unreadLabel": {
+      "message": "📬 Unread"
+   },
+   "smartInbox_clemzFetchingMessages": {
+      "message": "Reading messages..."
+   },
+   "smartInbox_clemzTagError": {
+      "message": "\u003Cb>Connection lost with Clemz\u003C/b> removing a tag"
+   },
+   "smartInbox_day": {
+      "message": "day"
+   },
+   "smartInbox_deletion": {
+      "message": "Deleting messages"
+   },
+   "smartInbox_deletionAttemptError": {
+      "message": "Error while deleting message:"
+   },
+   "smartInbox_deletionComplete": {
+      "message": "Deletion completed"
+   },
+   "smartInbox_deletionConfirmation": {
+      "message": "\u003Cb>🛑 Deletion is \u003Cu>FINAL\u003C/u> 🛑\u003C/b>\u003Cbr>=> \u003Cb class=\"text-danger\">$conversationsCount$\u003C/b> will be removed",
+      "placeholders": {
+         "conversationsCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "smartInbox_deletionWarning": {
+      "message": "\u003Cb class=\"text-danger\">DELETING\u003C/b> messages, caution:"
+   },
+   "smartInbox_displayingMessages": {
+      "message": "Clemz displays them"
+   },
+   "smartInbox_fetchingMessages": {
+      "message": "Reading messages"
+   },
+   "smartInbox_hour": {
+      "message": "hour"
+   },
+   "smartInbox_inboxReady": {
+      "message": "Inbox ready!"
+   },
+   "smartInbox_invalidMessageCount": {
+      "message": "\u003Cb>Invalid message count\u003C/b>\u003Cbr>Use 0..1000"
+   },
+   "smartInbox_minute": {
+      "message": "minute"
+   },
+   "smartInbox_month": {
+      "message": "month"
+   },
+   "smartInbox_noMessagesSelected": {
+      "message": "\u003Cb>No message selected\u003C/b>\u003Cbr>Use Smart Inbox & pick some"
+   },
+   "smartInbox_notDeletedMessages": {
+      "message": "messages not deleted\u003C/b> (Vinted error)"
+   },
+   "smartInbox_oldMessage": {
+      "message": "(Old message)"
+   },
+   "smartInbox_smartInbox": {
+      "message": "Smart Inbox"
+   },
+   "smartInbox_tagging": {
+      "message": "Tagging"
+   },
+   "smartInbox_taggingComplete": {
+      "message": "Tagging completed"
+   },
+   "smartInbox_taggingConfirmation": {
+      "message": "\u003Cb>TAGGING\u003C/b>"
+   },
+   "smartInbox_taggingConfirmationQuestion": {
+      "message": "\u003Cb>Tag with $tag$ for \u003Cb>$messageCount$\u003C/b> messages?\u003C/b>",
+      "placeholders": {
+         "messageCount": {
+            "content": "$2"
+         },
+         "tag": {
+            "content": "$1"
+         }
+      }
+   },
+   "smartInbox_taggingRefusal": {
+      "message": "Refusal to tag"
+   },
+   "smartInbox_untaggingConfirmation": {
+      "message": "\u003Cb>UNTAGGING\u003C/b>"
+   },
+   "smartInbox_untaggingConfirmationQuestion": {
+      "message": "Remove tag $tag$ from \u003Cb>$messageCount$\u003C/b> messages?",
+      "placeholders": {
+         "messageCount": {
+            "content": "$2"
+         },
+         "tag": {
+            "content": "$1"
+         }
+      }
+   },
+   "smartInbox_vintedError": {
+      "message": "\u003Cb>Vinted error\u003C/b> reading messages"
+   },
+   "smartInbox_vintedErrorDeleting": {
+      "message": "\u003Cb>Connection lost with Vinted\u003C/b> while deleting \"$conversationDescription$\"",
+      "placeholders": {
+         "conversationDescription": {
+            "content": "$1"
+         }
+      }
+   },
+   "smartInbox_week": {
+      "message": "week"
+   },
+   "smartInbox_year": {
+      "message": "year"
+   },
+   "sold": {
+      "message": "Sold"
+   },
+   "soldFirstLetter": {
+      "message": "S"
+   },
+   "starting": {
+      "message": "starting..."
+   },
+   "stopButton": {
+      "message": "🛑 STOP"
+   },
+   "syncSalesFromTab_errorExportingSale": {
+      "message": "Error exporting sale"
+   },
+   "syncSalesFromTab_errorFetchingShipmentUrl": {
+      "message": "Error fetching a shipping label URL"
+   },
+   "syncSalesFromTab_errorFetchingTransaction": {
+      "message": "Error fetching sale"
+   },
+   "syncSalesFromTab_errorSendingShippingLabelUrl": {
+      "message": "Error sending the shipping label to clemz.app"
+   },
+   "syncSalesFromTab_success": {
+      "message": "\u003Cb>Sales synchronization launched\u003C/b>\u003Cbr>It runs in the background: you can use Clemz normally."
+   },
+   "syncSalesModal_changeSyncFrequency": {
+      "message": "Change the frequency of this message \u003Ca href='https://www.clemz.app/dashboard/sale_parameter/edit#automation-form' target='_blank'>\u003Cu>in this menu\u003C/u>\u003C/a>"
+   },
+   "syncSalesModal_message": {
+      "message": "It's been a while since you've synchronized your sales.\u003Cbr>\u003Cb>👉 Do you want to do it now?\u003C/b>"
+   },
+   "syncSalesModal_notNow": {
+      "message": "Later"
+   },
+   "syncSalesModal_startSync": {
+      "message": "💲Sync sales"
+   },
+   "syncSalesModal_title": {
+      "message": "Synchronize sales"
+   },
+   "syncSalesParamsModal_excludedCarriers": {
+      "message": "Excluded carriers"
+   },
+   "syncSalesParamsModal_finalizationMessage": {
+      "message": "Finalization message"
+   },
+   "syncSalesParamsModal_hours": {
+      "message": "hours"
+   },
+   "syncSalesParamsModal_invoicing": {
+      "message": "Invoicing"
+   },
+   "syncSalesParamsModal_purchaseMessage": {
+      "message": "Purchase message"
+   },
+   "syncSalesParamsModal_reviewMessage": {
+      "message": "Leave a 5⭐ review"
+   },
+   "syncSalesParamsModal_saveError": {
+      "message": "Could not save sale parameters"
+   },
+   "syncSalesParamsModal_shippedMessage": {
+      "message": "Shipment message"
+   },
+   "syncSalesParamsModal_shippingLabels": {
+      "message": "Auto shipping labels"
+   },
+   "syncSalesParamsModal_syncFrequency": {
+      "message": "Sync frequency"
+   },
+   "syncSalesParamsModal_syncFrequencyTooltip": {
+      "message": "How often Clemz asks you to synchronize your sales. Leave empty to disable"
+   },
+   "syncSalesParamsModal_title": {
+      "message": "Sales automations"
+   },
+   "tabWorkerMessage_stopButton": {
+      "message": "Stop relisting"
+   },
+   "tabWorkerMessage_tabTitle": {
+      "message": "Clemz - do not close"
+   },
+   "tabWorkerMessage_warning": {
+      "message": "⚠️ Closing or interacting with this tab will stop the current activity"
+   },
+   "temporaryUnavailable": {
+      "message": "\u003Cb>This feature is temporarily unavailable\u003C/b> \u003Cbr>We’re working to make it available again as soon as possible!"
+   },
+   "upgradeSubscriptionModal_contact": {
+      "message": "Or ask us at: "
+   },
+   "upgradeSubscriptionModal_limitReached": {
+      "message": "You hit your Clemz plan limit!"
+   },
+   "upgradeSubscriptionModal_link": {
+      "message": "🚀 Pick a new plan\u003Cbr>\u003Ca href=\"https://www.clemz.app/users/pricing\" target=\"_blank\" class=\"font-weight-bold\">click here\u003C/a>"
+   },
+   "upgradeSubscriptionModal_moreFavs": {
+      "message": "💞 More favourites"
+   },
+   "upgradeSubscriptionModal_moreFavsMessages": {
+      "message": "📨 More messages to favourites"
+   },
+   "upgradeSubscriptionModal_moreReposts": {
+      "message": "♻️ More relists"
+   },
+   "upgradeSubscriptionModal_moreViews": {
+      "message": "👀 More views"
+   },
+   "upgradeSubscriptionModal_subscribeNow": {
+      "message": " 🚀 Subscribe to Clemz"
+   },
+   "upgradeSubscriptionModal_whyUpgrade": {
+      "message": "To remove limits,\u003Cbr>upgrade your plan 🦾"
+   },
+   "uploadItemFinishedModal_adsSaved": {
+      "message": "Listings saved ✅"
+   },
+   "uploadItemFinishedModal_adsSavedBut": {
+      "message": "Your listings were saved on clemz.app but \u003Cspan class=\"font-weight-bolder\">photo downloading may take ⏳a few minutes⏳\u003C/span>"
+   },
+   "uploadItemFinishedModal_checkAds": {
+      "message": "Check which aren’t 100% downloaded by clicking below 👇"
+   },
+   "uploadItemFinishedModal_downloadingAdsButton": {
+      "message": "👕 listings in progress"
+   },
+   "uploadItemFinishedModal_photosDownloading": {
+      "message": "Photos downloading⏳"
+   },
+   "uploadItemFinishedModal_republicationNote": {
+      "message": "You can only ♻️relist a listing when it’s \u003Cu>fully saved\u003C/u> with all photos 📸"
+   },
+   "uploadItems_cannotSaveImportedItems": {
+      "message": "\u003Cb>Your list has items from Clemz\u003C/b>\u003Cbr>Must be items in your Vinted closet"
+   },
+   "uploadItems_connectionLoss": {
+      "message": "\u003Cb>Connection lost with clemz.app\u003C/b> saving \"$itemTitle$\"",
+      "placeholders": {
+         "itemTitle": {
+            "content": "$1"
+         }
+      }
+   },
+   "uploadItems_fetchingItems": {
+      "message": "Clemz gets your listings..."
+   },
+   "uploadItems_incompleteItemsCount": {
+      "message": "\u003Cb class=\"text-danger\">$incompleteItemsCount$ incomplete listings\u003C/b>\u003Cbr> (Probably sold listings, \u003Ca href=\"https://www.clemz.app/documentation/republier-des-articles#incomplete-listings\" target=\"_blank\">\u003Cu>More info here\u003C/u>\u003C/a>)",
+      "placeholders": {
+         "incompleteItemsCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "uploadItems_itemsBeginGreaterThanLastItemNumber": {
+      "message": "\u003Cb>The starting number is greater than the total number of listings\u003C/b>"
+   },
+   "uploadItems_photoWarningParagraph1": {
+      "message": "For already saved listings, you chose to \u003Cu class=\"text-danger\">overwrite\u003C/u> their saved photos with your current Vinted photos"
+   },
+   "uploadItems_photoWarningParagraph2": {
+      "message": "⚠️If these Vinted photos are edited (frames, text, stickers...), \u003Cb>they replace the originals\u003C/b> in your backup."
+   },
+   "uploadItems_photoWarningParagraph3": {
+      "message": "Previously saved photos on clemz.app are \u003Cb class=\"text-danger\">deleted\u003C/b> and replaced by Vinted’s."
+   },
+   "uploadItems_photoWarningParagraph4": {
+      "message": "👉 Unsure? Ask \u003Cb>bonjour@clemz.app\u003C/b>"
+   },
+   "uploadItems_photoWarningTitle": {
+      "message": "🚨Photo loss risk!🚨"
+   },
+   "uploadItems_saveCompleted": {
+      "message": "Backup complete"
+   },
+   "uploadItems_saveItems": {
+      "message": "Save listings"
+   },
+   "uploadItems_savingItem": {
+      "message": "saving listing"
+   },
+   "uploadItems_selectTargetItems": {
+      "message": "\u003Cb>Select which listings to target\u003C/b>\u003Cbr>Click one of the 3 buttons below"
+   },
+   "uploadItems_vintedConnectionError": {
+      "message": "\u003Cb>Vinted connection error\u003C/b> reading listings"
+   },
+   "utilities_minutesShort": {
+      "message": "min"
+   },
+   "utilities_secondsLeft": {
+      "message": "$shownSeconds$ sec left",
+      "placeholders": {
+         "shownSeconds": {
+            "content": "$1"
+         }
+      }
+   },
+   "utilities_temporization": {
+      "message": "Temporizing (anti-blockage)\u003Cbr>\u003Cdiv class=\"text-center\">\u003Ca href=\"https://www.clemz.app/documentation/resoudre-un-bug#temporize-blockage\" target=\"_blank\">\u003Cu>Why?\u003C/u>\u003C/a>\u003C/div>"
+   },
+   "utilities_textCopied": {
+      "message": "Text \"$textContent$\" copied to clipboard",
+      "placeholders": {
+         "textContent": {
+            "content": "$1"
+         }
+      }
+   },
+   "verifyingArticles": {
+      "message": "Checking $articleCount$ listing(s)",
+      "placeholders": {
+         "articleCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "viewOnClemz": {
+      "message": "View on clemz.app"
+   },
+   "vintedApiCalls_errorFetchingUserOrders": {
+      "message": "Vinted sends an error when fetching your orders.\u003Cbr> Wait a bit and retry."
+   },
+   "vinzAppCom_checkVinted": {
+      "message": "Check Vinted"
+   },
+   "vinzAppCom_errorUnknown": {
+      "message": "Unknown error"
+   },
+   "vinzAppCom_openTaskTabDisconnected": {
+      "message": "On Vinted, you are not connected to your account."
+   },
+   "vinzAppCom_openTaskTabTimeout": {
+      "message": "The extension can't open the task tab"
+   },
+   "vinzAppCom_openTaskTabWrongProfile": {
+      "message": "On Vinted, you are connected to \u003Cb>@$USERNAME$\u003C/b> and this closet is not activated on your Clemz account.",
+      "placeholders": {
+         "username": {
+            "content": "$1"
+         }
+      }
+   },
+   "vinzAppCom_reconnect": {
+      "message": "To continue, please log in again"
+   },
+   "vinzAppCom_taskUnknown": {
+      "message": "Unknown task"
+   },
+   "vinzAppCom_tasksAlreadyRunning": {
+      "message": "\u003Cb>A sync is either in progress or has finished recently\u003C/b>\u003Cbr>Wait a bit before starting a new one."
+   },
+   "vinzAppCom_tasksLaunchFailed": {
+      "message": "Error launching tasks"
+   },
+   "wardrobes": {
+      "message": "Closet(s)"
+   },
+   "whatItemsToUploadModal_allTargeted": {
+      "message": "All targeted"
+   },
+   "whatItemsToUploadModal_alreadySavedTitle": {
+      "message": "For listings \u003Cu>already saved\u003C/u> on clemz.app, which photos to keep?"
+   },
+   "whatItemsToUploadModal_howSaveWorks": {
+      "message": "How saving works? (\u003Ca href=\"https://www.clemz.app/documentation/sauver-mes-annonces#rglesdeClemzconcernantlasauvegarde\" target=\"_blank\">\u003Cu>read here\u003C/u>\u003C/a>)"
+   },
+   "whatItemsToUploadModal_keepClemzPhotos": {
+      "message": "\u003Cb>Clemz.app\u003C/b>\u003Cspan> => Keep already saved photos\u003C/span>"
+   },
+   "whatItemsToUploadModal_notSavedPhotosRemark": {
+      "message": "(if not saved: Vinted photos used)"
+   },
+   "whatItemsToUploadModal_okSave": {
+      "message": "OK - Save"
+   },
+   "whatItemsToUploadModal_onlyNeverSaved": {
+      "message": "Only those never saved before"
+   },
+   "whatItemsToUploadModal_replaceWithVintedPhotos": {
+      "message": "\u003Cb>Vinted\u003C/b>\u003Cspan> => Replace with current Vinted photos\u003C/span>"
+   },
+   "whatItemsToUploadModal_title": {
+      "message": "⏫ Save listings"
+   },
+   "whatItemsToUploadModal_whichAdsToSave": {
+      "message": "\u003Cb class=\"h6\">Among the targeted listings, which to save on clemz.app?\u003C/b>\u003Cbr>(Clemz never deletes a saved listing)"
+   },
+   "wrongProfileWarning": {
+      "message": "\u003Cb>Closet not recognized\u003C/b>\u003Cbr>You are connected to \u003Cb>@$USERNAME$\u003C/b> on Vinted, a closet not activated on your Clemz account. \u003Ca href=\"https://www.clemz.app/documentation/demarrage-rapide#closets\" target=\"_blank\">\u003Cu>Read this\u003C/u>\u003C/a> to learn how to activate other closets on Clemz.",
+      "placeholders": {
+         "username": {
+            "content": "$1"
+         }
+      }
+   }
+}
