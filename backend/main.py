@@ -5,6 +5,20 @@ import sys
 if sys.platform == 'win32':
     asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 
+# CORRECTIF ENCODAGE WINDOWS (cf. échange du 07/10/2026) -- sans ça, un simple
+# print() contenant un emoji (omniprésents dans tout le code, ex: 🩹 dans
+# automation_service.rattraper_republish_manques) fait planter le démarrage
+# ENTIER avec UnicodeEncodeError dès que stdout utilise l'encodage Windows
+# par défaut (cp1252 sur une machine en français) -- systématique quand la
+# sortie est redirigée vers un fichier (demarrer_backend.bat), pas seulement
+# en console. Le logging (handlers ci-dessous) a déjà sa propre protection
+# (encoding="utf-8" explicite) ; ceci couvre tous les print() bruts, trop
+# nombreux pour être corrigés un par un. errors="replace" : un caractère
+# jamais vu plus tard ne doit plus jamais refaire planter tout le serveur.
+if sys.platform == 'win32':
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 import asyncio
 import logging
 import os
