@@ -1421,14 +1421,46 @@ class ClemzAutomation:
                 selection_results = selection_results_3
 
             elif self.task_type == "baisse_prix":
+                # Sauvegarde Clemz ('Sauver annonces') ENCHAÎNÉE juste après la baisse --
+                # ÉTAPE OBLIGATOIRE (cf. _trigger_save_backup) : sans elle, une
+                # republication ultérieure récupère l'ANCIEN prix encore sauvegardé côté
+                # Clemz et annule l'effet de la baisse. Même séquence que les étapes 1+2
+                # du chaînage "republication_baisse" ci-dessus, sans la republication
+                # finale (cf. échange du 06/10/2026).
                 navigation_result = await self._navigate_to_modify_tab(cdp, page, acc)
                 if navigation_result["status"] != "success":
                     logger.error(f"❌ [{acc['name']}] {navigation_result['reason']}")
                     return {"account": acc["name"], "selection_results": self._selection_results_finaux(selection_results, navigation_result), "repost_result": navigation_result}
-                repost_result = await self._trigger_baisse_prix(
+
+                baisse_result = await self._trigger_baisse_prix(
                     page, cdp, acc, expected_count=success_count, pourcentage=self.pourcentage_baisse_prix,
                     prix_fixe=self.prix_fixe,
                 )
+                if baisse_result.get("status") != "success":
+                    logger.error(f"❌ [{acc['name']}] Baisse de prix échouée : {baisse_result.get('reason')}")
+                    return {"account": acc["name"], "selection_results": self._selection_results_finaux(selection_results, baisse_result), "repost_result": baisse_result}
+                logger.info(f"✅ [{acc['name']}] Baisse de prix appliquée. Reconstruction de la liste pour la sauvegarde...")
+
+                # --- Reconstruction de liste avant la sauvegarde (vidée après l'action de masse) ---
+                selection_results_save = await self._build_list(page, cdp, acc)
+                success_count_save = sum(1 for r in selection_results_save if r["status"] == "success")
+                if success_count_save == 0:
+                    echec = {"status": "failed", "reason": "Liste reconstruite vide avant l'étape sauvegarde"}
+                    return {
+                        "account": acc["name"], "selection_results": self._selection_results_finaux(selection_results, echec),
+                        "repost_result": echec,
+                    }
+
+                navigation_result = await self._navigate_to_my_dressing_tab(cdp, page, acc)
+                if navigation_result["status"] != "success":
+                    logger.error(f"❌ [{acc['name']}] {navigation_result['reason']}")
+                    return {"account": acc["name"], "selection_results": self._selection_results_finaux(selection_results, navigation_result), "repost_result": navigation_result}
+
+                repost_result = await self._trigger_save_backup(page, cdp, acc, expected_count=success_count_save)
+                # La bookkeeping ci-dessous (price_drops, est_traite) doit refléter la
+                # DERNIÈRE reconstruction de liste (celle utilisée pour la sauvegarde),
+                # même raisonnement que pour "republication_baisse" plus haut.
+                selection_results = selection_results_save
 
             else:  # "republication"
                 navigation_result = await self._navigate_to_repost_tab(cdp, page, acc)

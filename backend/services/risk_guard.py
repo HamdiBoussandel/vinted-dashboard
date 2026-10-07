@@ -134,8 +134,19 @@ RAMP_QUOTA_DEPART = 5
 # un jour avant cette zone) est donc entièrement rognée : ce seuil colle
 # maintenant à la borne HAUTE déjà associée à de vraies suspensions, plus à la
 # borne basse. Risque accru assumé, pas une recalibration prudente.
+#
+# Remonté une 2e fois le 07/10/2026, de 21 à 24 -- démarche explicite de
+# l'utilisateur : monter PAR PALIERS mesurés pour chercher empiriquement le
+# volume réel qui déclenche une restriction, plutôt qu'un saut direct à la
+# valeur "confortable" (36-45) qui permettrait de tenir indéfiniment le
+# plafond quotidien (12-15, cf. PLAFOND_REPUBLICATION_MIN/MAX) sans aucune
+# coupure -- refusé comme trop éloigné d'un coup de la fourchette 18-21 à
+# risque. 24 = exactement 2 jours consécutifs à 12 republications sans
+# déclencher le Niveau 2, le minimum visé par l'utilisateur. Chaque palier
+# s'éloigne davantage de la marge de sécurité d'origine -- à ne RE-remonter
+# que sur nouvelle décision explicite, jamais par extrapolation automatique.
 JOURS_FENETRE_VOLUME = 3
-SEUIL_VOLUME_GLISSANT = 21
+SEUIL_VOLUME_GLISSANT = 24
 
 _supabase = SupabaseService()
 
