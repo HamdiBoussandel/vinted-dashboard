@@ -125,26 +125,21 @@ class VintedScraper:
         # rapprochées) -- constaté le 26/08/2026, bloquant le scraping.
         await asyncio.sleep(5)
 
-        if not session_ok_d1 or not session_ok_d2:
-            comptes_ko = []
-            if not session_ok_d1:
-                comptes_ko.append("Dressing 1")
-                update_task_result(task_id, "dressing1", status="failed", reason="Session Vinted invalide/expirée")
-            else:
-                update_task_result(task_id, "dressing1", status="success")
-            if not session_ok_d2:
-                comptes_ko.append("Dressing 2")
-                update_task_result(task_id, "dressing2", status="failed", reason="Session Vinted invalide/expirée")
-            else:
-                update_task_result(task_id, "dressing2", status="success")
+        # CORRIGÉ (08/10/2026) : jusqu'ici, une session invalide sur UN SEUL
+        # dressing annulait le scraping des DEUX -- contraire à la règle
+        # "chaque dressing traité indépendamment, jamais l'un conditionné par
+        # l'autre". Chaque dressing est désormais scrapé si (et seulement si)
+        # SA PROPRE session est valide, peu importe l'état de l'autre. On
+        # n'abandonne complètement que si AUCUN des deux n'a de session valide
+        # (rien à scraper dans ce cas).
+        if not session_ok_d1:
+            update_task_result(task_id, "dressing1", status="failed", reason="Session Vinted invalide/expirée")
+        if not session_ok_d2:
+            update_task_result(task_id, "dressing2", status="failed", reason="Session Vinted invalide/expirée")
 
-            if len(comptes_ko) == 2:
-                message = "Erreur : AUCUNE connexion Vinted détectée (D1 et D2)"
-            else:
-                message = f"Erreur : session expirée ({comptes_ko[0]})"
-
-            logger.error(f"❌ Session(s) invalide(s) — scraping annulé : {', '.join(comptes_ko)}")
-            app_state["status_TEST"] = message
+        if not session_ok_d1 and not session_ok_d2:
+            logger.error("❌ Session(s) invalide(s) — scraping annulé : Dressing 1, Dressing 2")
+            app_state["status_TEST"] = "Erreur : AUCUNE connexion Vinted détectée (D1 et D2)"
             app_state["has_error"] = True
             self.update_cron_status(start_time, False)
             finish_task_run(task_id)
@@ -156,27 +151,41 @@ class VintedScraper:
         # manuellement dans le profil clemz_session_chrome_d1_reel -- même
         # traitement que Dressing 2, coïncide avec le changement de compte
         # Vinted. Voir session_manager.ACCOUNTS["chrome_clemz"].) ---
-        articles_d1 = await self.scrap_vinted(
-            browser_type="chromium",
-            session_path="clemz_session_chrome_d1_reel",
-            member_id="287248160",
-            dressing_name="Dressing 1",
-            channel="chrome",
-        )
-        anomalie_d1 = self._verifier_anomalie_session_perdue(task_id, "dressing1", "Dressing 1", articles_d1)
+        # Indépendant de Dressing 2 : scrapé uniquement si SA propre session
+        # est valide (cf. correctif ci-dessus).
+        if session_ok_d1:
+            articles_d1 = await self.scrap_vinted(
+                browser_type="chromium",
+                session_path="clemz_session_chrome_d1_reel",
+                member_id="287248160",
+                dressing_name="Dressing 1",
+                channel="chrome",
+            )
+            anomalie_d1 = self._verifier_anomalie_session_perdue(task_id, "dressing1", "Dressing 1", articles_d1)
+        else:
+            articles_d1 = []
+            anomalie_d1 = True
+            logger.warning("⏭️ Dressing 1 : scraping ignoré (session invalide) -- Dressing 2 traité indépendamment.")
 
         # --- DRESSING 2 (migré 05/09/2026 : vrai Chrome + Clemz préchargée
         # manuellement dans le profil clemz_session_chrome_reel -- corrige
         # l'empreinte TLS/JA3-JA4 du Chromium embarqué. Voir
         # session_manager.ACCOUNTS["edge_clemz"] pour le détail.) ---
-        articles_d2 = await self.scrap_vinted(
-            browser_type="chromium",
-            session_path="clemz_session_chrome_reel",
-            member_id="3136979514",
-            dressing_name="Dressing 2",
-            channel="chrome",
-        )
-        anomalie_d2 = self._verifier_anomalie_session_perdue(task_id, "dressing2", "Dressing 2", articles_d2)
+        # Indépendant de Dressing 1 : scrapé uniquement si SA propre session
+        # est valide.
+        if session_ok_d2:
+            articles_d2 = await self.scrap_vinted(
+                browser_type="chromium",
+                session_path="clemz_session_chrome_reel",
+                member_id="3136979514",
+                dressing_name="Dressing 2",
+                channel="chrome",
+            )
+            anomalie_d2 = self._verifier_anomalie_session_perdue(task_id, "dressing2", "Dressing 2", articles_d2)
+        else:
+            articles_d2 = []
+            anomalie_d2 = True
+            logger.warning("⏭️ Dressing 2 : scraping ignoré (session invalide) -- Dressing 1 traité indépendamment.")
 
         # Les dressings anomaliques sont exclus de la synchro -- ne pas écraser les
         # vraies vues/favoris déjà en base avec des 0 partout.

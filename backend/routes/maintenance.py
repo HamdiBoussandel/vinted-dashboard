@@ -16,6 +16,140 @@ async def get_profiles():
     return maintenance_service.list_profiles()
 
 
+@router.get("/vm-lifecycle")
+async def get_vm_lifecycle_route(limit: int = 14):
+    """
+    Historique des démarrages/extinctions du VM (succès/échec) -- cf. échange
+    du 08/10/2026, log_vm_lifecycle_event() appelé par startup_event()
+    (main.py) et preparer_arret() ci-dessous. Utilisé par le Journal de
+    routine du dashboard.
+    """
+    from services.automation_scheduler import get_vm_lifecycle_log
+    return {"events": get_vm_lifecycle_log(limit=limit)}
+
+
+def _compter_resultats(task, dressing):
+    """
+    Compte succès/total/bloqués-quota/erreurs-Clemz pour UN dressing, à partir
+    des `results` d'une tâche task_history (qui peut mélanger les deux
+    dressings -- scraping, baisse_prix). Exclut les lignes d'anomalie
+    synthétiques (id "anomaly_*") du décompte article, les compte séparément
+    par catégorie (même logique que TaskHistory.jsx, cf. échange du 08/10/2026).
+    """
+    resultats = task.get("results") or []
+    succes = total = bloques_quota = erreurs_clemz = 0
+    for r in resultats:
+        r_dressing = r.get("dressing")
+        if r_dressing != dressing:
+            continue
+        if str(r.get("id", "")).startswith("anomaly_"):
+            if r.get("category") == "quota":
+                bloques_quota += 1
+            else:
+                erreurs_clemz += 1
+            continue
+        total += 1
+        if r.get("status") == "success":
+            succes += 1
+    return {"succes": succes, "total": total, "bloques_quota": bloques_quota, "erreurs_clemz": erreurs_clemz}
+
+
+def _dernier_plan_historique(dressing, date_str):
+    """Relit plan_du_jour_historique.jsonl pour retrouver le DERNIER plan connu
+    de ce dressing à cette date -- get_plan_du_jour() ne renvoie que le plan du
+    jour COURANT, jamais un plan passé."""
+    import json
+    import os
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    fichier = os.path.join(base_dir, "plan_du_jour_historique.jsonl")
+    if not os.path.exists(fichier):
+        return None
+    dernier = None
+    with open(fichier, "r", encoding="utf-8") as f:
+        for ligne in f:
+            ligne = ligne.strip()
+            if not ligne:
+                continue
+            try:
+                entree = json.loads(ligne)
+            except json.JSONDecodeError:
+                continue
+            if entree.get("dressing") == dressing and entree.get("date") == date_str:
+                dernier = entree
+    return dernier
+
+
+@router.get("/journal")
+async def get_journal_route(date: str = None):
+    """
+    Journal de routine : agrège task_history + vm_lifecycle_log + plan_du_jour
+    pour UNE journée, structuré selon le scénario métier fixé (démarrage ->
+    scraping D1 -> scraping D2 -> baisse D1 -> baisse D2 -> republication D1 ->
+    republication D2 -> extinction). Ne duplique aucune donnée détaillée par
+    article -- chaque étape référence le task_id de TaskHistory pour le détail
+    (cf. échange du 08/10/2026). `date` au format YYYY-MM-DD, défaut aujourd'hui.
+    """
+    from datetime import datetime as dt
+    from services.automation_scheduler import get_task_history, get_vm_lifecycle_log
+
+    date_str = date or dt.now().strftime("%Y-%m-%d")
+
+    toutes_taches = get_task_history(limit=200)
+    taches_du_jour = [t for t in toutes_taches if (t.get("started_at") or "").startswith(date_str)]
+
+    tous_events_vm = get_vm_lifecycle_log(limit=30)
+    events_du_jour = [e for e in tous_events_vm if (e.get("timestamp") or "").startswith(date_str)]
+
+    def _premier(task_type_predicate):
+        return next((t for t in taches_du_jour if task_type_predicate(t.get("type") or "")), None)
+
+    demarrage = next((e for e in events_du_jour if e["event"] == "demarrage"), None)
+    extinction = next((e for e in events_du_jour if e["event"] == "extinction"), None)
+    scraping = _premier(lambda t: t == "scraping")
+    baisse_prix = _premier(lambda t: t == "baisse_prix")
+    repub_midi = _premier(lambda t: t == "republication_midi")
+    repub_soir = _premier(lambda t: t == "republication_soir")
+
+    def _etape_vm(event, label):
+        if not event:
+            return {"label": label, "statut": "inconnu", "heure": None, "detail": None}
+        return {
+            "label": label,
+            "statut": event["status"],
+            "heure": event["timestamp"],
+            "detail": event.get("detail"),
+        }
+
+    def _etape_dressing(task, dressing, label, plan=None):
+        if not task:
+            return {"label": label, "statut": "inconnu", "heure": None, "task_id": None, "compteurs": None, "prevu": plan}
+        compteurs = _compter_resultats(task, dressing)
+        return {
+            "label": label,
+            "statut": task.get("global_status"),
+            "heure": task.get("started_at"),
+            "task_id": task.get("task_id"),
+            "compteurs": compteurs,
+            "prevu": plan,
+        }
+
+    plan_d1 = _dernier_plan_historique("Dressing 1", date_str)
+    plan_d2 = _dernier_plan_historique("Dressing 2", date_str)
+
+    etapes = [
+        _etape_vm(demarrage, "Démarrage VM"),
+        _etape_dressing(scraping, "Dressing 1", "Scraping Dressing 1"),
+        _etape_dressing(scraping, "Dressing 2", "Scraping Dressing 2"),
+        _etape_dressing(baisse_prix, "Dressing 1", "Baisse de prix Dressing 1", plan_d1),
+        _etape_dressing(baisse_prix, "Dressing 2", "Baisse de prix Dressing 2", plan_d2),
+        _etape_dressing(repub_midi, "Dressing 1", "Republication Dressing 1", plan_d1),
+        _etape_dressing(repub_soir, "Dressing 2", "Republication Dressing 2", plan_d2),
+        _etape_vm(extinction, "Extinction VM"),
+    ]
+
+    return {"date": date_str, "etapes": etapes}
+
+
 @router.post("/open-browser")
 async def open_browser(data: dict = Body(...)):
     """
@@ -240,11 +374,14 @@ async def preparer_arret(data: dict = Body(default={})):
     timeout_secondes = data.get("timeout_secondes") or 45 * 60
     poll_secondes = 15
 
+    from services.automation_scheduler import log_vm_lifecycle_event
+
     locks = [get_profile_lock(acc["account_key"]) for acc in ACCOUNTS]
     elapsed = 0
     while elapsed < timeout_secondes:
         if not any(lock.locked() for lock in locks):
             logger.info(f"🌙 [MAINTENANCE] Prêt pour l'extinction nocturne après {elapsed}s d'attente.")
+            log_vm_lifecycle_event("extinction", "succes", detail=f"Prêt après {elapsed}s d'attente.")
             return {"status": "pret", "attente_secondes": elapsed}
         if elapsed == 0:
             logger.warning("🌙 [MAINTENANCE] Extinction nocturne demandée mais une automatisation Clemz est en cours -- attente.")
@@ -252,4 +389,5 @@ async def preparer_arret(data: dict = Body(default={})):
         elapsed += poll_secondes
 
     logger.error(f"🌙 [MAINTENANCE] Toujours occupé après {timeout_secondes}s -- extinction forcée malgré tout (délai dépassé).")
+    log_vm_lifecycle_event("extinction", "echec", detail=f"Timeout après {timeout_secondes}s -- extinction forcée malgré une automatisation toujours en cours.")
     return {"status": "timeout", "attente_secondes": elapsed}

@@ -107,46 +107,57 @@ def _on_watchdog_task_done(task: asyncio.Task):
 @app.on_event("startup")
 async def startup_event():
     """Actions au démarrage : lancement du scheduler + du watchdog messages auto."""
-    if not scheduler.running:
-        scheduler.start()
+    from services.automation_scheduler import log_vm_lifecycle_event
 
-    from services.automation_scheduler import cleanup_stale_running_tasks
-    nb_cleaned = cleanup_stale_running_tasks()
-    if nb_cleaned:
-        print(f"🧹 [STARTUP] {nb_cleaned} tâche(s) 'en cours' interrompue(s) par le redémarrage précédent — marquée(s) 'Échec'.")
-        print("📅 [SYSTEM] Ordonnanceur APScheduler démarré (Sync à 14h et 22h).")
+    # Démarrage/extinction visibles dans le dashboard (cf. échange du
+    # 08/10/2026) -- jusqu'ici, un échec au démarrage n'était visible que dans
+    # logs/demarrage.log, jamais dans l'historique/journal.
+    try:
+        if not scheduler.running:
+            scheduler.start()
 
-    # Rattrapage : si le backend était éteint au passage de minuit, aucun plan
-    # du jour n'a été généré pour D1/D2 -- sans ce filet, les deux dressings
-    # resteraient au repos toute la journée, faute d'horaire calculé.
-    from services.automation_scheduler import get_plan_du_jour
-    from services.automation_service import generer_plans_du_jour_cron, rattraper_republish_manques
-    if get_plan_du_jour("Dressing 1") is None or get_plan_du_jour("Dressing 2") is None:
-        print("🎲 [STARTUP] Aucun plan du jour valide pour aujourd'hui — génération de rattrapage.")
-        await generer_plans_du_jour_cron()
-    else:
-        # Cas distinct du précédent : un plan du jour existe déjà (généré à
-        # minuit), mais le job de republication associé ne vit qu'en mémoire
-        # dans APScheduler -- un redémarrage survenu entre la génération du
-        # plan et l'horaire tiré le perd silencieusement (cf. échange du
-        # 21/09/2026, Dressing 2 actif à 11h00 jamais republié après deux
-        # redémarrages consécutifs avant cet horaire).
-        await rattraper_republish_manques()
+        from services.automation_scheduler import cleanup_stale_running_tasks
+        nb_cleaned = cleanup_stale_running_tasks()
+        if nb_cleaned:
+            print(f"🧹 [STARTUP] {nb_cleaned} tâche(s) 'en cours' interrompue(s) par le redémarrage précédent — marquée(s) 'Échec'.")
+            print("📅 [SYSTEM] Ordonnanceur APScheduler démarré (Sync à 14h et 22h).")
 
-    global watchdog_task
-    # 🔧 TEMPORAIRE : watchdog désactivé le temps de régler le problème de
-    # sessions Vinted (conflit entre reconnexion manuelle du scraping et
-    # tentatives simultanées du watchdog). À réactiver une fois le souci résolu.
-    print("📨 [SYSTEM] Watchdog 'Messages automatiques' DÉSACTIVÉ (temporaire).")
-    # try:
-    #     watchdog = ClemzAutoMessageWatchdog()
-    #     watchdog_task = asyncio.create_task(watchdog.run_forever())
-    #     watchdog_task.add_done_callback(_on_watchdog_task_done)
-    #     print("📨 [SYSTEM] Watchdog 'Messages automatiques' démarré (Chrome + Edge).")
-    # except Exception as e:
-    #     # Même l'initialisation elle-même (avant le premier await) est protégée :
-    #     # le serveur doit démarrer quoi qu'il arrive, avec juste un log d'alerte.
-    #     logger.error(f"❌ [SYSTEM] Échec du démarrage du watchdog 'Messages automatiques' : {e}")
+        # Rattrapage : si le backend était éteint au passage de minuit, aucun plan
+        # du jour n'a été généré pour D1/D2 -- sans ce filet, les deux dressings
+        # resteraient au repos toute la journée, faute d'horaire calculé.
+        from services.automation_scheduler import get_plan_du_jour
+        from services.automation_service import generer_plans_du_jour_cron, rattraper_republish_manques
+        if get_plan_du_jour("Dressing 1") is None or get_plan_du_jour("Dressing 2") is None:
+            print("🎲 [STARTUP] Aucun plan du jour valide pour aujourd'hui — génération de rattrapage.")
+            await generer_plans_du_jour_cron()
+        else:
+            # Cas distinct du précédent : un plan du jour existe déjà (généré à
+            # minuit), mais le job de republication associé ne vit qu'en mémoire
+            # dans APScheduler -- un redémarrage survenu entre la génération du
+            # plan et l'horaire tiré le perd silencieusement (cf. échange du
+            # 21/09/2026, Dressing 2 actif à 11h00 jamais republié après deux
+            # redémarrages consécutifs avant cet horaire).
+            await rattraper_republish_manques()
+
+        global watchdog_task
+        # 🔧 TEMPORAIRE : watchdog désactivé le temps de régler le problème de
+        # sessions Vinted (conflit entre reconnexion manuelle du scraping et
+        # tentatives simultanées du watchdog). À réactiver une fois le souci résolu.
+        print("📨 [SYSTEM] Watchdog 'Messages automatiques' DÉSACTIVÉ (temporaire).")
+        # try:
+        #     watchdog = ClemzAutoMessageWatchdog()
+        #     watchdog_task = asyncio.create_task(watchdog.run_forever())
+        #     watchdog_task.add_done_callback(_on_watchdog_task_done)
+        #     print("📨 [SYSTEM] Watchdog 'Messages automatiques' démarré (Chrome + Edge).")
+        # except Exception as e:
+        #     # Même l'initialisation elle-même (avant le premier await) est protégée :
+        #     # le serveur doit démarrer quoi qu'il arrive, avec juste un log d'alerte.
+        #     logger.error(f"❌ [SYSTEM] Échec du démarrage du watchdog 'Messages automatiques' : {e}")
+
+        log_vm_lifecycle_event("demarrage", "succes")
+    except Exception as e:
+        log_vm_lifecycle_event("demarrage", "echec", detail=str(e)[:300])
+        raise
 
 
 @app.on_event("shutdown")

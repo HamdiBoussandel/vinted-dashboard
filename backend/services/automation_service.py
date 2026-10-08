@@ -1,4 +1,6 @@
 # services/automation_service.py
+import asyncio
+import random
 from datetime import datetime, timedelta
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -7,8 +9,6 @@ from apscheduler.triggers.interval import IntervalTrigger
 from services.vinted_scraper import VintedScraper
 
 from services.automation_scheduler import (
-    get_scheduled_republish,
-    mark_scheduled_republish_status,
     start_task_run,
     update_task_result,
     finish_task_run,
@@ -41,8 +41,8 @@ def _planifier_republish_oneshot(dressing, plan, job_id, creneau):
     now = datetime.now()
     run_time = now.replace(hour=heure, minute=minute, second=seconde, microsecond=0)
     if run_time <= now:
-        # Garde-fou (le job tourne à minuit normalement, la plage est 11h-19h,
-        # donc toujours dans le futur) -- mais aussi le chemin normal du
+        # Garde-fou (le job tourne à minuit normalement, les créneaux sont
+        # 12h-13h/19h-21h, donc toujours dans le futur) -- mais aussi le chemin normal du
         # rattrapage démarrage quand l'horaire tiré est déjà passé : on ne
         # perd pas le jour, on republie au plus tôt.
         run_time = now + timedelta(minutes=1)
@@ -178,19 +178,38 @@ async def _execute_republish(creneau="soir", volume_cible=None):
     supplémentaire dans ce cas, seul le quota risk_guard s'applique).
     """
     from services.clemz_automation import ClemzAutomation
+    from services.supabase_service import SupabaseService
 
-    task = get_scheduled_republish(creneau)
-    if not task or task.get("status") != "pending":
-        print(f"⏭️  [REPUB {creneau.upper()}] Liste absente ou déjà traitée.")
-        return
+    dressing = "Dressing 1" if creneau == "midi" else "Dressing 2"
 
-    items = task.get("items", [])
+    # AUTO-REMPLISSAGE (cf. échange du 08/10/2026) : remplace la dépendance à
+    # la liste programmée manuellement (bouton "Programmer" du dashboard,
+    # scheduled_republish_*.json, cf. schedule_republish()) -- sans surveillance
+    # sur le VM, personne ne clique ce bouton chaque jour, donc la republication
+    # automatique ne faisait jamais rien (early return silencieux ci-dessus,
+    # "Liste absente ou déjà traitée"). Construit désormais la liste directement
+    # depuis l'inventaire réel, même filtre/tri que l'onglet "À republier" du
+    # dashboard (frontend/src/pages/Dashboard.jsx, articlesToRepublish) : les
+    # plus anciens en ligne d'abord. Le bouton "Programmer" existant reste
+    # disponible (rien supprimé) mais n'est plus un pré-requis bloquant.
+    svc = SupabaseService()
+    inventaire = await svc.get_processed_inventory()
+    today_iso = datetime.now().strftime("%Y-%m-%d")
+    eligibles = [
+        a for a in inventaire
+        if a.get("dressing") == dressing
+        and a.get("needs_republish_action")
+        and not a.get("is_vendu")
+        and not (a.get("report_republication_jusqu_au") and a["report_republication_jusqu_au"] > today_iso)
+    ]
+    eligibles.sort(key=lambda a: a.get("jours_en_ligne") or 0, reverse=True)
+    items = [{"id": a["id"], "nom": a["nom"], "dressing": a["dressing"]} for a in eligibles]
+
     if not items:
-        print(f"⚠️  [REPUB {creneau.upper()}] Liste vide, rien à faire.")
+        print(f"⏭️  [REPUB {creneau.upper()}] Aucun article éligible aujourd'hui pour {dressing}.")
         return
 
-    print(f"🚀 [REPUB {creneau.upper()}] Lancement — {len(items)} article(s).")
-    mark_scheduled_republish_status("running", creneau)
+    print(f"🚀 [REPUB {creneau.upper()}] Lancement — {len(items)} article(s) éligible(s) pour {dressing}.")
     task_id = start_task_run(f"republication_{creneau}", items)
 
     if volume_cible is not None and volume_cible < len(items):
@@ -219,13 +238,13 @@ async def _execute_republish(creneau="soir", volume_cible=None):
         produits_d2 = produits_d2[:allowed_d2]
 
         if truncated_d1:
-            add_task_global_anomaly(task_id, "Quota anti-détection atteint", "Dressing 1", reason_d1)
+            add_task_global_anomaly(task_id, "Quota anti-détection atteint", "Dressing 1", reason_d1, category="quota")
             for nom in excluded_d1:
                 matched = next((i for i in items if i["nom"] == nom), None)
                 if matched:
                     update_task_result(task_id, matched["id"], status="skipped", reason="Quota anti-détection atteint — reporté au prochain cycle.")
         if truncated_d2:
-            add_task_global_anomaly(task_id, "Quota anti-détection atteint", "Dressing 2", reason_d2)
+            add_task_global_anomaly(task_id, "Quota anti-détection atteint", "Dressing 2", reason_d2, category="quota")
             for nom in excluded_d2:
                 matched = next((i for i in items if i["nom"] == nom), None)
                 if matched:
@@ -239,7 +258,7 @@ async def _execute_republish(creneau="soir", volume_cible=None):
         # réussi sur Vinted. Même bug déjà corrigé le 21/09/2026 côté run_now_task()
         # (bouton manuel du dashboard) et le 02/10/2026 côté run_baisse_prix_auto(),
         # mais jamais reporté ici -- alors que c'est la tâche qui s'exécute TOUS LES
-        # JOURS automatiquement (horaire tiré 11h-19h), sans aucune intervention
+        # JOURS automatiquement (horaire tiré dans 12h-13h/19h-21h), sans aucune intervention
         # manuelle pour remarquer un comptage faussé par un échec partiel Clemz.
         traites_d1 = traites_d2 = 0
         for account_result in results:
@@ -270,6 +289,7 @@ async def _execute_republish(creneau="soir", volume_cible=None):
                     label="Échec navigation 'Voir mes listes'",
                     dressing=account_result["account"],
                     reason=repost["reason"],
+                    category="erreur_clemz",
                 )
 
             # Erreurs majeures Clemz ignorées en cours de route (ancienne annonce
@@ -282,6 +302,7 @@ async def _execute_republish(creneau="soir", volume_cible=None):
                     label=f"Erreur majeure ignorée : {erreur['nom']}",
                     dressing=account_result["account"],
                     reason=f"Ancienne annonce supprimée, nouvelle non créée — {erreur.get('url') or 'URL inconnue'}. Intervention manuelle nécessaire.",
+                    category="erreur_clemz",
                 )
 
     except Exception as e:
@@ -291,15 +312,15 @@ async def _execute_republish(creneau="soir", volume_cible=None):
 
     finally:
         finish_task_run(task_id)
-        mark_scheduled_republish_status("done", creneau)
         print(f"✅ [REPUB {creneau.upper()}] Tâche terminée.")
 
     # Le partage vues/favoris se déclenche désormais après CETTE unique
-    # republication (fenêtre 14h-19h), peu importe l'heure exacte à laquelle
-    # elle se termine -- et uniquement si elle a réussi (au moins partiellement).
-    # Généralisé sur `creneau` plutôt que hardcodé sur "soir" : comme "soir"
-    # reste toujours vide (early return plus haut dans la fonction), ce bloc
-    # n'est de toute façon jamais atteint pour ce créneau-là.
+    # republication (créneaux 12h-13h/19h-21h, cf. CRENEAUX_HORAIRES), peu
+    # importe l'heure exacte à laquelle elle se termine -- et uniquement si
+    # elle a réussi (au moins partiellement). Généralisé sur `creneau` plutôt
+    # que hardcodé sur "soir" -- DEPUIS le 08/10/2026 (auto-remplissage de la
+    # liste, cf. plus haut), "midi" ET "soir" republient réellement chacun
+    # leur dressing, ce bloc s'exécute bien pour les deux.
     from services.automation_scheduler import get_task_history
 
     history = get_task_history(limit=200, task_type=f"republication_{creneau}")
@@ -447,12 +468,12 @@ async def run_baisse_prix_auto(article_ids_restriction=None):
         + [{"id": a["id"], "nom": a["nom"], "dressing": a["dressing"], "taux": a["baisse_prix_taux"]} for a in exclus_quota]
     )
 
-    task_id = start_task_run("baisse_prix", tous_les_items)
+    task_id = start_task_run("baisse_prix", tous_les_items, sous_type="mauvaise_performance")
 
     if truncated_d1:
-        add_task_global_anomaly(task_id, "Quota anti-détection atteint", "Dressing 1", reason_d1)
+        add_task_global_anomaly(task_id, "Quota anti-détection atteint", "Dressing 1", reason_d1, category="quota")
     if truncated_d2:
-        add_task_global_anomaly(task_id, "Quota anti-détection atteint", "Dressing 2", reason_d2)
+        add_task_global_anomaly(task_id, "Quota anti-détection atteint", "Dressing 2", reason_d2, category="quota")
     for a in exclus_quota:
         update_task_result(task_id, a["id"], status="skipped", reason="Quota anti-détection atteint — reporté au prochain cycle.")
 
@@ -464,49 +485,71 @@ async def run_baisse_prix_auto(article_ids_restriction=None):
     # un échec partiel Clemz (déjà observé : "panneau perdu", message "X non
     # republiés") gonflait silencieusement le quota anti-détection sans qu'aucune
     # baisse n'ait réellement eu lieu.
-    traites_d1 = traites_d2 = 0
-    for taux, lot in sorted(lots_par_taux.items()):
-        if not lot:
-            continue
-        produits_d1 = [a["nom"] for a in lot if a["dressing"] == "Dressing 1"]
-        produits_d2 = [a["nom"] for a in lot if a["dressing"] == "Dressing 2"]
-        print(f"🚀 [BAISSE PRIX] Lancement du lot -{taux}% — {len(lot)} article(s).")
-        try:
-            automation = ClemzAutomation(produits_d1, produits_d2, task_type="baisse_prix", pourcentage_baisse_prix=taux)
-            results = await automation.run()
+    #
+    # SÉPARATION STRICTE PAR DRESSING (cf. échange du 08/10/2026) : les deux
+    # dressings ne sont plus jamais traités dans le même appel ClemzAutomation --
+    # tous les lots Dressing 1 d'abord, PUIS une pause aléatoire 5-10 min, PUIS
+    # tous les lots Dressing 2. Remplace l'ancien comportement où chaque lot
+    # (par taux) mélangeait les deux comptes dans un seul appel, avec une pause
+    # interne à ClemzAutomation.run() seulement si les deux avaient du travail.
+    async def _traiter_lots_dressing(dressing):
+        traites = 0
+        for taux, lot_complet in sorted(lots_par_taux.items()):
+            lot = [a for a in lot_complet if a["dressing"] == dressing]
+            if not lot:
+                continue
+            noms = [a["nom"] for a in lot]
+            produits_d1 = noms if dressing == "Dressing 1" else []
+            produits_d2 = noms if dressing == "Dressing 2" else []
+            print(f"🚀 [BAISSE PRIX] {dressing} — lancement du lot -{taux}% — {len(lot)} article(s).")
+            try:
+                automation = ClemzAutomation(produits_d1, produits_d2, task_type="baisse_prix", pourcentage_baisse_prix=taux)
+                results = await automation.run()
 
-            for account_result in results:
-                nb_succes = sum(
-                    1 for r in account_result.get("selection_results", []) if r.get("status") == "success"
-                )
-                if "Dressing 1" in account_result.get("account", ""):
-                    traites_d1 += nb_succes
-                elif "Dressing 2" in account_result.get("account", ""):
-                    traites_d2 += nb_succes
-
-                for item_result in account_result.get("selection_results", []):
-                    matched = next((a for a in lot if a["nom"] == item_result["nom"]), None)
-                    item_id = matched["id"] if matched else item_result["nom"]
-                    reason = item_result.get("reason")
-                    if item_result["status"] == "success":
-                        reason = f"Baisse -{taux}% appliquée"
-                    update_task_result(task_id, item_id, status=item_result["status"], reason=reason)
-
-                # Erreurs majeures Clemz ignorées en cours de route (ancienne annonce
-                # supprimée, nouvelle jamais créée) -- possibles même quand le lot
-                # se termine globalement en succès.
-                repost = account_result.get("repost_result") or {}
-                for erreur in repost.get("erreurs_majeures", []):
-                    add_task_global_anomaly(
-                        task_id,
-                        label=f"Erreur majeure ignorée (-{taux}%) : {erreur['nom']}",
-                        dressing=account_result["account"],
-                        reason=f"Ancienne annonce supprimée, nouvelle non créée — {erreur.get('url') or 'URL inconnue'}. Intervention manuelle nécessaire.",
+                for account_result in results:
+                    nb_succes = sum(
+                        1 for r in account_result.get("selection_results", []) if r.get("status") == "success"
                     )
-        except Exception as e:
-            print(f"❌ [BAISSE PRIX] Erreur sur le lot -{taux}% : {e}")
-            for a in lot:
-                update_task_result(task_id, a["id"], status="failed", reason=f"Erreur lot -{taux}% : {str(e)[:100]}")
+                    if dressing in account_result.get("account", ""):
+                        traites += nb_succes
+
+                    for item_result in account_result.get("selection_results", []):
+                        matched = next((a for a in lot if a["nom"] == item_result["nom"]), None)
+                        item_id = matched["id"] if matched else item_result["nom"]
+                        reason = item_result.get("reason")
+                        if item_result["status"] == "success":
+                            reason = f"Baisse -{taux}% appliquée"
+                        update_task_result(task_id, item_id, status=item_result["status"], reason=reason)
+
+                    # Erreurs majeures Clemz ignorées en cours de route (ancienne annonce
+                    # supprimée, nouvelle jamais créée) -- possibles même quand le lot
+                    # se termine globalement en succès.
+                    repost = account_result.get("repost_result") or {}
+                    for erreur in repost.get("erreurs_majeures", []):
+                        add_task_global_anomaly(
+                            task_id,
+                            label=f"Erreur majeure ignorée (-{taux}%) : {erreur['nom']}",
+                            dressing=account_result["account"],
+                            reason=f"Ancienne annonce supprimée, nouvelle non créée — {erreur.get('url') or 'URL inconnue'}. Intervention manuelle nécessaire.",
+                            category="erreur_clemz",
+                        )
+            except Exception as e:
+                print(f"❌ [BAISSE PRIX] {dressing} — erreur sur le lot -{taux}% : {e}")
+                for a in lot:
+                    update_task_result(task_id, a["id"], status="failed", reason=f"Erreur lot -{taux}% : {str(e)[:100]}")
+        return traites
+
+    d1_a_des_lots = any(a["dressing"] == "Dressing 1" for lot in lots_par_taux.values() for a in lot)
+    d2_a_des_lots = any(a["dressing"] == "Dressing 2" for lot in lots_par_taux.values() for a in lot)
+
+    traites_d1 = await _traiter_lots_dressing("Dressing 1")
+
+    if d1_a_des_lots and d2_a_des_lots:
+        pause_secondes = random.uniform(300, 600)
+        print(f"⏸️  [BAISSE PRIX] Pause de {pause_secondes / 60:.1f} min avant Dressing 2...")
+        await asyncio.sleep(pause_secondes)
+
+    traites_d2 = await _traiter_lots_dressing("Dressing 2")
 
     log_action("Dressing 1", "baisse_prix", traites_d1)
     log_action("Dressing 2", "baisse_prix", traites_d2)
@@ -517,9 +560,10 @@ async def run_baisse_prix_auto(article_ids_restriction=None):
     finish_task_run(task_id)
     print("✅ [BAISSE PRIX] Traitement terminé.")
 
-# Baisse de prix automatique quotidienne -- déclenchée après la sync de 14h
-# (données fraîches) et avant la fenêtre de republication 14h-19h (qui tire son
-# heure aléatoire dans cette même fenêtre, laissant de la marge).
+# Baisse de prix automatique quotidienne -- déclenchée à 10h40, après la sync
+# de 10h30 (données fraîches) et avant le premier créneau de republication
+# (12h00, cf. CRENEAUX_HORAIRES) -- voir le commentaire détaillé au niveau des
+# scheduler.add_job() plus bas dans ce fichier pour le calcul de marge.
 async def _run_baisse_prix_auto_cron():
     """
     Wrapper appelé uniquement par le cron quotidien -- vérifie le toggle
@@ -586,24 +630,38 @@ scheduler.add_job(
 )
 
 
-# Baisse de prix automatique quotidienne -- déclenchée après la sync de 14h
-# (données fraîches) et avant la fenêtre de republication 14h-19h (qui tire son
-# heure aléatoire dans cette même fenêtre, laissant de la marge).
-scheduler.add_job(
-    _run_baisse_prix_auto_cron,
-    CronTrigger(hour=14, minute=5),
-    id="baisse_prix_auto",
-    replace_existing=True,
-)
-
+# ORDRE DU SCÉNARIO JOURNALIER (cf. échange du 08/10/2026) : scraping -> baisse
+# de prix -> republication, TOUJOURS dans cet ordre. Avancé de 14h à 10h30 car
+# les créneaux de republication tirés au sort commencent dès 12h00
+# (CRENEAUX_HORAIRES, planification_republication.py) -- un cron à 14h
+# republierait APRÈS un tirage tombé dans 12h-13h, cassant l'ordre. Marge
+# calculée sur des durées réelles observées (task_history.json) : scraping
+# ~1,5-1,8 min pour les deux dressings, baisse de prix jusqu'à ~11 min pour un
+# gros lot AVANT l'ajout de la pause 5-10 min + sauvegarde chaînée (plus long
+# désormais) -- 10h30/10h40 laisse ~80 min de marge avant 12h00, largement
+# suffisant même avec la marge supplémentaire. Le verrou de profil Clemz
+# (ClemzAutomation.run()) reste le filet de sécurité réel si jamais la baisse
+# de prix débordait malgré tout : une republication qui démarrerait pendant
+# qu'il est encore tenu attend simplement son tour, elle ne se chevauche
+# jamais avec une autre automatisation sur le même profil.
 scheduler.add_job(
     run_cron_sync,
-    CronTrigger(hour=14, minute=0),
-    args=["14h"],
+    CronTrigger(hour=10, minute=30),
+    args=["10h30"],
     id="sync_14h",
     replace_existing=True,
 )
 
+scheduler.add_job(
+    _run_baisse_prix_auto_cron,
+    CronTrigger(hour=10, minute=40),
+    id="baisse_prix_auto",
+    replace_existing=True,
+)
+
+# Sync du soir -- conservée à 22h (fraîcheur des données avant l'extinction du
+# VM à 23h), indépendante de l'ordre scraping -> baisse -> republication
+# ci-dessus (purpose différent, pas liée aux créneaux de republication).
 scheduler.add_job(
     run_cron_sync,
     CronTrigger(hour=22, minute=0),

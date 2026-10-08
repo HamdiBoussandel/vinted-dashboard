@@ -77,6 +77,15 @@ export const maintenanceService = {
     return response.json();
   },
 
+  // Journal de routine (démarrage VM -> scraping -> baisse de prix ->
+  // republication -> extinction VM), une journée à la fois.
+  async getJournal(date) {
+    const params = date ? `?date=${date}` : '';
+    const response = await fetch(`${API_URL}/maintenance/journal${params}`);
+    if (!response.ok) throw new Error("Erreur réseau");
+    return response.json();
+  },
+
   async openBrowser(profileKey) {
     const response = await fetch(`${API_URL}/maintenance/open-browser`, {
       method: "POST",

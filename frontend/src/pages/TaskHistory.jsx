@@ -113,9 +113,19 @@ function getDressings(task) {
     return Array.from(set);
 }
 
+// Distingue un blocage quota (prévu, pas une panne) d'une vraie erreur Clemz
+// (cf. échange du 08/10/2026) -- avant, add_task_global_anomaly forçait
+// systématiquement "failed" sans distinction, rendant les deux indiscernables
+// dans l'historique.
+const CATEGORY_BADGE = {
+    quota: { label: 'Quota', className: 'bg-amber-100 text-amber-700' },
+    erreur_clemz: { label: 'Erreur Clemz', className: 'bg-red-200 text-red-900' },
+};
+
 function TaskResultRow({ result }) {
     const isSuccess = result.status === 'success';
     const dressingLabel = result.dressing || result.account || null;
+    const categoryBadge = CATEGORY_BADGE[result.category];
     return (
         <div className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs border ${isSuccess
             ? 'bg-white border-slate-100 text-slate-600'
@@ -130,6 +140,11 @@ function TaskResultRow({ result }) {
                 {dressingLabel && (
                     <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 shrink-0">
                         {dressingLabel}
+                    </span>
+                )}
+                {categoryBadge && (
+                    <span className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded shrink-0 ${categoryBadge.className}`}>
+                        {categoryBadge.label}
                     </span>
                 )}
                 {/* Sous-groupe de baisse de prix (-10%/-20%), absent pour les autres types de tâche */}
@@ -216,6 +231,13 @@ function TaskCard({ task }) {
     const successCount = counts.success;
     const totalCount = counts.total;
     const dressings = getDressings(task);
+    // Précision d'affichage uniquement (cf. échange du 08/10/2026) -- ex:
+    // "mauvaise_performance" pour distinguer une baisse_prix issue du cron
+    // Mauvaise Performance d'un futur autre sous-type, sans toucher à la
+    // logique de sélection/exécution sous-jacente.
+    const sousTypeLabel = task.sous_type
+        ? task.sous_type.replaceAll('_', ' ')
+        : null;
     const unitLabel = task.type === 'scraping'
         ? `dressing${totalCount > 1 ? 's' : ''}`
         : `article${totalCount > 1 ? 's' : ''}`;
@@ -233,6 +255,7 @@ function TaskCard({ task }) {
                     <span className={`flex items-center gap-1 text-[10px] font-black uppercase px-2 py-1 rounded-md border ${type.color}`}>
                         {type.icon}
                         {type.label}
+                        {sousTypeLabel && <span className="font-medium normal-case opacity-70">· {sousTypeLabel}</span>}
                     </span>
 
                     {/* Badge(s) dressing(s) concerné(s) */}

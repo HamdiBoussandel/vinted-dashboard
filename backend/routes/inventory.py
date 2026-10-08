@@ -631,13 +631,13 @@ async def run_automation_now(background_tasks: BackgroundTasks, payload: dict = 
                 lot2 = lot2[:allowed_d2]
 
                 if truncated_d1:
-                    add_task_global_anomaly(task_id, "Quota anti-détection atteint", "Dressing 1", reason_d1)
+                    add_task_global_anomaly(task_id, "Quota anti-détection atteint", "Dressing 1", reason_d1, category="quota")
                     for nom in excluded_d1:
                         matched = next((i for i in items if i["nom"] == nom), None)
                         if matched:
                             update_task_result(task_id, matched["id"], status="skipped", reason="Quota anti-détection atteint — reporté au prochain cycle.")
                 if truncated_d2:
-                    add_task_global_anomaly(task_id, "Quota anti-détection atteint", "Dressing 2", reason_d2)
+                    add_task_global_anomaly(task_id, "Quota anti-détection atteint", "Dressing 2", reason_d2, category="quota")
                     for nom in excluded_d2:
                         matched = next((i for i in items if i["nom"] == nom), None)
                         if matched:
@@ -715,6 +715,7 @@ async def run_automation_now(background_tasks: BackgroundTasks, payload: dict = 
                             label=f"Erreur majeure ignorée : {erreur['nom']}",
                             dressing=dressing_normalise,
                             reason=f"Ancienne annonce supprimée, nouvelle non créée — {erreur.get('url') or 'URL inconnue'}. Intervention manuelle nécessaire.",
+                            category="erreur_clemz",
                         )
 
                 # Items du lot n'ayant reçu AUCUN résultat (ex: navigateur fermé

@@ -8,7 +8,8 @@ import {
     Wrench,
     Camera,
     TrendingUp,
-    Flame
+    Flame,
+    CalendarCheck
 } from 'lucide-react';
 
 
@@ -25,6 +26,7 @@ export default function Sidebar() {
       { name: 'Ventes',            path: '/ventes',            icon: TrendingUp },
       { name: 'Générateur',        path: '/generateur',        icon: Sparkles },
       { name: 'Historique',        path: '/historique',        icon: ClipboardList },
+      { name: 'Journal',           path: '/journal',           icon: CalendarCheck },
       { name: 'Maintenance',       path: '/maintenance',       icon: Wrench },
   ]; 
 

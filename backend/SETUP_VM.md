@@ -21,8 +21,9 @@ chiffrée (LSA Secrets), pas en clair comme le ferait un `reg add` direct sur
 
 ## 2. Fuseau horaire
 
-Tous les crons du backend (minuit, 14h, 22h, fenêtre 11h-19h) utilisent
-l'heure locale -- un décalage silencieux casserait tout.
+Tous les crons du backend (minuit, 10h30 scraping, 10h40 baisse de prix, 22h,
+créneaux de republication 12h-13h/19h-21h) utilisent l'heure locale -- un
+décalage silencieux casserait tout.
 
 ```powershell
 tzutil /s "Romance Standard Time"

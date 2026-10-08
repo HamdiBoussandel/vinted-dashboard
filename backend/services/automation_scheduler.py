@@ -11,6 +11,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCHEDULED_REPUBLISH_MIDI_FILE = os.path.join(BASE_DIR, "scheduled_republish_midi.json")
 SCHEDULED_REPUBLISH_SOIR_FILE = os.path.join(BASE_DIR, "scheduled_republish_soir.json")
 TASK_HISTORY_FILE = os.path.join(BASE_DIR, "task_history.json")
+VM_LIFECYCLE_FILE = os.path.join(BASE_DIR, "vm_lifecycle_log.json")
+MAX_VM_LIFECYCLE_ENTRIES = 30
 
 # Plan du jour (hiérarchie convalescence > repos forcé > calendrier aléatoire),
 # recalculé chaque jour à minuit par planification_republication.py -- un
@@ -304,7 +306,13 @@ def cleanup_stale_running_tasks():
     return nb_cleaned
 
 
-def start_task_run(task_type, items):
+def start_task_run(task_type, items, sous_type=None):
+    """
+    sous_type : précision affichée sous le badge de type dans TaskHistory.jsx
+    (ex: "mauvaise_performance" pour une baisse_prix issue du cron Mauvaise
+    Performance) -- cf. échange du 08/10/2026, purement un libellé d'affichage,
+    aucune incidence sur la logique de sélection/exécution. None = pas affiché.
+    """
     today_str = datetime.now().strftime("%Y-%m-%d")
     timestamp = datetime.now().strftime("%H%M%S")
     task_id = f"{task_type}_{today_str}_{timestamp}"
@@ -312,6 +320,7 @@ def start_task_run(task_type, items):
     entry = {
         "task_id": task_id,
         "type": task_type,
+        "sous_type": sous_type,
         "started_at": datetime.now().isoformat(),
         "finished_at": None,
         "global_status": "running",
@@ -372,13 +381,18 @@ def fail_pending_results(task_id, reason):
         _write_json_locked(TASK_HISTORY_FILE, history)
 
 
-def add_task_global_anomaly(task_id, label, dressing, reason):
+def add_task_global_anomaly(task_id, label, dressing, reason, category="erreur"):
     """
     Ajoute une entrée d'anomalie GLOBALE (pas liée à un produit précis) dans les
     résultats d'une tâche déjà démarrée — ex. échec de navigation 'Voir mes listes'
     après une constitution de liste par ailleurs réussie. Réutilise directement
     l'affichage existant de TaskHistory.jsx (items avec id/nom/dressing/status/reason),
     sans modification du frontend.
+
+    category : "quota" (blocage risk_guard, pas une vraie erreur Clemz) ou
+    "erreur_clemz" (échec Clemz réel) -- affiché avec un badge distinct dans
+    TaskHistory.jsx (cf. échange du 08/10/2026). "status" reste "failed" dans
+    les deux cas pour ne pas changer le calcul de global_status existant.
     """
     with _file_lock:
         history = _read_json(TASK_HISTORY_FILE, default=[])
@@ -390,6 +404,7 @@ def add_task_global_anomaly(task_id, label, dressing, reason):
                 "nom": f"⚠️ {label}",
                 "dressing": dressing,
                 "status": "failed",
+                "category": category,
                 "reason": reason,
             })
             break
@@ -427,3 +442,34 @@ def finish_task_run(task_id):
 
         _write_json_locked(TASK_HISTORY_FILE, history)
         return history[0] if history else None
+
+
+def log_vm_lifecycle_event(event, status, detail=None):
+    """
+    Journalise un événement de cycle de vie du VM (démarrage/extinction) --
+    distinct de task_history (qui suit des tâches d'automatisation, pas le
+    process backend lui-même). Ajouté le 08/10/2026 : jusqu'ici, un échec au
+    démarrage (ex: crash import) ou à l'extinction n'était visible que dans
+    des logs fichier (logs/demarrage.log, console), jamais dans le dashboard.
+
+    event : "demarrage" | "extinction"
+    status : "succes" | "echec"
+    detail : message libre (ex: raison d'un échec), optionnel.
+    """
+    entry = {
+        "event": event,
+        "status": status,
+        "detail": detail,
+        "timestamp": datetime.now().isoformat(),
+    }
+    with _file_lock:
+        log = _read_json(VM_LIFECYCLE_FILE, default=[])
+        log.insert(0, entry)
+        log = log[:MAX_VM_LIFECYCLE_ENTRIES]
+        _write_json_locked(VM_LIFECYCLE_FILE, log)
+    return entry
+
+
+def get_vm_lifecycle_log(limit=14):
+    log = _read_json(VM_LIFECYCLE_FILE, default=[])
+    return log[:limit]

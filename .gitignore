@@ -15,8 +15,10 @@ backend/clemz_session_chrome/
 backend/clemz_session_edge/
 
 # Fichiers de persistance locale (générés à l'exécution)
-scheduled_republish.json
+scheduled_republish_midi.json
+scheduled_republish_soir.json
 task_history.json
+vm_lifecycle_log.json
 cron_status.json
 error_log.txt
 extension_errors.log
