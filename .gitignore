@@ -23,6 +23,10 @@ extension_errors.log
 plan_du_jour_d1.json
 plan_du_jour_d2.json
 plan_du_jour_historique.jsonl
+baisse_prix_auto_settings.json
+partage_vues_favoris_auto_settings.json
+scraping_auto_settings.json
+clemz_visible_settings.json
 
 # Build frontend
 dist/

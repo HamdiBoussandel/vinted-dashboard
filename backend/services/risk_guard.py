@@ -230,15 +230,22 @@ def report_suspension(dressing: str, note: str = None, detected_at: datetime = N
     À appeler manuellement dès qu'une suspension/limitation Vinted est constatée
     sur un compte. Déclenche une période de convalescence automatique.
 
-    detected_at : date ET HEURE réelles de la restriction Vinted, si connues --
-    le palier démarre à partir de ce moment, PAS de l'instant où ce signalement
-    est enregistré en base (souvent constaté a posteriori, parfois plusieurs
-    heures après le début réel de la restriction). None = maintenant (par
-    défaut Supabase) -- à éviter dès que l'heure réelle est déterminable.
+    detected_at : date ET HEURE réelles de la restriction Vinted EN HEURE LOCALE
+    (naturel pour un humain qui rapporte "vu vers 13h"), si connues -- le palier
+    démarre à partir de ce moment, PAS de l'instant où ce signalement est
+    enregistré en base (souvent constaté a posteriori, parfois plusieurs heures
+    après le début réel de la restriction). None = maintenant.
+    Convertie en UTC avant stockage (cf. échange du 08/10/2026 -- un premier
+    appel avait stocké une heure locale telle quelle, alors que
+    get_active_convalescence() la compare à datetime.utcnow() : le palier
+    calculé partait "dans le futur", produisant un jours_ecoules négatif
+    incohérent) -- jamais passer une heure déjà en UTC ici, sous peine de la
+    décaler une deuxième fois.
     """
     payload = {"dressing": dressing, "note": note}
     if detected_at is not None:
-        payload["detected_at"] = detected_at.isoformat()
+        decalage_local_utc = datetime.now() - datetime.utcnow()
+        payload["detected_at"] = (detected_at - decalage_local_utc).isoformat()
     _supabase.db.table("account_suspensions").insert(payload).execute()
 
 

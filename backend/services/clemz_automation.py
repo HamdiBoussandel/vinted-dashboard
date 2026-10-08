@@ -1723,6 +1723,16 @@ class ClemzAutomation:
 
 if __name__ == "__main__":
     async def _test():
+        # IMPORTANT (cf. échange du 08/10/2026) : ce harnais pilote le MÊME
+        # navigateur/compte Vinted réel que la prod -- une exécution réussie ici
+        # a un impact réel, identique à un lancement depuis le dashboard. Avant,
+        # aucun log_action() n'était appelé après un test, créant un angle mort
+        # invisible au quota anti-détection (volume glissant sous-estimé par
+        # rapport à l'activité réelle perçue côté Vinted) -- au moins 2 fois
+        # responsable d'un volume réel bien supérieur à ce que le système de
+        # sécurité croyait avoir autorisé, jusqu'à contribuer à une vraie
+        # restriction de compte (Dressing 1, 08/10/2026). Désormais compté
+        # comme n'importe quel autre déclenchement, jamais une exception.
         automation = ClemzAutomation(
             produits_d1=[
                 "Jean Blanc Morgan - Taille 38 (M) - Détails Chaînes Argentées - Chic",
@@ -1732,5 +1742,12 @@ if __name__ == "__main__":
         async with async_playwright() as p:
             result = await automation._run_single_automation(p, automation.accounts[0])
             print(result)
+
+        from services.risk_guard import log_action
+        nb_succes = sum(1 for r in result.get("selection_results", []) if r.get("status") == "success")
+        dressing = next((d for d in ("Dressing 1", "Dressing 2") if d in result.get("account", "")), None)
+        if dressing and nb_succes > 0:
+            log_action(dressing, automation.task_type, nb_succes)
+            print(f"📊 [TEST CLI] {nb_succes} succès loggé(s) dans le quota anti-détection pour {dressing}.")
 
     asyncio.run(_test())

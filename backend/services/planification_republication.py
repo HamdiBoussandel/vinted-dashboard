@@ -1,9 +1,6 @@
 """
 Niveau 3 de la hiérarchie de décision anti-détection (calendrier aléatoire),
-et orchestration des 3 niveaux dans leur ordre strict -- casse la
-prévisibilité mécanique des anciens créneaux fixes (11h30-12h30 / 17h00-18h00),
-détectable par les systèmes de scoring comportemental type DataDome Account
-Protect.
+et orchestration des 3 niveaux dans leur ordre strict.
 
 Hiérarchie (s'arrête au premier niveau qui se prononce) :
   1. Convalescence à paliers -- risk_guard.get_active_convalescence()
@@ -13,7 +10,8 @@ Hiérarchie (s'arrête au premier niveau qui se prononce) :
   3. Calendrier aléatoire (ce module) :
      - 75% actif / 25% repos, tiré indépendamment chaque jour (pas de
        distinction semaine/week-end)
-     - si actif : horaire aléatoire dans 11h00-19h00
+     - si actif : horaire aléatoire tiré dans CRENEAUX_HORAIRES (cf.
+       ci-dessous) -- PAS un horaire fixe, un tirage dans le créneau choisi
      - volume cible tiré selon une loi triangulaire (favorise les valeurs
        moyennes) entre VOLUME_MIN_JOUR_ACTIF (5) et le plafond RÉEL du jour,
        obtenu en interrogeant risk_guard.get_allowed_quantity() -- jamais un
@@ -32,8 +30,22 @@ from services.automation_scheduler import save_plan_du_jour
 
 PROBABILITE_JOUR_ACTIF = 0.75
 
-HORAIRE_MIN = time(11, 0, 0)
-HORAIRE_MAX = time(19, 0, 0)
+# Créneaux de republication -- choisis le 07/10/2026 pour viser les heures de
+# forte affluence acheteurs sur Vinted (pause déjeuner, soirée), DÉCISION
+# BUSINESS explicite de l'utilisateur, pas une recalibration anti-détection.
+#
+# ATTENTION, compromis assumé : remplace l'ancienne fenêtre continue unique
+# (11h-19h), elle-même conçue pour casser la prévisibilité mécanique des
+# créneaux fixes historiques (11h30-12h30 / 17h00-18h00), jugés détectables
+# par les systèmes de scoring comportemental type DataDome Account Protect.
+# Revenir à 2 créneaux étroits et répétés tous les jours réintroduit une part
+# de ce risque (atténué par le tirage aléatoire DANS chaque créneau, que
+# l'ancien système fixe n'avait pas) -- accepté en connaissance de cause,
+# visibilité jugée prioritaire ici.
+CRENEAUX_HORAIRES = [
+    (time(12, 0, 0), time(13, 0, 0)),
+    (time(19, 0, 0), time(21, 0, 0)),
+]
 
 # Plancher ABSOLU du tirage triangulaire (cf. tirer_volume_triangulaire) --
 # relevé de 1 à 5 le 15/09/2026 : avec un plancher à 1, ~16% des jours actifs
@@ -89,8 +101,15 @@ def _minutes_depuis_minuit(t: time) -> int:
 
 
 def tirer_horaire_aleatoire() -> time:
-    minutes_min = _minutes_depuis_minuit(HORAIRE_MIN)
-    minutes_max = _minutes_depuis_minuit(HORAIRE_MAX)
+    """
+    Tire d'abord UN créneau au hasard parmi CRENEAUX_HORAIRES (chance égale
+    entre créneaux, peu importe leur durée respective), puis une minute/seconde
+    au hasard À L'INTÉRIEUR -- jamais un horaire fixe, même en ciblant des
+    plages de visibilité précises.
+    """
+    debut, fin = random.choice(CRENEAUX_HORAIRES)
+    minutes_min = _minutes_depuis_minuit(debut)
+    minutes_max = _minutes_depuis_minuit(fin)
     minutes_tirees = random.randint(minutes_min, minutes_max)
     secondes = random.randint(0, 59)
     return time(minutes_tirees // 60, minutes_tirees % 60, secondes)

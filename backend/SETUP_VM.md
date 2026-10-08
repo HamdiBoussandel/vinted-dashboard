@@ -86,6 +86,17 @@ Pour les mises à jour futures (après la première installation), un simple
 
 ## 6. Python + dépendances
 
+**Prérequis découvert le 07/10/2026 sur une machine fraîchement installée** :
+installer le **Visual C++ Redistributable x64** AVANT `pip install`, sinon
+`greenlet` (dépendance de Playwright) plante au premier démarrage avec
+`ImportError: DLL load failed while importing _greenlet` -- runtime C++ qui
+manque souvent sur un Windows tout juste réinstallé (déjà présent sur le
+poste de dev via d'autres logiciels, d'où l'absence du problème là-bas) :
+
+```
+https://aka.ms/vs/17/release/vc_redist.x64.exe
+```
+
 Installer **Python 3.14** (version exacte utilisée actuellement, cf. `venv`
 du poste de dev) depuis python.org, puis dans `backend/` :
 
