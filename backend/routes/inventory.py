@@ -787,68 +787,127 @@ async def run_liquidation_now(background_tasks: BackgroundTasks, payload: dict =
     laissés de côté. Comme rien n'est stocké en état (liquidation_phase/
     liquidation_prix_cible recalculés à chaque fois depuis jours_en_vente),
     ils seront réévalués naturellement au prochain clic, sans action requise.
+
+    Groupes formés par (dressing, prix fixe) depuis le 08/10/2026 -- le seuil
+    s'applique à CHAQUE dressing séparément : avant, 2 articles D1 + 1 article
+    D2 au même prix franchissaient le seuil ensemble, puis l'exécution (déjà
+    séparée par dressing) ouvrait quand même un cycle Playwright pour 1 seul
+    article D2, exactement ce que le seuil est censé éviter.
+    payload["dressing"] optionnel ("Dressing 1"/"Dressing 2") : ne lance que ce
+    dressing (absent = les deux, D1 puis pause 5-10 min puis D2).
+    payload["forcer_seuil"] optionnel (08/10/2026, choix manuel et délibéré de
+    l'utilisateur) : lance aussi les groupes sous le seuil -- un cycle Clemz par
+    prix fixe, même pour 1 seul article.
     """
     produits = payload.get("produits", [])
+    dressing_demande = payload.get("dressing")
+    forcer_seuil = bool(payload.get("forcer_seuil"))
+    if dressing_demande not in (None, "Dressing 1", "Dressing 2"):
+        raise HTTPException(status_code=400, detail=f"Dressing inconnu : {dressing_demande}")
+    if dressing_demande:
+        produits = [p for p in produits if p.get("dressing") == dressing_demande]
     if not produits:
         raise HTTPException(status_code=400, detail="La liste de produits est vide.")
 
-    groupes_bruts_par_prix = {}
+    groupes_bruts = {}
     for p in produits:
         prix_cible = p.get("prix_cible")
-        if not prix_cible or prix_cible <= 0:
+        if not prix_cible or prix_cible <= 0 or p.get("dressing") not in ("Dressing 1", "Dressing 2"):
             continue
         prix_fixe = supabase_svc.calculer_prix_fixe_liquidation(prix_cible)
-        groupes_bruts_par_prix.setdefault(prix_fixe, []).append(p)
+        groupes_bruts.setdefault((p["dressing"], prix_fixe), []).append(p)
 
-    # groupes / groupes_reportes : prix_fixe -> items
+    # groupes / groupes_reportes : (dressing, prix_fixe) -> items
     groupes = {}
     groupes_reportes = {}
-    for prix_fixe, items in groupes_bruts_par_prix.items():
-        if len(items) >= MIN_ARTICLES_PAR_GROUPE_LIQUIDATION:
-            groupes[prix_fixe] = items
+    for cle, items in groupes_bruts.items():
+        if forcer_seuil or len(items) >= MIN_ARTICLES_PAR_GROUPE_LIQUIDATION:
+            groupes[cle] = items
         else:
-            groupes_reportes[prix_fixe] = items
+            groupes_reportes[cle] = items
 
     if not groupes:
         nb_en_attente = sum(len(items) for items in groupes_reportes.values())
         raise HTTPException(
             status_code=400,
-            detail=f"Aucun groupe n'atteint le seuil de {MIN_ARTICLES_PAR_GROUPE_LIQUIDATION} articles pour l'instant "
+            detail=f"Aucun groupe n'atteint le seuil de {MIN_ARTICLES_PAR_GROUPE_LIQUIDATION} articles d'un même dressing pour l'instant "
                    f"({nb_en_attente} article(s) en attente, répartis sur {len(groupes_reportes)} groupe(s) trop petits)."
         )
 
     background_tasks.add_task(_run_liquidation_task, groupes)
+
+    def _stats_dressing(dressing):
+        return {
+            "nb_articles": sum(len(items) for (d, _), items in groupes.items() if d == dressing),
+            "nb_groupes": sum(1 for (d, _) in groupes if d == dressing),
+        }
+
     return {
         "status": "started",
         "nb_articles": sum(len(items) for items in groupes.values()),
         "nb_groupes": len(groupes),
         "nb_articles_reportes": sum(len(items) for items in groupes_reportes.values()),
         "nb_groupes_reportes": len(groupes_reportes),
+        "par_dressing": {d: _stats_dressing(d) for d in ("Dressing 1", "Dressing 2")},
     }
 
 
 async def _run_liquidation_task(groupes):
-    """groupes : prix_fixe -> items"""
+    """groupes : (dressing, prix_fixe) -> items -- chaque groupe est mono-dressing
+
+    Séparation stricte Dressing 1 / Dressing 2 (règle anti-détection : jamais
+    les deux dressings dans le même appel ClemzAutomation, même en déclenchement
+    manuel) -- même schéma que _traiter_lots_dressing() dans
+    automation_service.run_baisse_prix_auto(). La liquidation reste volontairement
+    hors quota risk_guard (pas de get_allowed_quantity/log_action) et hors cron :
+    toujours déclenchée manuellement depuis le dashboard.
+    """
+    import asyncio
+    import random
     from services.automation_scheduler import start_task_run, update_task_result, finish_task_run
 
     tous_les_items = [p for items in groupes.values() for p in items]
     task_id = start_task_run("liquidation", tous_les_items)
 
-    try:
-        for prix_fixe, items in groupes.items():
-            produits_d1 = [i["nom"] for i in items if i.get("dressing") == "Dressing 1"]
-            produits_d2 = [i["nom"] for i in items if i.get("dressing") == "Dressing 2"]
+    async def _traiter_dressing(dressing):
+        groupes_dressing = sorted(
+            ((prix_fixe, items) for (d, prix_fixe), items in groupes.items() if d == dressing),
+            key=lambda kv: kv[0],
+        )
+        for index, (prix_fixe, items_dressing) in enumerate(groupes_dressing):
+            # Pause aléatoire 2-5 min entre deux groupes d'un même dressing
+            # (08/10/2026) -- même fourchette que entre deux dressings dans
+            # clemz_automation.py ; évite d'enchaîner les baisses de prix Clemz
+            # d'affilée (séries associées aux captchas observés).
+            if index > 0:
+                pause_secondes = random.uniform(120, 300)
+                logger.info(f"⏸️ Liquidation {dressing} : pause de {pause_secondes / 60:.1f} min avant le groupe {prix_fixe}€")
+                await asyncio.sleep(pause_secondes)
+            noms = [i["nom"] for i in items_dressing]
+            produits_d1 = noms if dressing == "Dressing 1" else []
+            produits_d2 = noms if dressing == "Dressing 2" else []
 
             bot = ClemzAutomation(produits_d1, produits_d2, task_type="baisse_prix", prix_fixe=prix_fixe)
             results = await bot.run()
 
             for account_result in results:
                 for item_result in account_result.get("selection_results", []):
-                    matched = next((i for i in items if i["nom"] == item_result["nom"]), None)
+                    matched = next((i for i in items_dressing if i["nom"] == item_result["nom"]), None)
                     item_id = matched["id"] if matched else item_result["nom"]
                     update_task_result(task_id, item_id, status=item_result["status"], reason=item_result.get("reason"))
                     if item_result["status"] == "success" and matched:
                         supabase_svc.update_article(matched["id"], {"prix_vente": prix_fixe})
+
+    try:
+        d1_a_des_items = any(d == "Dressing 1" for (d, _) in groupes)
+        d2_a_des_items = any(d == "Dressing 2" for (d, _) in groupes)
+
+        await _traiter_dressing("Dressing 1")
+        if d1_a_des_items and d2_a_des_items:
+            pause_secondes = random.uniform(300, 600)
+            logger.info(f"⏸️ Liquidation : pause de {pause_secondes / 60:.1f} min avant Dressing 2")
+            await asyncio.sleep(pause_secondes)
+        await _traiter_dressing("Dressing 2")
     except Exception as e:
         logger.error(f"❌ Erreur liquidation : {e}")
         for item in tous_les_items:

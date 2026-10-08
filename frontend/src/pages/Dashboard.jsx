@@ -816,6 +816,23 @@ export default function Dashboard() {
                     >
                         {isForcingBaisse ? '...' : `📉 Forcer baisse de prix (${articlesToBaisse.length})`}
                     </button>
+                    {/* Lancement limité à un seul dressing (08/10/2026) -- le backend
+                        (run_baisse_prix_auto) ne traite que les IDs envoyés, l'autre
+                        compte n'est donc jamais ouvert. */}
+                    {['Dressing 1', 'Dressing 2'].map(dressing => {
+                        const items = articlesToBaisse.filter(a => a.dressing === dressing);
+                        return (
+                            <button
+                                key={dressing}
+                                onClick={() => handleForceRunNow('baisse_prix', items)}
+                                disabled={isForcingBaisse || items.length === 0}
+                                title={`Baisse de prix uniquement sur ${dressing}`}
+                                className="px-3 py-2 bg-white text-orange-600 border border-orange-200 rounded-lg text-xs font-black uppercase hover:bg-orange-50 disabled:opacity-40"
+                            >
+                                {isForcingBaisse ? '...' : `📉 ${dressing.replace('Dressing ', 'D')} (${items.length})`}
+                            </button>
+                        );
+                    })}
                     {activeSegment === 'Pépites' && (
                         <button
                             onClick={handleOpenPepitesModal}

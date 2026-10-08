@@ -1,4 +1,5 @@
 import os
+import json
 import asyncio
 import logging
 import sys
@@ -339,8 +340,24 @@ class ClemzAutomation:
         results = []
 
         # --- Ouverture panneau + onglet Mon dressing + lancement Smart Dressing ---
+        # CORRIGÉ (08/10/2026) : la RECONSTRUCTION de liste après une baisse de prix
+        # suit un clic sur #progressDressingButton ("Mon dressing"), qui recharge la
+        # page Vinted -- le panneau Clemz n'est pas encore réinjecté 0,5 s après.
+        # L'ancien snapshot immédiat échouait alors en silence (aucun log), la
+        # liste "reconstruite" était vide et la SAUVEGARDE n'était jamais faite
+        # (constaté en test liquidation D2 : prix baissé sur Vinted, pas sauvegardé
+        # dans Clemz). On attend donc la réinjection (jusqu'à 30 s) puis on
+        # rouvre le panneau avant de continuer.
+        by_id = {}
+        for _ in range(30):
+            by_id = await snapshot_by_id(cdp)
+            if "miniVinz" in by_id and "toolBody" in by_id:
+                break
+            await asyncio.sleep(1)
+        await ensure_panel_open(cdp, page)
         by_id = await snapshot_by_id(cdp)
         if "myDressingTabLink" not in by_id:
+            logger.error(f"❌ [{acc['name']}] Panneau Clemz introuvable au début de la constitution de liste (url={page.url!r}).")
             return [{"nom": p, "status": "failed", "reason": "Panneau Clemz introuvable (toolBody/myDressingTabLink absent)"} for p in acc["produits"]]
 
         await click_element(cdp, by_id["myDressingTabLink"]["node_id"])
@@ -370,6 +387,24 @@ class ClemzAutomation:
             logger.warning(f"⚠️ [{acc['name']}] Radio 'Tout mon dressing' (myDressingTargetAll) introuvable — "
                             f"on suppose qu'il est déjà coché (ancien comportement), à vérifier.")
 
+        # CORRIGÉ (08/10/2026) : #myDressingSelectAction (1 = "🔍 Smart dressing",
+        # 2 = "⏫ Sauver annonces") est MÉMORISÉ par Clemz (chrome.storage.local) et
+        # restauré à chaque ouverture. Après une sauvegarde (_trigger_save_backup
+        # le met à "2"), le "Lancer !" ci-dessous lançait donc "Sauver annonces" sur
+        # "Tout mon dressing" au lieu du Smart Dressing -- modale de sauvegarde
+        # jamais confirmée, #processStage jamais modifié, timeout 120 s (constaté
+        # en test liquidation D2). On force explicitement "1" à chaque fois.
+        by_id = await snapshot_by_id(cdp)
+        if "myDressingSelectAction" not in by_id:
+            return [{"nom": p, "status": "failed", "reason": "Sélecteur d'action (myDressingSelectAction) introuvable"} for p in acc["produits"]]
+        await set_select_value(cdp, by_id["myDressingSelectAction"]["node_id"], "1")
+        await asyncio.sleep(0.2)
+        action = (await get_live_props(cdp, by_id["myDressingSelectAction"]["node_id"], props=("value",))).get("value")
+        if action != "1":
+            logger.error(f"❌ [{acc['name']}] Action Mon dressing restée sur {action!r} au lieu de '1' (Smart dressing) — arrêt avant 'Lancer !'.")
+            return [{"nom": p, "status": "failed", "reason": f"Action 'Smart dressing' non sélectionnable (valeur {action!r})"} for p in acc["produits"]]
+        _pause("Action 'Smart dressing' (1) sélectionnée explicitement")
+
         await click_element(cdp, by_id["myDressingButton"]["node_id"])  # "Lancer !"
         _pause(f"Clic sur 'Lancer !' effectué — texte de référence AVANT clic : {baseline_text!r}")
 
@@ -378,6 +413,7 @@ class ClemzAutomation:
         MAX_WAIT_SMART_DRESSING = 120  # secondes, garde-fou
         POLL_INTERVAL = 1
         has_changed = False
+        text = baseline_text
         while elapsed < MAX_WAIT_SMART_DRESSING:
             by_id = await snapshot_by_id(cdp)
             if "processStage" in by_id:
@@ -397,7 +433,8 @@ class ClemzAutomation:
         if not ready:
             logger.error(
                 f"🔬 [DIAG SMART DRESSING TIMEOUT] [{acc['name']}] Panneau jamais devenu 'prêt' après "
-                f"{MAX_WAIT_SMART_DRESSING}s -- changement de #processStage détecté ? {has_changed}. "
+                f"{MAX_WAIT_SMART_DRESSING}s -- changement de #processStage détecté ? {has_changed} "
+                f"(texte avant clic : {baseline_text!r}, dernier texte lu : {text!r}, url={page.url!r}). "
                 f"Probablement une contention au lancement si un autre compte tournait en parallèle "
                 f"au même moment (CPU/réseau) -- voir le délai de démarrage échelonné ajouté."
             )
@@ -922,6 +959,137 @@ class ClemzAutomation:
 
         return {"status": "success"}
 
+    # --- Liste "à traiter" (mainList) : lecture / vidage (08/10/2026) ---------
+    # En mode PRIX FIXE, Clemz applique le même prix à TOUTE la liste "à
+    # traiter". Un résidu d'un run précédent interrompu (cf. bug du 17/08/2026
+    # dans _poll_mass_action) recevrait donc ce prix aussi -- ex. un article à
+    # 40€ fixé à 3,90€. D'où : vidage avant constitution de la liste, puis
+    # contrôle du compteur juste avant l'action de masse.
+    # Sélecteurs repris du code source de l'extension (html/toolModals/
+    # listsModal.html) : #mainListLink .itemCount affiche "(N)" ; le bouton
+    # "🗑️ enlever" (.list-delete-button[data-list-current=mainList]) retire de la
+    # LISTE les articles cochés dans #mainListContent -- simple retrait de
+    # chrome.storage.local, aucune action sur Vinted.
+
+    async def _ouvrir_modale_listes(self, cdp, page, acc):
+        """Ouvre 'Voir mes listes' et retourne le node_id de #mainListLink (ou None)."""
+        await ensure_panel_open(cdp, page)
+        by_id = await snapshot_by_id(cdp)
+        if "showListsButton1" not in by_id:
+            return None
+        await click_element(cdp, by_id["showListsButton1"]["node_id"])
+        await asyncio.sleep(0.8)
+        by_id = await snapshot_by_id(cdp)
+        return by_id.get("mainListLink", {}).get("node_id")
+
+    @staticmethod
+    async def _js_sur_noeud(cdp, node_id, fonction_js):
+        result = await cdp.send("Runtime.callFunctionOn", {
+            "objectId": (await cdp.send("DOM.resolveNode", {"nodeId": node_id}))["object"]["objectId"],
+            "functionDeclaration": fonction_js,
+            "returnByValue": True,
+        })
+        return json.loads(result["result"]["value"])
+
+    async def _compter_liste_a_traiter(self, cdp, main_list_link_id):
+        """Nombre d'articles de la liste 'à traiter' (badge '(N)'), None si illisible."""
+        info = await self._js_sur_noeud(cdp, main_list_link_id, """
+            function() {
+                const badge = (this.querySelector('.itemCount') || {}).textContent || '';
+                const m = badge.match(/\\((\\d+)\\)/);
+                const content = this.getRootNode().querySelector('#mainListContent');
+                return JSON.stringify({
+                    badge: m ? parseInt(m[1], 10) : null,
+                    cases: content ? content.querySelectorAll('input[type=checkbox]').length : null,
+                });
+            }
+        """)
+        logger.info(f"   [DIAG] Liste 'à traiter' : badge={info.get('badge')} cases={info.get('cases')}")
+        return info.get("badge")
+
+    async def _fermer_modale_listes(self, cdp, main_list_link_id):
+        await self._js_sur_noeud(cdp, main_list_link_id, """
+            function() {
+                const modale = this.closest('.toolModal-content');
+                const bouton = modale && modale.querySelector('.close-modal');
+                if (bouton) bouton.click();
+                return JSON.stringify(!!bouton);
+            }
+        """)
+        await asyncio.sleep(0.5)
+
+    async def _vider_liste_a_traiter(self, cdp, page, acc):
+        """
+        Vide la liste 'à traiter' : éditer -> cocher toutes les cases -> enlever.
+        Retourne {"status": "success"} seulement si le compteur relu vaut 0 --
+        sinon "failed" (l'appelant n'applique alors AUCUN prix).
+        """
+        main_list_link_id = await self._ouvrir_modale_listes(cdp, page, acc)
+        if not main_list_link_id:
+            return {"status": "failed", "reason": "Modale 'Voir mes listes' introuvable (vidage de la liste impossible)"}
+
+        avant = await self._compter_liste_a_traiter(cdp, main_list_link_id)
+        if avant == 0:
+            await self._fermer_modale_listes(cdp, main_list_link_id)
+            return {"status": "success"}
+
+        logger.warning(f"🧹 [{acc['name']}] Liste 'à traiter' non vide ({avant} article(s) résiduel(s)) — vidage avant prix fixe.")
+        resultat = await self._js_sur_noeud(cdp, main_list_link_id, """
+            function() {
+                const root = this.getRootNode();
+                const editer = root.querySelector('.list-modify-button[data-list-current="mainList"]');
+                if (editer) editer.click();
+                const content = root.querySelector('#mainListContent');
+                const cases = content ? content.querySelectorAll('input[type=checkbox]') : [];
+                cases.forEach(c => { c.checked = true; });
+                const enlever = root.querySelector('.list-delete-button[data-list-current="mainList"]');
+                if (!enlever) return JSON.stringify({ok: false, cases: cases.length});
+                enlever.click();
+                return JSON.stringify({ok: true, cases: cases.length});
+            }
+        """)
+        await asyncio.sleep(1.5)
+        _pause(f"Vidage liste 'à traiter' déclenché ({resultat}) — vérifie visuellement")
+
+        # Relecture après ré-ouverture de la modale (badge rafraîchi au rendu)
+        await self._fermer_modale_listes(cdp, main_list_link_id)
+        main_list_link_id = await self._ouvrir_modale_listes(cdp, page, acc)
+        apres = await self._compter_liste_a_traiter(cdp, main_list_link_id) if main_list_link_id else None
+        if main_list_link_id:
+            await self._fermer_modale_listes(cdp, main_list_link_id)
+
+        if apres != 0:
+            return {
+                "status": "failed",
+                "reason": f"Liste 'à traiter' non vidée ({avant} -> {apres} article(s)) — prix fixe annulé "
+                          f"pour ne pas l'appliquer à des articles hors groupe. À vider à la main dans Clemz.",
+            }
+        logger.info(f"✅ [{acc['name']}] Liste 'à traiter' vidée ({avant} -> 0).")
+
+        # Rechargement de la page après un vidage EFFECTIF (08/10/2026) -- précaution :
+        # la modale reste en mode "éditer" après enlever/fermer. Recharger remet
+        # le panneau dans le même état qu'un démarrage normal ; _build_list attend
+        # ensuite la réinjection de Clemz. (Le timeout Smart Dressing de 120 s
+        # constaté en test venait en fait de myDressingSelectAction, cf. _build_list.)
+        await page.goto(acc["url"], wait_until="networkidle")
+        logger.info(f"🔄 [{acc['name']}] Page rechargée après vidage de la liste.")
+        return {"status": "success"}
+
+    async def _verifier_liste_a_traiter(self, cdp, page, acc, attendu):
+        """Contrôle final avant prix fixe : la liste doit contenir EXACTEMENT nos articles."""
+        main_list_link_id = await self._ouvrir_modale_listes(cdp, page, acc)
+        if not main_list_link_id:
+            return {"status": "failed", "reason": "Modale 'Voir mes listes' introuvable (contrôle de la liste impossible) — prix fixe annulé."}
+        reel = await self._compter_liste_a_traiter(cdp, main_list_link_id)
+        await self._fermer_modale_listes(cdp, main_list_link_id)
+        if reel != attendu:
+            return {
+                "status": "failed",
+                "reason": f"Liste 'à traiter' : {reel} article(s) au lieu de {attendu} attendu(s) — prix fixe annulé "
+                          f"pour ne pas l'appliquer à des articles hors groupe.",
+            }
+        return {"status": "success"}
+
     async def _trigger_baisse_prix(self, page, cdp, acc, expected_count, pourcentage=20, prix_fixe=None):
         """
         Déclenche la baisse de prix en masse de la liste "à traiter" via le panneau
@@ -1338,6 +1506,18 @@ class ClemzAutomation:
             reopened = await ensure_panel_open(cdp, page)
             _pause(f"ensure_panel_open() initial -> {reopened}")
 
+            # --- Étape A0 (prix fixe uniquement) : vidage de la liste "à traiter" ---
+            # Cf. _vider_liste_a_traiter : sans ça, un résidu recevrait le prix fixe.
+            if self.prix_fixe is not None:
+                vidage = await self._vider_liste_a_traiter(cdp, page, acc)
+                if vidage["status"] != "success":
+                    logger.error(f"❌ [{acc['name']}] {vidage['reason']}")
+                    return {
+                        "account": acc["name"],
+                        "selection_results": [{"nom": p, "status": "failed", "reason": vidage["reason"]} for p in acc["produits"]],
+                        "repost_result": vidage,
+                    }
+
             # --- Étape A : Constitution de la liste ---
             selection_results = await self._build_list(page, cdp, acc)
 
@@ -1380,7 +1560,9 @@ class ClemzAutomation:
                 selection_results_2 = await self._build_list(page, cdp, acc)
                 success_count_2 = sum(1 for r in selection_results_2 if r["status"] == "success")
                 if success_count_2 == 0:
-                    echec = {"status": "failed", "reason": "Liste reconstruite vide avant l'étape sauvegarde"}
+                    raisons = sorted({r.get("reason") or "?" for r in selection_results_2 if r["status"] != "success"})
+                    echec = {"status": "failed", "reason": f"Liste reconstruite vide avant l'étape sauvegarde — PRIX DÉJÀ BAISSÉ SUR VINTED, sauvegarde Clemz à faire à la main ({'; '.join(raisons)[:150]})"}
+                    logger.error(f"❌ [{acc['name']}] {echec['reason']}")
                     return {
                         "account": acc["name"], "selection_results": self._selection_results_finaux(selection_results, echec),
                         "repost_result": echec,
@@ -1427,6 +1609,15 @@ class ClemzAutomation:
                 # Clemz et annule l'effet de la baisse. Même séquence que les étapes 1+2
                 # du chaînage "republication_baisse" ci-dessus, sans la republication
                 # finale (cf. échange du 06/10/2026).
+
+                # Prix fixe : contrôle que la liste contient EXACTEMENT nos articles
+                # avant d'appliquer le prix (cf. _verifier_liste_a_traiter).
+                if self.prix_fixe is not None:
+                    controle = await self._verifier_liste_a_traiter(cdp, page, acc, attendu=success_count)
+                    if controle["status"] != "success":
+                        logger.error(f"❌ [{acc['name']}] {controle['reason']}")
+                        return {"account": acc["name"], "selection_results": self._selection_results_finaux(selection_results, controle), "repost_result": controle}
+
                 navigation_result = await self._navigate_to_modify_tab(cdp, page, acc)
                 if navigation_result["status"] != "success":
                     logger.error(f"❌ [{acc['name']}] {navigation_result['reason']}")
@@ -1445,7 +1636,9 @@ class ClemzAutomation:
                 selection_results_save = await self._build_list(page, cdp, acc)
                 success_count_save = sum(1 for r in selection_results_save if r["status"] == "success")
                 if success_count_save == 0:
-                    echec = {"status": "failed", "reason": "Liste reconstruite vide avant l'étape sauvegarde"}
+                    raisons = sorted({r.get("reason") or "?" for r in selection_results_save if r["status"] != "success"})
+                    echec = {"status": "failed", "reason": f"Liste reconstruite vide avant l'étape sauvegarde — PRIX DÉJÀ BAISSÉ SUR VINTED, sauvegarde Clemz à faire à la main ({'; '.join(raisons)[:150]})"}
+                    logger.error(f"❌ [{acc['name']}] {echec['reason']}")
                     return {
                         "account": acc["name"], "selection_results": self._selection_results_finaux(selection_results, echec),
                         "repost_result": echec,

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { inventoryService } from '../services/api';
 import toast, { Toaster } from 'react-hot-toast';
-import { Flame, Loader, CheckCircle2, Clock } from 'lucide-react';
+import { Flame, Loader, CheckCircle2, Circle, Clock } from 'lucide-react';
 
 const PHASE_LABELS = {
     0: { label: 'Phase 0 — Sous surveillance', color: 'bg-blue-100 text-blue-700 border-blue-200' },
@@ -15,11 +15,19 @@ const PHASE_LABELS = {
 // toute façon les groupes trop petits de son côté, indépendamment de ce chiffre.
 const MIN_ARTICLES_PAR_GROUPE = 3;
 
+const DRESSINGS = ['Dressing 1', 'Dressing 2'];
+
 export default function Liquidation() {
     const [inventory, setInventory] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [excludedIds, setExcludedIds] = useState(new Set());
     const [isRunning, setIsRunning] = useState(false);
+    // Filtre d'AFFICHAGE uniquement -- ne change pas le calcul des groupes, qui
+    // sont de toute façon formés par dressing (cf. groupesParDressingPrix).
+    const [dressingFiltre, setDressingFiltre] = useState('tous');
+    // Override manuel du seuil MIN_ARTICLES_PAR_GROUPE (08/10/2026) -- les
+    // groupes trop petits partent aussi, un cycle Clemz par prix fixe.
+    const [forcerSeuil, setForcerSeuil] = useState(false);
 
     useEffect(() => {
         fetchData();
@@ -30,7 +38,7 @@ export default function Liquidation() {
         try {
             const data = await inventoryService.getArticles();
             setInventory(data);
-        } catch (err) {
+        } catch {
             toast.error("Impossible de charger l'inventaire.");
         } finally {
             setIsLoading(false);
@@ -43,11 +51,16 @@ export default function Liquidation() {
     const articlesDormants = inventory
         .filter(a =>
             a.liquidation_needs_action &&
-            !excludedIds.has(a.id) &&
             !a.exclu_liquidation_saisonnier &&
             !a.est_personnel_ou_ami
         )
         .sort((a, b) => b.jours_en_vente - a.jours_en_vente);
+
+    // Sélection pour CE lancement (08/10/2026) -- les articles décochés restent
+    // affichés (re-cochables), mais ne comptent ni dans les groupes ni dans
+    // l'envoi au backend. Avant, décocher retirait l'article de la liste sans
+    // moyen de le récupérer autrement qu'en rechargeant la page.
+    const articlesSelectionnes = articlesDormants.filter(a => !excludedIds.has(a.id));
 
     // Articles exclus (saisonnier/perso-ami) mais qui redeviendraient dormants
     // sinon -- besoin d'un moyen de les revoir/réintégrer, sans quoi une
@@ -66,35 +79,63 @@ export default function Liquidation() {
     // des groupes Phase 3 restaient < 5 articles).
     const calculerPrixFixeLiquidation = (prixCible) => Math.floor(prixCible) + 0.90;
 
-    const groupesParPrixFixe = {};
-    articlesDormants.forEach(a => {
-        const prixFixe = calculerPrixFixeLiquidation(a.liquidation_prix_cible);
-        if (!groupesParPrixFixe[prixFixe]) groupesParPrixFixe[prixFixe] = [];
-        groupesParPrixFixe[prixFixe].push(a);
+    // Groupes par (dressing, prix fixe) depuis le 08/10/2026 -- DOIT rester
+    // identique au regroupement de run_liquidation_now() côté backend : le seuil
+    // MIN_ARTICLES_PAR_GROUPE s'applique à chaque dressing séparément, un groupe
+    // ne mélange jamais D1 et D2.
+    const groupesParDressingPrix = {};
+    articlesSelectionnes.forEach(a => {
+        if (!DRESSINGS.includes(a.dressing)) return;
+        const cle = `${a.dressing}|${calculerPrixFixeLiquidation(a.liquidation_prix_cible)}`;
+        if (!groupesParDressingPrix[cle]) groupesParDressingPrix[cle] = [];
+        groupesParDressingPrix[cle].push(a);
     });
 
     // Distinction groupes exécutables (>= seuil) vs reportés (< seuil) -- reflète
     // exactement ce que le backend fera : les groupes reportés ne partiront pas
     // dans ce lancement, ils seront réévalués naturellement au prochain clic.
     const idsExecutables = new Set();
-    let nbGroupesExecutables = 0;
-    let nbGroupesReportes = 0;
-    let nbArticlesReportes = 0;
-    Object.values(groupesParPrixFixe).forEach(items => {
+    const statsParDressing = Object.fromEntries(DRESSINGS.map(d => [d, {
+        nbArticlesExecutables: 0, nbGroupesExecutables: 0, nbArticlesReportes: 0, nbGroupesReportes: 0,
+    }]));
+    Object.entries(groupesParDressingPrix).forEach(([cle, items]) => {
+        const stats = statsParDressing[cle.split('|')[0]];
         if (items.length >= MIN_ARTICLES_PAR_GROUPE) {
-            nbGroupesExecutables += 1;
+            stats.nbGroupesExecutables += 1;
+            stats.nbArticlesExecutables += items.length;
             items.forEach(a => idsExecutables.add(a.id));
         } else {
-            nbGroupesReportes += 1;
-            nbArticlesReportes += items.length;
+            stats.nbGroupesReportes += 1;
+            stats.nbArticlesReportes += items.length;
         }
     });
-    const nbArticlesExecutables = idsExecutables.size;
+    // Articles réellement envoyés au clic : avec forcerSeuil, les groupes
+    // reportés partent aussi.
+    const nbALancer = (dressing) => {
+        const s = statsParDressing[dressing];
+        return s.nbArticlesExecutables + (forcerSeuil ? s.nbArticlesReportes : 0);
+    };
+    const nbArticlesExecutables = DRESSINGS.reduce((total, d) => total + nbALancer(d), 0);
+
+    // Listes FILTRÉES pour l'affichage seulement (cf. état dressingFiltre).
+    const matchFiltre = (a) => dressingFiltre === 'tous' || a.dressing === dressingFiltre;
+    const articlesDormantsAffiches = articlesDormants.filter(matchFiltre);
+    const articlesExclusAffiches = articlesExclus.filter(matchFiltre);
 
     const toggleExclude = (id) => {
         setExcludedIds(prev => {
             const next = new Set(prev);
             next.has(id) ? next.delete(id) : next.add(id);
+            return next;
+        });
+    };
+
+    // Coche/décoche d'un coup les articles actuellement AFFICHÉS (respecte le
+    // filtre dressing).
+    const setSelectionAffiches = (cocher) => {
+        setExcludedIds(prev => {
+            const next = new Set(prev);
+            articlesDormantsAffiches.forEach(a => (cocher ? next.delete(a.id) : next.add(a.id)));
             return next;
         });
     };
@@ -140,16 +181,22 @@ export default function Liquidation() {
         }
     };
 
-    const handleLancerLiquidation = async () => {
-        if (articlesDormants.length === 0) return;
+    // dressing : 'Dressing 1' / 'Dressing 2' pour ne lancer que ce compte, ou
+    // null pour les deux (le backend enchaîne alors D1, pause 5-10 min, D2).
+    const handleLancerLiquidation = async (dressing = null) => {
+        const produitsEnvoyes = dressing ? articlesSelectionnes.filter(a => a.dressing === dressing) : articlesSelectionnes;
+        if (produitsEnvoyes.length === 0) return;
+        const nbArticles = dressing ? nbALancer(dressing) : nbArticlesExecutables;
         setIsRunning(true);
-        toast.loading(`Lancement de la liquidation (${nbArticlesExecutables} article(s), ${nbGroupesExecutables} groupe(s))...`, { id: 'liq-toast' });
+        toast.loading(`Lancement de la liquidation ${dressing || 'D1 puis D2'} (${nbArticles} article(s))...`, { id: 'liq-toast' });
         try {
             const response = await fetch('http://localhost:8000/api/liquidation/run-now', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    produits: articlesDormants.map(a => ({
+                    dressing,
+                    ...(forcerSeuil ? { forcer_seuil: true } : {}),
+                    produits: produitsEnvoyes.map(a => ({
                         id: a.id,
                         nom: a.nom,
                         dressing: a.dressing,
@@ -196,51 +243,115 @@ export default function Liquidation() {
                 </p>
             </header>
 
-            {/* Résumé + bouton de lancement */}
-            <div className="flex items-center justify-between gap-4 mb-6 p-4 bg-slate-50 border border-slate-100 rounded-2xl">
-                <div className="flex items-center gap-6">
-                    <div>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Articles exécutables</p>
-                        <p className="text-xl font-black text-slate-800">{nbArticlesExecutables}</p>
-                    </div>
-                    <div>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Groupes exécutables</p>
-                        <p className="text-xl font-black text-slate-800">{nbGroupesExecutables}</p>
-                    </div>
-                    {nbArticlesReportes > 0 && (
-                        <div>
-                            <p className="text-[10px] font-black text-amber-500 uppercase tracking-wide flex items-center gap-1">
-                                <Clock size={11} /> En attente
-                            </p>
-                            <p className="text-xl font-black text-amber-600">
-                                {nbArticlesReportes} <span className="text-xs font-bold text-amber-400">({nbGroupesReportes} groupe{nbGroupesReportes > 1 ? 's' : ''} &lt; {MIN_ARTICLES_PAR_GROUPE})</span>
-                            </p>
+            {/* Résumé + bouton de lancement, un bloc par dressing (groupes et
+                seuil calculés séparément, cf. groupesParDressingPrix). */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                {DRESSINGS.map(dressing => {
+                    const s = statsParDressing[dressing];
+                    return (
+                        <div key={dressing} className="flex items-center justify-between gap-4 p-4 bg-slate-50 border border-slate-100 rounded-2xl">
+                            <div>
+                                <p className="text-xs font-black text-slate-700 uppercase tracking-wide mb-2">{dressing}</p>
+                                <div className="flex items-center gap-5">
+                                    <div>
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Articles</p>
+                                        <p className="text-xl font-black text-slate-800">{s.nbArticlesExecutables}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide">Groupes</p>
+                                        <p className="text-xl font-black text-slate-800">{s.nbGroupesExecutables}</p>
+                                    </div>
+                                    {s.nbArticlesReportes > 0 && (
+                                        <div>
+                                            <p className="text-[10px] font-black text-amber-500 uppercase tracking-wide flex items-center gap-1">
+                                                <Clock size={11} /> En attente
+                                            </p>
+                                            <p className="text-xl font-black text-amber-600">
+                                                {s.nbArticlesReportes} <span className="text-xs font-bold text-amber-400">({s.nbGroupesReportes} groupe{s.nbGroupesReportes > 1 ? 's' : ''} &lt; {MIN_ARTICLES_PAR_GROUPE})</span>
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => handleLancerLiquidation(dressing)}
+                                disabled={isRunning || nbALancer(dressing) === 0}
+                                className="flex items-center gap-2 px-4 py-2.5 bg-orange-500 text-white rounded-lg font-black uppercase text-xs hover:scale-105 transition-all shadow-lg shadow-orange-100 disabled:opacity-40 whitespace-nowrap"
+                            >
+                                {isRunning ? <Loader size={16} className="animate-spin" /> : <Flame size={16} />}
+                                Lancer ({nbALancer(dressing)})
+                            </button>
                         </div>
-                    )}
-                </div>
-                <button
-                    onClick={handleLancerLiquidation}
-                    disabled={isRunning || nbArticlesExecutables === 0}
-                    className="flex items-center gap-2 px-6 py-2.5 bg-orange-500 text-white rounded-lg font-black uppercase text-xs hover:scale-105 transition-all shadow-lg shadow-orange-100 disabled:opacity-40"
+                    );
+                })}
+            </div>
+            <div className="flex items-center justify-end gap-3 mb-6">
+                <label
+                    title={`Lance aussi les groupes de moins de ${MIN_ARTICLES_PAR_GROUPE} articles -- un cycle Clemz par prix fixe, même pour 1 seul article`}
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-[10px] font-black uppercase cursor-pointer border transition-all ${forcerSeuil
+                        ? 'bg-amber-100 text-amber-700 border-amber-300'
+                        : 'bg-white text-slate-400 border-slate-200 hover:border-amber-300'
+                        }`}
                 >
-                    {isRunning ? (
-                        <>
-                            <Loader size={16} className="animate-spin" />
-                            Lancement...
-                        </>
-                    ) : (
-                        <>
-                            <Flame size={16} />
-                            Lancer la liquidation ({nbArticlesExecutables})
-                        </>
-                    )}
+                    <input
+                        type="checkbox"
+                        checked={forcerSeuil}
+                        onChange={e => setForcerSeuil(e.target.checked)}
+                        className="accent-amber-600"
+                    />
+                    ⚠️ Forcer même si groupe &lt; {MIN_ARTICLES_PAR_GROUPE}
+                </label>
+                <button
+                    onClick={() => handleLancerLiquidation(null)}
+                    disabled={isRunning || nbArticlesExecutables === 0}
+                    className="flex items-center gap-2 px-4 py-2 bg-white text-orange-600 border border-orange-200 rounded-lg font-black uppercase text-[10px] hover:bg-orange-50 transition-all disabled:opacity-40"
+                    title="Dressing 1, pause aléatoire 5-10 min, puis Dressing 2 -- jamais en simultané"
+                >
+                    {isRunning ? <Loader size={14} className="animate-spin" /> : <Flame size={14} />}
+                    Lancer les deux (D1 puis D2) — {nbArticlesExecutables}
                 </button>
+            </div>
+
+            {/* Filtre d'affichage par dressing -- n'affecte que les lignes montrées,
+                jamais le calcul des groupes/compteurs ci-dessus (cf. dressingFiltre).
+                Tout cocher/décocher agit seulement sur les lignes affichées. */}
+            <div className="flex items-center gap-2 mb-6">
+                {['tous', ...DRESSINGS].map(valeur => (
+                    <button
+                        key={valeur}
+                        onClick={() => setDressingFiltre(valeur)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wide border transition-all ${
+                            dressingFiltre === valeur
+                                ? 'bg-slate-800 text-white border-slate-800'
+                                : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'
+                        }`}
+                    >
+                        {valeur === 'tous' ? 'Tous' : valeur}
+                    </button>
+                ))}
+                <div className="ml-auto flex items-center gap-2">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-wide">
+                        {articlesDormantsAffiches.filter(a => !excludedIds.has(a.id)).length}/{articlesDormantsAffiches.length} coché(s)
+                    </span>
+                    <button
+                        onClick={() => setSelectionAffiches(true)}
+                        className="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase border bg-white text-slate-500 border-slate-200 hover:border-slate-300"
+                    >
+                        Tout cocher
+                    </button>
+                    <button
+                        onClick={() => setSelectionAffiches(false)}
+                        className="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase border bg-white text-slate-500 border-slate-200 hover:border-slate-300"
+                    >
+                        Tout décocher
+                    </button>
+                </div>
             </div>
 
             {/* Liste des articles, groupée par phase */}
             <div className="space-y-6">
                 {[0, 1, 2, 3].map(phase => {
-                    const items = articlesDormants.filter(a => a.liquidation_phase === phase);
+                    const items = articlesDormantsAffiches.filter(a => a.liquidation_phase === phase);
                     if (items.length === 0) return null;
                     const phaseInfo = PHASE_LABELS[phase];
                     return (
@@ -250,11 +361,14 @@ export default function Liquidation() {
                             </div>
                             <div className="space-y-2">
                                 {items.map(a => {
-                                    const enAttenteGroupe = !idsExecutables.has(a.id);
+                                    const coche = !excludedIds.has(a.id);
+                                    const enAttenteGroupe = coche && !idsExecutables.has(a.id);
                                     return (
-                                        <div key={a.id} className={`flex items-center gap-4 p-4 bg-white border rounded-xl ${enAttenteGroupe ? 'border-amber-200 bg-amber-50/40' : 'border-slate-100'}`}>
-                                            <button onClick={() => toggleExclude(a.id)} title="Exclure de ce lancement">
-                                                <CheckCircle2 size={20} className="text-emerald-500" />
+                                        <div key={a.id} className={`flex items-center gap-4 p-4 bg-white border rounded-xl ${!coche ? 'border-slate-100 opacity-50' : enAttenteGroupe ? 'border-amber-200 bg-amber-50/40' : 'border-slate-100'}`}>
+                                            <button onClick={() => toggleExclude(a.id)} title={coche ? 'Exclure de ce lancement' : 'Inclure dans ce lancement'}>
+                                                {coche
+                                                    ? <CheckCircle2 size={20} className="text-emerald-500" />
+                                                    : <Circle size={20} className="text-slate-300" />}
                                             </button>
                                             <img src={a.photo_url} alt={a.nom} className="w-14 h-14 object-cover rounded-lg bg-slate-100" />
                                             <div className="flex-1 min-w-0">
@@ -308,20 +422,24 @@ export default function Liquidation() {
                     );
                 })}
 
-                {articlesDormants.length === 0 && (
-                    <p className="text-center text-slate-400 py-12">Aucun article en liquidation à traiter pour le moment.</p>
+                {articlesDormantsAffiches.length === 0 && (
+                    <p className="text-center text-slate-400 py-12">
+                        {dressingFiltre === 'tous'
+                            ? 'Aucun article en liquidation à traiter pour le moment.'
+                            : `Aucun article en liquidation pour ${dressingFiltre} pour le moment.`}
+                    </p>
                 )}
             </div>
 
             {/* Articles exclus (saisonnier/perso-ami) -- sans cette section, une
                 exclusion persistée serait irréversible en pratique. */}
-            {articlesExclus.length > 0 && (
+            {articlesExclusAffiches.length > 0 && (
                 <div className="mt-10">
                     <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-black uppercase mb-3 bg-slate-100 text-slate-500 border-slate-200">
-                        Exclus ({articlesExclus.length})
+                        Exclus ({articlesExclusAffiches.length})
                     </div>
                     <div className="space-y-2">
-                        {articlesExclus.map(a => (
+                        {articlesExclusAffiches.map(a => (
                             <div key={a.id} className="flex items-center gap-4 p-4 bg-white border border-slate-100 rounded-xl opacity-70">
                                 <img src={a.photo_url} alt={a.nom} className="w-14 h-14 object-cover rounded-lg bg-slate-100" />
                                 <div className="flex-1 min-w-0">
