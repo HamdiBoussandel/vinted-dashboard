@@ -37,7 +37,11 @@ class SupabaseService:
         # naturel dans la distribution réelle (9 pépites à 20, 15 à 18, 26 à 12
         # -- 12 aurait trop dilué le signal).
         self.MIN_V_REEL_PEPITE = 18
-        self.DELAI_MIN_PEPITE = 4
+        # Abaissé de 4 à 3 le 08/10/2026 (décision "restons raisonnable" --
+        # palier mesuré de -1j, pas un saut) -- stock trop clairsemé près du
+        # seuil pour juger précisément l'effet (2 articles à j=2 avec score
+        # déjà suffisant côté inventaire au moment de la décision).
+        self.DELAI_MIN_PEPITE = 3
 
         # Nombre minimum de vues réelles avant qu'un score soit considéré fiable --
         # en dessous, get_processed_inventory force score=0.0 par manque
@@ -48,7 +52,14 @@ class SupabaseService:
         # Paramètres Mauvaise Performance
         self.SEUIL_LOW_PERF = 5.0
         self.DELAI_MIN_LOW_PERF = 0
-        self.DELAI_MIN_LOW_PERF_HIGH = 7
+        # 7 -> 5 le 08/10/2026 ("restons raisonnable"), puis -> 3 le 08/10/2026
+        # ("un peu plus agressif pour les mauvaise performance", décision
+        # explicite). Stock ≥50€ au score faible trop clairsemé pour mesurer
+        # un effet réel aujourd'hui (1 seul article dans ce cas, déjà vieux de
+        # 8j, déjà capté quel que soit le seuil testé 1-5j) -- prépare surtout
+        # le terrain pour le prochain article de ce ticket à tomber en
+        # mauvaise perf, qui sera détecté plus tôt.
+        self.DELAI_MIN_LOW_PERF_HIGH = 3
         self.DELAI_FORCE_REPUBLISH = 10
         # Remplace l'ancien plancher "marge_dispo > 3€" (valeur ABSOLUE, donc
         # dérisoire sur un article cher et trop stricte sur un article pas cher
@@ -64,8 +75,16 @@ class SupabaseService:
         # Paramètres Invisibilité
         self.SEUIL_INVISIBLE_LOW = 2
         self.SEUIL_INVISIBLE_HIGH = 10
-        self.DELAI_MIN_INVISIBLE = 3       # délai avant shadow-ban — DISTINCT du délai Mauvaise Perf
-        self.DELAI_MIN_INVISIBLE_HIGH = 7
+        # Abaissés le 08/10/2026 ("restons raisonnable" -- palier -1j/-2j, pas
+        # le palier le plus agressif envisagé). Impact mesuré sur l'inventaire
+        # réel avant application : <50€ 3j->2j ajoute 9 articles shadow-ban
+        # (1j aurait ajouté 25 d'un coup -- écarté, trop de volume à republier
+        # en une fois) ; ≥50€ 7j->5j n'ajoute qu'1 article (stock clairsemé).
+        self.DELAI_MIN_INVISIBLE = 2       # délai avant shadow-ban — DISTINCT du délai Mauvaise Perf
+        # 7 -> 5 ("restons raisonnable"), puis -> 3 le 08/10/2026 -- même
+        # palier que DELAI_MIN_LOW_PERF_HIGH (mauvaise perf ≥50€), décision
+        # explicite de garder les deux seuils ≥50€ alignés.
+        self.DELAI_MIN_INVISIBLE_HIGH = 3
 
         # Seuils de prix
         self.LIMITE_LOW_TICKET = 50.0

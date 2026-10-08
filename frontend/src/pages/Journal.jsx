@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
     CheckCircle, XCircle, AlertCircle, Clock, Loader,
-    Power, ScanLine, TrendingDown, RefreshCw, ChevronLeft, ChevronRight,
+    Power, ScanLine, TrendingDown, RefreshCw, Heart, ChevronLeft, ChevronRight,
 } from 'lucide-react';
 import { maintenanceService } from '../services/api';
 
@@ -19,7 +19,7 @@ const STATUS_CONFIG = {
     inconnu: { label: 'Pas encore passé', icon: <Clock size={14} className="text-slate-300" />, bg: 'bg-slate-50 border-slate-100', text: 'text-slate-400' },
 };
 
-const ICONS_ETAPE = [Power, ScanLine, ScanLine, TrendingDown, TrendingDown, RefreshCw, RefreshCw, Power];
+const ICONS_ETAPE = [Power, ScanLine, ScanLine, TrendingDown, TrendingDown, RefreshCw, RefreshCw, Heart, Power];
 
 function formatHeure(iso) {
     if (!iso) return null;
@@ -105,7 +105,7 @@ export default function Journal() {
                 <div>
                     <h1 className="text-2xl font-black text-slate-800">Journal de routine</h1>
                     <p className="text-sm text-slate-400 mt-1">
-                        Démarrage VM → scraping → baisses de prix → republications → extinction, dans l'ordre du scénario quotidien.
+                        Démarrage VM → scraping → baisses de prix → republications → partage vues/favoris → extinction, dans l'ordre du scénario quotidien.
                     </p>
                 </div>
 

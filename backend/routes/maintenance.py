@@ -85,9 +85,10 @@ async def get_journal_route(date: str = None):
     Journal de routine : agrège task_history + vm_lifecycle_log + plan_du_jour
     pour UNE journée, structuré selon le scénario métier fixé (démarrage ->
     scraping D1 -> scraping D2 -> baisse D1 -> baisse D2 -> republication D1 ->
-    republication D2 -> extinction). Ne duplique aucune donnée détaillée par
-    article -- chaque étape référence le task_id de TaskHistory pour le détail
-    (cf. échange du 08/10/2026). `date` au format YYYY-MM-DD, défaut aujourd'hui.
+    republication D2 -> partage vues/favoris -> extinction). Ne duplique
+    aucune donnée détaillée par article -- chaque étape référence le task_id
+    de TaskHistory pour le détail (cf. échange du 08/10/2026). `date` au
+    format YYYY-MM-DD, défaut aujourd'hui.
     """
     from datetime import datetime as dt
     from services.automation_scheduler import get_task_history, get_vm_lifecycle_log
@@ -109,6 +110,7 @@ async def get_journal_route(date: str = None):
     baisse_prix = _premier(lambda t: t == "baisse_prix")
     repub_midi = _premier(lambda t: t == "republication_midi")
     repub_soir = _premier(lambda t: t == "republication_soir")
+    partage = _premier(lambda t: t == "partage_vues_favoris")
 
     def _etape_vm(event, label):
         if not event:
@@ -133,6 +135,27 @@ async def get_journal_route(date: str = None):
             "prevu": plan,
         }
 
+    def _etape_partage(task):
+        """
+        Dernière étape de la routine (cf. échange du 08/10/2026) -- forme de
+        résultats différente des autres tâches ({account, vues:{status},
+        favoris:{status}}, pas {id, nom, dressing, status}), compte donc
+        séparément plutôt que de réutiliser _compter_resultats.
+        """
+        if not task:
+            return {"label": "Partage vues/favoris", "statut": "inconnu", "heure": None, "task_id": None, "compteurs": None, "prevu": None}
+        resultats = task.get("results") or []
+        ok_statuses = {"success", "skipped"}
+        succes = sum(1 for r in resultats if r.get("vues", {}).get("status") in ok_statuses and r.get("favoris", {}).get("status") in ok_statuses)
+        return {
+            "label": "Partage vues/favoris",
+            "statut": task.get("global_status"),
+            "heure": task.get("started_at"),
+            "task_id": task.get("task_id"),
+            "compteurs": {"succes": succes, "total": len(resultats), "bloques_quota": 0, "erreurs_clemz": 0},
+            "prevu": None,
+        }
+
     plan_d1 = _dernier_plan_historique("Dressing 1", date_str)
     plan_d2 = _dernier_plan_historique("Dressing 2", date_str)
 
@@ -144,6 +167,7 @@ async def get_journal_route(date: str = None):
         _etape_dressing(baisse_prix, "Dressing 2", "Baisse de prix Dressing 2", plan_d2),
         _etape_dressing(repub_midi, "Dressing 1", "Republication Dressing 1", plan_d1),
         _etape_dressing(repub_soir, "Dressing 2", "Republication Dressing 2", plan_d2),
+        _etape_partage(partage),
         _etape_vm(extinction, "Extinction VM"),
     ]
 
@@ -271,7 +295,7 @@ async def toggle_clemz_visible_route(payload: dict = Body(...)):
 
 @router.get("/baisse-prix-auto")
 async def get_baisse_prix_auto_route():
-    """Statut courant de la baisse de prix automatique quotidienne (cron 14h05)."""
+    """Statut courant de la baisse de prix automatique quotidienne (cron 10h40)."""
     return maintenance_service.get_baisse_prix_auto_status()
 
 
@@ -310,14 +334,14 @@ async def toggle_partage_vues_favoris_auto_route(data: dict = Body(...)):
 
 @router.get("/scraping-auto")
 async def get_scraping_auto_route():
-    """Statut courant du scraping automatique planifié (syncs 14h/22h)."""
+    """Statut courant du scraping automatique planifié (syncs 10h30/22h)."""
     return maintenance_service.get_scraping_auto_status()
 
 
 @router.post("/scraping-auto/toggle")
 async def toggle_scraping_auto_route(data: dict = Body(...)):
     """
-    Active ou désactive les 2 synchronisations planifiées (14h/22h). N'affecte
+    Active ou désactive les 2 synchronisations planifiées (10h30/22h). N'affecte
     pas le bouton "Lancer Scraping" manuel du dashboard.
     Payload attendu : { "active": true | false }
     """

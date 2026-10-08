@@ -314,14 +314,16 @@ async def _execute_republish(creneau="soir", volume_cible=None):
         finish_task_run(task_id)
         print(f"✅ [REPUB {creneau.upper()}] Tâche terminée.")
 
-    # Le partage vues/favoris se déclenche désormais après CETTE unique
-    # republication (créneaux 12h-13h/19h-21h, cf. CRENEAUX_HORAIRES), peu
-    # importe l'heure exacte à laquelle elle se termine -- et uniquement si
-    # elle a réussi (au moins partiellement). Généralisé sur `creneau` plutôt
-    # que hardcodé sur "soir" -- DEPUIS le 08/10/2026 (auto-remplissage de la
-    # liste, cf. plus haut), "midi" ET "soir" republient réellement chacun
-    # leur dressing, ce bloc s'exécute bien pour les deux.
-    from services.automation_scheduler import get_task_history
+    # Le partage vues/favoris est la DERNIÈRE étape de la routine journalière
+    # (cf. échange du 08/10/2026) -- ne se déclenche donc qu'après la
+    # republication des DEUX dressings, jamais après la première des deux à
+    # se terminer. Comme les créneaux (12h-13h/19h-21h, CRENEAUX_HORAIRES)
+    # sont tirés indépendamment par dressing, "le dernier à finir" n'est pas
+    # toujours "soir" -- on vérifie donc explicitement l'état de L'AUTRE
+    # dressing à chaque fin de republication : s'il est encore à venir
+    # aujourd'hui, on ne déclenche rien ici, ce sera lui qui déclenchera le
+    # partage en terminant à son tour (même code, exécuté pour les deux creneaux).
+    from services.automation_scheduler import get_task_history, get_plan_du_jour
 
     history = get_task_history(limit=200, task_type=f"republication_{creneau}")
     today_str = datetime.now().strftime("%Y-%m-%d")
@@ -332,7 +334,24 @@ async def _execute_republish(creneau="soir", volume_cible=None):
 
     if not maintenance_service.partage_vues_favoris_auto_active:
         print("⏭️  [PARTAGE] Automatisation désactivée (Maintenance) — on passe.")
-    elif repost_ok:
+    elif not repost_ok:
+        print("⏭️  [PARTAGE] Repost non réussi — partage vues/favoris non déclenché aujourd'hui.")
+    else:
+        autre_creneau = "soir" if creneau == "midi" else "midi"
+        autre_dressing = "Dressing 2" if dressing == "Dressing 1" else "Dressing 1"
+        plan_autre = get_plan_du_jour(autre_dressing)
+        autre_actif_aujourdhui = bool(plan_autre and plan_autre.get("actif"))
+
+        if autre_actif_aujourdhui:
+            historique_autre = get_task_history(limit=200, task_type=f"republication_{autre_creneau}")
+            autre_deja_termine = any(
+                h["task_id"].startswith(f"republication_{autre_creneau}_{today_str}") and h.get("finished_at")
+                for h in historique_autre
+            )
+            if not autre_deja_termine:
+                print(f"⏭️  [PARTAGE] {autre_dressing} republie encore aujourd'hui — partage reporté à la fin de SA republication.")
+                return
+
         partage_history = get_task_history(limit=50, task_type="partage_vues_favoris")
         already_run_today = any(
             h["task_id"].startswith(f"partage_vues_favoris_{today_str}")
@@ -342,9 +361,8 @@ async def _execute_republish(creneau="soir", volume_cible=None):
         if already_run_today:
             print("⏭️  [PARTAGE] Déjà exécuté avec succès aujourd'hui, on passe.")
         else:
+            print("🏁 [PARTAGE] Dernière republication du jour terminée — lancement du partage vues/favoris.")
             await run_partage_vues_favoris_task()
-    else:
-        print("⏭️  [PARTAGE] Repost non réussi — partage vues/favoris non déclenché aujourd'hui.")
 
 
 async def run_partage_vues_favoris_task(dressing: str = None):
