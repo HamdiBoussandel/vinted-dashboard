@@ -91,9 +91,6 @@ class SupabaseService:
         self.DELAI_LOW_TICKET = 15
         self.DELAI_HIGH_TICKET = 21
 
-        # Statut Quo
-        self.MIN_V_REEL_STATUT_QUO = 50
-
     def strip_accents(self, s):
         return ''.join(
             c for c in unicodedata.normalize('NFD', s)
@@ -349,10 +346,10 @@ class SupabaseService:
                             (v_reel >= self.MIN_V_REEL_PEPITE) and \
                             (jours_en_ligne >= self.DELAI_MIN_PEPITE)
 
-            is_statut_quo = (prix_vente > 10.0) and (score >= self.SEUIL_LOW_PERF) and \
-                            (score < self.SEUIL_PEPITE) and \
-                            (v_reel >= self.MIN_V_REEL_STATUT_QUO) and \
-                            (jours_en_ligne < 7)  # Bascule en low_perf après 7j
+            # "Statut quo" supprimé le 08/10/2026 : plus d'onglet ni d'action associée
+            # depuis longtemps, l'étiquette "Analyse Prix/Photos" faisait croire à une
+            # action attendue sur des articles qui performent correctement (score
+            # >= SEUIL_LOW_PERF, < 7j en ligne). Ces articles sont désormais "✅ OK".
 
             is_invisible  = (jours_en_ligne >= delai_observation_invisible) and (v_reel < seuil_invisible)
 
@@ -396,7 +393,6 @@ class SupabaseService:
             # --- LABELS D'ACTION ---
             display_pepite    = False
             display_low_perf  = False
-            display_statut_quo = False
             is_critical       = False
 
             SEUIL_AUDIT = 3
@@ -427,7 +423,7 @@ class SupabaseService:
                 # d'audit -- exactement le bug qu'on vient de trouver.
                 action_label = "À auditer"
                 is_critical = False
-                display_pepite = display_low_perf = display_statut_quo = False
+                display_pepite = display_low_perf = False
 
             elif is_invisible:
                 action_label = "♻️ REPUBLIER (Shadow Ban)"
@@ -457,9 +453,6 @@ class SupabaseService:
                     display_pepite = True
                 elif is_liquidation:
                     action_label = f"♻️ REPUBLIER (Liquidation {prix_vente}€)"
-                elif is_statut_quo:
-                    action_label = "⚖️ REPUBLIER (Statut Quo : Revoir Photos)"
-                    display_statut_quo = True
                 # CORRIGÉ : elif au lieu de if (bug écrasement labels)
                 elif score < self.SEUIL_LOW_PERF and item.get("est_traite"):
                     # Baisse déjà appliquée et pas encore republié depuis (une
@@ -522,10 +515,6 @@ class SupabaseService:
                         action_label = "📸 MAUVAISE PERF : Changer Photos (Plancher atteint)"
                         # baisse_prix_taux reste None -- exclu de toute baisse automatique
 
-            elif is_statut_quo:
-                action_label = "⚖️ STATUT QUO : Analyse Prix/Photos"
-                display_statut_quo = True
-
             else:
                 action_label = "✅ OK"
 
@@ -561,7 +550,7 @@ class SupabaseService:
                 "jours_restants":       max(0, delai_max - jours_en_ligne),
                 "is_stuck":             display_pepite,
                 "is_low_perf":          display_low_perf,
-                "is_statut_quo":        display_statut_quo,
+                "is_statut_quo":        False,  # catégorie supprimée (08/10/2026), champ gardé pour compatibilité API
                 "delai_max":            delai_max,
                 "v_tot":                v_tot,
                 "f_tot":                f_tot,
