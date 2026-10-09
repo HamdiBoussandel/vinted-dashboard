@@ -28,6 +28,7 @@ plan_du_jour_historique.jsonl
 baisse_prix_auto_settings.json
 partage_vues_favoris_auto_settings.json
 scraping_auto_settings.json
+republication_auto_settings.json
 clemz_visible_settings.json
 
 # Build frontend

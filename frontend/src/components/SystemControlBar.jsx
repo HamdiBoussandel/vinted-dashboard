@@ -55,6 +55,8 @@ function formaterHeure(horaireStr) {
 const LIBELLE_NIVEAU = {
     repos_force: 'repos forcé après activité consécutive',
     calendrier: 'calendrier',
+    // Satellite (PC de dev) sans accès au plan de la VM -- cf. backend/services/plan_source.py
+    plan_vm_indisponible: 'plan de la VM illisible — republication manuelle bloquée sur ce PC',
 };
 
 // Version courte pour le badge visible en permanence (pas juste au survol) --
@@ -65,6 +67,7 @@ const LIBELLE_NIVEAU_COURT = {
     calendrier: 'tirage 25%',
     repos_force: 'seuil volume',
     convalescence: 'convalescence',
+    plan_vm_indisponible: 'VM injoignable',
 };
 
 // Construit le tooltip enrichi à partir du plan du jour (niveau ayant tranché

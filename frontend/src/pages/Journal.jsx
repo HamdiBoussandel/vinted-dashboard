@@ -72,22 +72,61 @@ function EtapeCard({ etape, index }) {
     );
 }
 
+// Lecture du journal de la VM depuis le PC principal (09/10/2026) -- les deux
+// PC sont sur le même réseau local, le backend de la VM écoute déjà sur
+// 0.0.0.0:8000 (run.py) avec CORS ouvert. Choix de source + adresse IP
+// mémorisés dans le navigateur (simple confort, la page marche sans).
+const CLE_SOURCE = 'journal_source';
+const CLE_ADRESSE_VM = 'journal_adresse_vm';
+
+function lireStockage(cle, defaut) {
+    try { return localStorage.getItem(cle) ?? defaut; } catch { return defaut; }
+}
+function ecrireStockage(cle, valeur) {
+    try { localStorage.setItem(cle, valeur); } catch { /* stockage indisponible */ }
+}
+
 export default function Journal() {
     const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
     const [journal, setJournal] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [source, setSource] = useState(() => lireStockage(CLE_SOURCE, 'local'));
+    const [adresseVm, setAdresseVm] = useState(() => lireStockage(CLE_ADRESSE_VM, ''));
+    const [adresseVmSaisie, setAdresseVmSaisie] = useState(adresseVm);
+
+    const lectureVm = source === 'vm';
+    const vmNonConfiguree = lectureVm && !adresseVm;
 
     const fetchJournal = useCallback(async () => {
+        if (vmNonConfiguree) {
+            setJournal(null);
+            setIsLoading(false);
+            return;
+        }
         setIsLoading(true);
         try {
-            const data = await maintenanceService.getJournal(date);
+            const data = lectureVm
+                ? await maintenanceService.getJournal(date, `http://${adresseVm}:8000/api`)
+                : await maintenanceService.getJournal(date);
             setJournal(data);
         } catch {
             setJournal(null);
         } finally {
             setIsLoading(false);
         }
-    }, [date]);
+    }, [date, lectureVm, adresseVm, vmNonConfiguree]);
+
+    const changerSource = (nouvelleSource) => {
+        setSource(nouvelleSource);
+        ecrireStockage(CLE_SOURCE, nouvelleSource);
+    };
+
+    const enregistrerAdresseVm = () => {
+        const adresse = adresseVmSaisie.trim().replace(/^https?:\/\//, '').replace(/:\d+.*$/, '').replace(/\/.*$/, '');
+        setAdresseVm(adresse);
+        setAdresseVmSaisie(adresse);
+        ecrireStockage(CLE_ADRESSE_VM, adresse);
+    };
 
     useEffect(() => { fetchJournal(); }, [fetchJournal]);
 
@@ -126,10 +165,56 @@ export default function Journal() {
                 </div>
             </div>
 
-            {isLoading ? (
+            {/* Source du journal : ce PC ou la VM (réseau local) */}
+            <div className="flex flex-wrap items-center gap-3 mb-6 max-w-3xl">
+                <div className="flex items-center gap-1 bg-white rounded-xl border border-slate-100 shadow-sm p-1">
+                    {[['local', 'Ce PC'], ['vm', 'VM']].map(([valeur, label]) => (
+                        <button
+                            key={valeur}
+                            onClick={() => changerSource(valeur)}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wide transition-all ${source === valeur
+                                ? 'bg-slate-800 text-white'
+                                : 'text-slate-500 hover:bg-slate-50'
+                                }`}
+                        >
+                            {label}
+                        </button>
+                    ))}
+                </div>
+                {lectureVm && (
+                    <form
+                        onSubmit={(e) => { e.preventDefault(); enregistrerAdresseVm(); }}
+                        className="flex items-center gap-2"
+                    >
+                        <input
+                            type="text"
+                            value={adresseVmSaisie}
+                            onChange={(e) => setAdresseVmSaisie(e.target.value)}
+                            placeholder="IP de la VM (ex. 192.168.1.42)"
+                            className="text-sm px-3 py-1.5 rounded-lg border border-slate-200 focus:outline-none focus:border-slate-400 w-56"
+                        />
+                        <button type="submit" className="px-3 py-1.5 rounded-lg text-xs font-black uppercase bg-white border border-slate-200 text-slate-600 hover:border-slate-300">
+                            Valider
+                        </button>
+                        {adresseVm && (
+                            <button type="button" onClick={fetchJournal} className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-50" title="Recharger">
+                                <RefreshCw size={14} />
+                            </button>
+                        )}
+                    </form>
+                )}
+            </div>
+
+            {vmNonConfiguree ? (
+                <p className="text-sm text-slate-500">Saisis l'adresse IP locale de la VM pour afficher son journal.</p>
+            ) : isLoading ? (
                 <p className="text-sm text-slate-400">Chargement...</p>
             ) : !journal ? (
-                <p className="text-sm text-red-500">Impossible de charger le journal de cette journée.</p>
+                <p className="text-sm text-red-500">
+                    {lectureVm
+                        ? `Impossible de joindre la VM (${adresseVm}:8000) — vérifie qu'elle est allumée, que le backend tourne, et que le pare-feu Windows de la VM autorise le port 8000 en réseau privé.`
+                        : 'Impossible de charger le journal de cette journée.'}
+                </p>
             ) : (
                 <div className="space-y-2 max-w-3xl">
                     {journal.etapes.map((etape, i) => (

@@ -148,6 +148,12 @@ def save_plan_du_jour(dressing, plan):
     """Persiste le plan du jour généré par planification_republication.generer_plan_du_jour()
     pour ce dressing. Écrase silencieusement tout plan précédent (un seul plan
     actif par dressing à la fois, celui du jour courant)."""
+    from services.plan_source import est_satellite
+    if est_satellite():
+        # Filet de sécurité : le satellite (PC de dev) ne persiste jamais de
+        # plan -- la VM est la seule source de vérité (cf. plan_source.py).
+        print(f"⏭️  [PLAN DU JOUR] Satellite : plan {dressing} non enregistré (la VM fait foi).")
+        return
     file = PLAN_DU_JOUR_FILES.get(dressing)
     if not file:
         print(f"⚠️ [SCHEDULER] Dressing inconnu pour le plan du jour : {dressing}")
@@ -183,7 +189,15 @@ def get_plan_du_jour(dressing):
     None si aucun plan n'a encore été généré, OU si le plan stocké date d'un
     jour précédent (ex: redémarrage backend après minuit sans catch-up) --
     mieux vaut ne rien afficher qu'un plan périmé.
+
+    Sur le satellite (PLAN_SOURCE_URL défini, cf. plan_source.py) : plan de
+    la VM, jamais le fichier local -- toujours un dict (plan de repos
+    synthétique si la VM est injoignable).
     """
+    from services.plan_source import est_satellite, get_plan_distant
+    if est_satellite():
+        return get_plan_distant(dressing)
+
     file = PLAN_DU_JOUR_FILES.get(dressing)
     if not file:
         return None

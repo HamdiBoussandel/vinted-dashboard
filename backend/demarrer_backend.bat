@@ -14,7 +14,15 @@ REM tache planifiee (aucune fenetre visible du tout, declenchee "onlogon"
 REM sans personne devant l'ecran) ne permettent de lire une erreur de
 REM demarrage autrement. Fichier ECRASE a chaque lancement (>, pas >>) --
 REM c'est le journal du demarrage le plus recent, pas un historique cumule.
+REM
+REM Fenetre plus un ecran noir (cf. echange du 09/10/2026) : Python tourne en
+REM arriere-plan dans CETTE console (start /b, -u = sortie non bufferisee),
+REM toujours redirige vers logs\demarrage.log, et surveiller_backend.ps1
+REM affiche ce fichier en direct + l'etat EN LIGNE/HORS LIGNE dans le titre
+REM de la fenetre. Fermer la fenetre arrete le serveur, comme avant.
 
 cd /d "%~dp0"
 if not exist "logs" mkdir "logs"
-"%~dp0venv\Scripts\python.exe" "%~dp0run.py" > "%~dp0logs\demarrage.log" 2>&1
+title VintedPro Backend - demarrage...
+start "" /b "%~dp0venv\Scripts\python.exe" -u "%~dp0run.py" > "%~dp0logs\demarrage.log" 2>&1
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0surveiller_backend.ps1" -LogPath "%~dp0logs\demarrage.log"

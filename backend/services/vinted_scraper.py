@@ -95,6 +95,33 @@ class VintedScraper:
         return False
 
     async def run_full_sync(self):
+        """
+        Verrous de profil (09/10/2026) : le scraping ouvre les MÊMES profils
+        navigateur que les automatisations Clemz (clemz_session_chrome_d1_reel /
+        clemz_session_chrome_reel) mais ne prenait aucun verrou -- constaté sur
+        la VM : scraping lancé pendant la republication de Dressing 2, contraire
+        à la règle "scraping et Clemz jamais en même temps" (deux contextes
+        Playwright sur le même dossier de profil, double activité sur le compte).
+        On prend désormais les verrous des deux comptes (même ordre trié que
+        ClemzAutomation.run() et clemz_partage, pour exclure tout deadlock) :
+        si une automatisation Clemz tourne, le scraping attend sa fin, et
+        inversement une automatisation lancée pendant le scraping attend.
+        """
+        from services.clemz_auto_message import get_profile_lock
+
+        verrous = [get_profile_lock(cle) for cle in sorted(["chrome_clemz", "edge_clemz"])]
+        if any(v.locked() for v in verrous):
+            logger.info("⏳ Scraping en attente : une automatisation Clemz utilise un profil — démarrage dès qu'elle se termine.")
+            app_state["status_TEST"] = "En attente (automatisation Clemz en cours)"
+        for verrou in verrous:
+            await verrou.acquire()
+        try:
+            await self._run_full_sync_verrouille()
+        finally:
+            for verrou in reversed(verrous):
+                verrou.release()
+
+    async def _run_full_sync_verrouille(self):
         from services.session_manager import ensure_session
         from services.automation_scheduler import start_task_run, update_task_result, finish_task_run
 

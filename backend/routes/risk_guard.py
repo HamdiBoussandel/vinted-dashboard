@@ -56,3 +56,21 @@ def get_statut():
         }
         for cle, nom in _DRESSINGS.items()
     }
+
+
+@router.get("/plan-du-jour")
+def get_plans_du_jour_bruts():
+    """
+    Plans du jour BRUTS de cette machine, lus par le satellite (PC de dev,
+    cf. services/plan_source.py) -- la VM est la seule source de vérité du
+    tirage. Même rafraîchissement live que /statut avant lecture (un repos
+    Niveau 1/2 levé en cours de journée est régénéré ici, sur la VM).
+    Format : {"date": "AAAA-MM-JJ", "Dressing 1": plan|null, "Dressing 2": plan|null}.
+    """
+    from datetime import datetime
+    for nom in _DRESSINGS.values():
+        rafraichir_repos_si_leve(nom)
+    return {
+        "date": datetime.now().strftime("%Y-%m-%d"),
+        **{nom: get_plan_du_jour(nom) for nom in _DRESSINGS.values()},
+    }

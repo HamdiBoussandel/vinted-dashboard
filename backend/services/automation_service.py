@@ -33,6 +33,9 @@ def _planifier_republish_oneshot(dressing, plan, job_id, creneau):
     persisté sur disque) continue d'afficher "actif" avec son horaire comme
     si de rien n'était.
     """
+    from services.plan_source import est_satellite
+    if est_satellite():
+        return  # le satellite ne programme jamais de republication (la VM fait foi)
     if not plan["actif"] or not plan["horaire"]:
         print(f"⏭️  [PLAN DU JOUR] {dressing} — repos aujourd'hui (niveau : {plan['niveau']}).")
         return
@@ -69,6 +72,10 @@ async def generer_plans_du_jour_cron():
     actif aujourd'hui (quel que soit le niveau qui l'a décidé), planifie le
     job de republication réel à l'horaire calculé par le plan.
     """
+    from services.plan_source import est_satellite
+    if est_satellite():
+        print("⏭️  [PLAN DU JOUR] Satellite : aucun tirage local, plan lu sur la VM.")
+        return
     plan_d1, plan_d2 = generer_plans_du_jour()
 
     for dressing, plan, creneau, job_id in [
@@ -92,6 +99,9 @@ async def rattraper_republish_manques():
     dressing depuis la génération du plan (le job a peut-être eu le temps de
     s'exécuter avant le redémarrage -- pas la peine de doubler la mise).
     """
+    from services.plan_source import est_satellite
+    if est_satellite():
+        return  # aucun rattrapage sur le satellite : la VM fait foi
     from services.automation_scheduler import get_plan_du_jour
     from services.risk_guard import get_volume_depuis_minuit
 
@@ -164,10 +174,28 @@ async def run_cron_sync(slot):
         print(f"❌ [CRON] Échec de la synchronisation de {slot} : {e}")
 
 
+def _republication_auto_desactivee(creneau):
+    """
+    Interrupteur "Republication automatique" (Maintenance, 10/10/2026) --
+    vérifié ICI, dans les deux points d'entrée des jobs planifiés (plan du jour
+    et rattrapage au démarrage passent tous deux par _planifier_republish_oneshot
+    -> ces wrappers), et PAS dans _execute_republish() lui-même, qui reste
+    appelé directement par le déclenchement manuel (routes/inventory.py).
+    """
+    from services.maintenance_service import maintenance_service
+    if not maintenance_service.republication_auto_active:
+        print(f"⏭️  [REPUB {creneau.upper()}] Republication automatique désactivée (Maintenance) — on passe.")
+        return True
+    return False
+
 async def _execute_republish_midi(volume_cible=None):
+    if _republication_auto_desactivee("midi"):
+        return
     await _execute_republish("midi", volume_cible)
 
 async def _execute_republish_soir(volume_cible=None):
+    if _republication_auto_desactivee("soir"):
+        return
     await _execute_republish("soir", volume_cible)
 
 async def _execute_republish(creneau="soir", volume_cible=None):
@@ -634,10 +662,22 @@ async def _verifier_plan_du_jour_cron():
     moins un dressing, régénère LES DEUX (comme le fait déjà ce rattrapage),
     plutôt que d'introduire une politique différente pour ce cas.
     """
+    from services.plan_source import est_satellite
+    if est_satellite():
+        return  # la VM fait foi, rien à vérifier ni régénérer ici
     from services.automation_scheduler import get_plan_du_jour
     if get_plan_du_jour("Dressing 1") is None or get_plan_du_jour("Dressing 2") is None:
         print("🩹 [PLAN DU JOUR] Plan manquant détecté en cours de journée (vérification périodique) — génération de rattrapage.")
         await generer_plans_du_jour_cron()
+        return
+
+    # Bascule en repos si une action faite DEPUIS UN AUTRE PC (satellite, qui
+    # ne modifie jamais de plan) a fait franchir le seuil de volume -- le
+    # volume est partagé via Supabase, mais seule la VM met son plan à jour
+    # (10/10/2026). Idempotent : ne fait rien si aucune pause ne s'impose.
+    from services.planification_republication import rafraichir_pause_si_necessaire
+    rafraichir_pause_si_necessaire("Dressing 1")
+    rafraichir_pause_si_necessaire("Dressing 2")
 
 
 scheduler.add_job(

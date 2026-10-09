@@ -104,6 +104,14 @@ class MaintenanceService:
         self.scraping_auto_settings_file = os.path.join(_base, "scraping_auto_settings.json")
         self.scraping_auto_active = self._load_scraping_auto_active()
 
+        # Republication automatique (plan du jour + rattrapage au démarrage) --
+        # ajouté le 10/10/2026 : c'était la seule automatisation sans
+        # interrupteur, donc le PC de dev republiait dès que son propre plan
+        # (tiré localement) rendait un dressing actif, en plus de la VM. Même
+        # persistance par machine que les 3 autres (fichier hors git).
+        self.republication_auto_settings_file = os.path.join(_base, "republication_auto_settings.json")
+        self.republication_auto_active = self._load_republication_auto_active()
+
         self.clemz_visible_settings_file = os.path.join(_base, "clemz_visible_settings.json")
         self.clemz_visible_mode = self._load_clemz_visible_mode()
 
@@ -531,6 +539,25 @@ class MaintenanceService:
 
     def get_scraping_auto_status(self):
         return {"active": self.scraping_auto_active}
+
+    def _load_republication_auto_active(self):
+        if not os.path.exists(self.republication_auto_settings_file):
+            return True
+        try:
+            with open(self.republication_auto_settings_file, "r", encoding="utf-8") as f:
+                return json.load(f).get("active", True)
+        except (json.JSONDecodeError, OSError) as e:
+            logger.warning(f"⚠️ [MAINTENANCE] Erreur lecture réglage republication auto : {e}")
+            return True
+
+    def set_republication_auto_active(self, active: bool):
+        self.republication_auto_active = active
+        with open(self.republication_auto_settings_file, "w", encoding="utf-8") as f:
+            json.dump({"active": active}, f)
+        logger.info(f"♻️ [MAINTENANCE] Republication automatique : {'activée' if active else 'désactivée'}.")
+
+    def get_republication_auto_status(self):
+        return {"active": self.republication_auto_active}
 
     def _load_clemz_visible_mode(self):
         if not os.path.exists(self.clemz_visible_settings_file):

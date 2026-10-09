@@ -79,9 +79,11 @@ export const maintenanceService = {
 
   // Journal de routine (démarrage VM -> scraping -> baisse de prix ->
   // republication -> extinction VM), une journée à la fois.
-  async getJournal(date) {
+  // apiUrl optionnel : permet de lire le journal d'un AUTRE backend (la VM,
+  // sur le réseau local) au lieu du backend de ce PC.
+  async getJournal(date, apiUrl = API_URL) {
     const params = date ? `?date=${date}` : '';
-    const response = await fetch(`${API_URL}/maintenance/journal${params}`);
+    const response = await fetch(`${apiUrl}/maintenance/journal${params}`, { signal: AbortSignal.timeout(10000) });
     if (!response.ok) throw new Error("Erreur réseau");
     return response.json();
   },
@@ -189,6 +191,25 @@ export const maintenanceService = {
     if (!response.ok) {
       const errData = await response.json().catch(() => ({}));
       throw new Error(errData.detail || "Erreur lors du changement d'état du scraping automatique");
+    }
+    return response.json();
+  },
+
+  async getRepublicationAutoStatus() {
+    const response = await fetch(`${API_URL}/maintenance/republication-auto`);
+    if (!response.ok) throw new Error("Erreur réseau");
+    return response.json();
+  },
+
+  async toggleRepublicationAuto(active) {
+    const response = await fetch(`${API_URL}/maintenance/republication-auto/toggle`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ active }),
+    });
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.detail || "Erreur lors du changement d'état de la republication automatique");
     }
     return response.json();
   },

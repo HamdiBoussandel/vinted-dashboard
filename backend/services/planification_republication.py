@@ -231,6 +231,10 @@ def rafraichir_pause_si_necessaire(dressing: str, action_type: str = "republicat
     """
     from services.risk_guard import get_active_convalescence, get_jour_pause_volume
     from services.automation_scheduler import get_plan_du_jour
+    from services.plan_source import est_satellite
+
+    if est_satellite():
+        return  # la VM corrige elle-même son plan (vérification toutes les 15 min)
 
     convalescence = get_active_convalescence(dressing)
     pause_volume = convalescence is None and get_jour_pause_volume(dressing)
@@ -344,6 +348,10 @@ def rafraichir_repos_si_leve(dressing: str, action_type: str = "republication"):
     """
     from services.risk_guard import get_active_convalescence, get_jour_pause_volume
     from services.automation_scheduler import get_plan_du_jour
+    from services.plan_source import est_satellite
+
+    if est_satellite():
+        return  # jamais de re-tirage sur le satellite : la VM fait foi
 
     plan = get_plan_du_jour(dressing)
     if plan is None or plan.get("date") != datetime.now().strftime("%Y-%m-%d"):

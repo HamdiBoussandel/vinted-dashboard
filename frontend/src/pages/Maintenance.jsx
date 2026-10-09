@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Chrome, Globe, Wrench, ExternalLink, RefreshCw, PackageCheck, Zap, MessageSquare, Eye, TrendingDown, Heart, Eraser, Trash2 } from 'lucide-react';
+import { Chrome, Globe, Wrench, ExternalLink, RefreshCw, PackageCheck, Zap, MessageSquare, Eye, TrendingDown, Heart, Eraser, Trash2, Repeat } from 'lucide-react';
 import { maintenanceService } from '../services/api';
 import SyncDatesCard from '../components/SyncDatesCard';
 
@@ -203,7 +203,28 @@ const ScrapingAutoCard = ({ active, onToggle, loading }) => (
       <div className="min-w-0">
         <p className="text-sm font-black text-slate-800">Scraping automatique</p>
         <p className="text-[11px] text-slate-400 font-semibold uppercase tracking-wide">
-          Syncs planifiées 14h/22h — n'affecte pas "Lancer Scraping"
+          Syncs planifiées 10h30/22h — n'affecte pas "Lancer Scraping"
+        </p>
+      </div>
+    </div>
+
+    <ToggleSwitch checked={active} onChange={onToggle} disabled={loading} />
+  </div>
+);
+
+// Ajouté le 10/10/2026 -- seule automatisation qui n'avait pas d'interrupteur :
+// sans lui, le PC de dev republiait dès que son propre plan du jour (tiré
+// localement) rendait un dressing actif, en plus de la VM.
+const RepublicationAutoCard = ({ active, onToggle, loading }) => (
+  <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex items-center justify-between gap-4 mt-5">
+    <div className="flex items-center gap-3 min-w-0">
+      <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0">
+        <Repeat size={20} className="text-slate-500" />
+      </div>
+      <div className="min-w-0">
+        <p className="text-sm font-black text-slate-800">Republication automatique</p>
+        <p className="text-[11px] text-slate-400 font-semibold uppercase tracking-wide">
+          Horaires tirés par le plan du jour + rattrapage au démarrage — n'affecte pas les boutons manuels
         </p>
       </div>
     </div>
@@ -282,6 +303,8 @@ export default function Maintenance() {
   const [baissePrixAutoLoading, setBaissePrixAutoLoading] = useState(false);
   const [scrapingAutoActive, setScrapingAutoActive] = useState(true);
   const [scrapingAutoLoading, setScrapingAutoLoading] = useState(false);
+  const [republicationAutoActive, setRepublicationAutoActive] = useState(true);
+  const [republicationAutoLoading, setRepublicationAutoLoading] = useState(false);
 
   const [partageAutoActive, setPartageAutoActive] = useState(true);
   const [partageAutoLoading, setPartageAutoLoading] = useState(false);
@@ -336,6 +359,15 @@ export default function Maintenance() {
     }
   }, []);
 
+  const fetchRepublicationAutoStatus = useCallback(async () => {
+    try {
+      const data = await maintenanceService.getRepublicationAutoStatus();
+      setRepublicationAutoActive(!!data.active);
+    } catch (err) {
+      console.error('Erreur chargement statut republication auto', err);
+    }
+  }, []);
+
   const fetchBaissePrixAutoStatus = useCallback(async () => {
     try {
       const data = await maintenanceService.getBaissePrixAutoStatus();
@@ -361,6 +393,7 @@ export default function Maintenance() {
     fetchClemzVisible();
     fetchBaissePrixAutoStatus();
     fetchScrapingAutoStatus();
+    fetchRepublicationAutoStatus();
     fetchPartageAutoStatus();
     // Poll léger : reflète l'ouverture/fermeture manuelle du navigateur, détecte
     // si Chrome a reçu une nouvelle version de Clemz, et reflète le statut watchdog
@@ -374,7 +407,7 @@ export default function Maintenance() {
       fetchPartageAutoStatus();
     }, 5000);
     return () => clearInterval(interval);
-  }, [fetchProfiles, fetchExtensionStatus, fetchWatchdogStatus, fetchClemzVisible, fetchBaissePrixAutoStatus, fetchPartageAutoStatus, fetchScrapingAutoStatus]);
+  }, [fetchProfiles, fetchExtensionStatus, fetchWatchdogStatus, fetchClemzVisible, fetchBaissePrixAutoStatus, fetchPartageAutoStatus, fetchScrapingAutoStatus, fetchRepublicationAutoStatus]);
 
   const handleOpen = async (key) => {
     setError(null);
@@ -490,6 +523,22 @@ export default function Maintenance() {
     }
   };
 
+  const handleToggleRepublicationAuto = async (nextValue) => {
+    setError(null);
+    setRepublicationAutoLoading(true);
+    setRepublicationAutoActive(nextValue);
+    try {
+      const data = await maintenanceService.toggleRepublicationAuto(nextValue);
+      setRepublicationAutoActive(!!data.active);
+    } catch (err) {
+      console.error('Erreur bascule republication auto', err);
+      setError(err.message || "Impossible de changer l'état de la republication automatique.");
+      setRepublicationAutoActive(!nextValue);
+    } finally {
+      setRepublicationAutoLoading(false);
+    }
+  };
+
   const handleTogglePartageAuto = async (nextValue) => {
     setError(null);
     setPartageAutoLoading(true);
@@ -584,6 +633,12 @@ export default function Maintenance() {
         active={scrapingAutoActive}
         onToggle={handleToggleScrapingAuto}
         loading={scrapingAutoLoading}
+      />
+
+      <RepublicationAutoCard
+        active={republicationAutoActive}
+        onToggle={handleToggleRepublicationAuto}
+        loading={republicationAutoLoading}
       />
 
       <PartageVuesFavorisAutoCard

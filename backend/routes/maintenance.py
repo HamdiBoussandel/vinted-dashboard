@@ -351,6 +351,27 @@ async def toggle_scraping_auto_route(data: dict = Body(...)):
     maintenance_service.set_scraping_auto_active(active)
     return maintenance_service.get_scraping_auto_status()
 
+
+@router.get("/republication-auto")
+async def get_republication_auto_route():
+    """Statut courant de la republication automatique (plan du jour + rattrapage)."""
+    return maintenance_service.get_republication_auto_status()
+
+
+@router.post("/republication-auto/toggle")
+async def toggle_republication_auto_route(data: dict = Body(...)):
+    """
+    Active ou désactive la republication automatique planifiée (horaire tiré
+    par le plan du jour, et son rattrapage au démarrage). N'affecte pas les
+    boutons de republication manuels du dashboard.
+    Payload attendu : { "active": true | false }
+    """
+    active = data.get("active")
+    if active is None:
+        raise HTTPException(status_code=400, detail="Le champ 'active' est requis.")
+    maintenance_service.set_republication_auto_active(active)
+    return maintenance_service.get_republication_auto_status()
+
 @router.post("/sync-dates-republication")
 async def sync_dates_republication_route(
     file: UploadFile = File(...),

@@ -585,6 +585,13 @@ async def run_automation_now(background_tasks: BackgroundTasks, payload: dict = 
         if not plan.get("actif"):
             if plan.get("niveau") in ("convalescence", "repos_force"):
                 return allowed, None  # repos Niveau 1/2 mis en cache, mais plus vrai live -- plan obsolète
+            from services.plan_source import PLAN_INDISPONIBLE
+            if plan.get("niveau") == PLAN_INDISPONIBLE:
+                return 0, (
+                    f"Plan du jour de la VM illisible (VM éteinte, backend arrêté ou pas "
+                    f"encore de plan aujourd'hui) -- republication manuelle de {dressing} "
+                    f"bloquée depuis ce PC tant que le plan de référence n'est pas lisible."
+                )
             return 0, (
                 f"Jour de repos décidé par le calendrier anti-détection (niveau "
                 f"'{plan.get('niveau')}') pour {dressing} -- aucune republication "
