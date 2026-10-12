@@ -32,9 +32,10 @@ MAX_HISTORY_ENTRIES = 200
 # devant réussir pour débloquer la suivante. Remis à zéro au changement de date.
 ROUTINE_DU_JOUR_FILE = os.path.join(BASE_DIR, "routine_du_jour.json")
 # "succes" : au moins un article traité (succès partiel = OK) ; "rien_a_faire" :
-# aucun article concerné ; "desactive" : bascule Maintenance coupée -- les
-# trois débloquent l'étape suivante. "echec"/"bloque" l'arrêtent.
-STATUTS_ETAPE_OK = ("succes", "rien_a_faire", "desactive")
+# aucun article concerné ; "desactive" : bascule Maintenance coupée ; "repos" :
+# dressing au repos aujourd'hui selon son plan du jour (aucune action Clemz) --
+# les quatre débloquent l'étape suivante. "echec"/"bloque" l'arrêtent.
+STATUTS_ETAPE_OK = ("succes", "rien_a_faire", "desactive", "repos")
 
 
 def _read_json(file_path, default):

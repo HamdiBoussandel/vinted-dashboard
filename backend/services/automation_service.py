@@ -315,14 +315,23 @@ async def _rattraper_sans_verrou(reprendre_echecs):
 
 async def _baisse_prix_chainee(dressings_candidats):
     """Baisse de prix pour les dressings dont le scraping du jour a réussi ;
-    les autres sont notés "bloqué" (pas d'e-mail : celui du scraping suffit)."""
+    les autres sont notés "bloqué" (pas d'e-mail : celui du scraping suffit).
+    Un dressing au REPOS aujourd'hui (plan du jour inactif) n'a aucune baisse
+    de prix -- règle utilisateur du 12/10/2026 : le repos vaut pour toute
+    action Clemz, pas seulement la republication (D1 en repos avait reçu une
+    baisse ce jour-là)."""
+    from services.automation_scheduler import get_plan_du_jour, noter_etape_routine
     autorises = []
     for dressing in dressings_candidats:
+        plan = get_plan_du_jour(dressing)
+        if plan is not None and not plan.get("actif"):
+            print(f"😴 [ROUTINE] {dressing} — au repos aujourd'hui ({plan.get('niveau')}) : pas de baisse de prix.")
+            noter_etape_routine(dressing, "baisse_prix", "repos", f"Repos du jour ({plan.get('niveau')})")
+            continue
         if _etape_ok(dressing, "scraping"):
             autorises.append(dressing)
         else:
             print(f"⛔ [ROUTINE] {dressing} — baisse de prix bloquée : scraping du jour non réussi.")
-            from services.automation_scheduler import noter_etape_routine
             noter_etape_routine(dressing, "baisse_prix", "bloque", "Scraping du jour non réussi")
     if autorises:
         await _etape_baisse_prix(autorises)

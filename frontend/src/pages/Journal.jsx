@@ -1,7 +1,7 @@
 // pages/Journal.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-    CheckCircle, XCircle, AlertCircle, Clock, Loader, Ban, Play,
+    CheckCircle, XCircle, AlertCircle, Clock, Loader, Ban, Play, Moon,
     Power, ScanLine, TrendingDown, RefreshCw, Heart, ChevronLeft, ChevronRight,
 } from 'lucide-react';
 import { maintenanceService } from '../services/api';
@@ -20,6 +20,7 @@ const STATUS_CONFIG = {
     // Statuts propres à la chaîne de routine par dressing (12/10/2026)
     bloque: { label: 'Bloqué', icon: <Ban size={14} className="text-red-400" />, bg: 'bg-red-50 border-red-100', text: 'text-red-600' },
     rien_a_faire: { label: 'Rien à faire', icon: <CheckCircle size={14} className="text-slate-400" />, bg: 'bg-slate-50 border-slate-100', text: 'text-slate-500' },
+    repos: { label: 'Repos', icon: <Moon size={14} className="text-slate-400" />, bg: 'bg-slate-50 border-slate-100', text: 'text-slate-500' },
     desactive: { label: 'Désactivé', icon: <Ban size={14} className="text-slate-300" />, bg: 'bg-slate-50 border-slate-100', text: 'text-slate-400' },
 };
 
