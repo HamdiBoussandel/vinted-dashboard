@@ -61,6 +61,9 @@ function EtapeCard({ etape, index }) {
                     {etape.compteurs && (
                         <p className="text-[11px] text-slate-500 mt-0.5">
                             {etape.compteurs.succes}/{etape.compteurs.total} réussi(s)
+                            {etape.compteurs.ecartes > 0 && (
+                                <span className="text-slate-400"> · {etape.compteurs.ecartes} écarté(s)</span>
+                            )}
                             {etape.compteurs.bloques_quota > 0 && (
                                 <span className="text-amber-600 font-semibold"> · {etape.compteurs.bloques_quota} bloqué(s) quota</span>
                             )}

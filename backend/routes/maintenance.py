@@ -37,7 +37,7 @@ def _compter_resultats(task, dressing):
     par catégorie (même logique que TaskHistory.jsx, cf. échange du 08/10/2026).
     """
     resultats = task.get("results") or []
-    succes = total = bloques_quota = erreurs_clemz = 0
+    succes = total = bloques_quota = erreurs_clemz = ecartes = 0
     for r in resultats:
         r_dressing = r.get("dressing")
         if r_dressing != dressing:
@@ -48,10 +48,16 @@ def _compter_resultats(task, dressing):
             else:
                 erreurs_clemz += 1
             continue
+        # Écartés AVANT traitement (volume cible du jour, quota) : hors du
+        # total, comptés à part -- sinon "0/32" pour 7 articles réellement
+        # envoyés à Clemz (cf. échange du 12/10/2026).
+        if r.get("status") == "skipped":
+            ecartes += 1
+            continue
         total += 1
         if r.get("status") == "success":
             succes += 1
-    return {"succes": succes, "total": total, "bloques_quota": bloques_quota, "erreurs_clemz": erreurs_clemz}
+    return {"succes": succes, "total": total, "bloques_quota": bloques_quota, "erreurs_clemz": erreurs_clemz, "ecartes": ecartes}
 
 
 def _dernier_plan_historique(dressing, date_str):
@@ -108,9 +114,21 @@ async def get_journal_route(date: str = None):
     extinction = next((e for e in events_du_jour if e["event"] == "extinction"), None)
     scraping = _premier(lambda t: t == "scraping")
     baisse_prix = _premier(lambda t: t == "baisse_prix")
-    repub_midi = _premier(lambda t: t == "republication_midi")
-    repub_soir = _premier(lambda t: t == "republication_soir")
     partage = _premier(lambda t: t == "partage_vues_favoris")
+
+    def _republication_routine(dressing):
+        """Dernière republication AUTOMATIQUE (sous-type "routine") du jour pour
+        ce dressing -- les republications manuelles du dashboard partagent le
+        type "republication" mais ne font pas partie de la routine."""
+        return next(
+            (t for t in taches_du_jour
+             if t.get("type") == "republication" and t.get("sous_type") == "routine"
+             and any(r.get("dressing") == dressing for r in t.get("results") or [])),
+            None,
+        )
+
+    repub_d1 = _republication_routine("Dressing 1")
+    repub_d2 = _republication_routine("Dressing 2")
 
     def _etape_vm(event, label):
         if not event:
@@ -176,8 +194,8 @@ async def get_journal_route(date: str = None):
         _avec_chaine(_etape_dressing(scraping, "Dressing 2", "Scraping Dressing 2"), "Dressing 2", "scraping"),
         _avec_chaine(_etape_dressing(baisse_prix, "Dressing 1", "Baisse de prix Dressing 1", plan_d1), "Dressing 1", "baisse_prix"),
         _avec_chaine(_etape_dressing(baisse_prix, "Dressing 2", "Baisse de prix Dressing 2", plan_d2), "Dressing 2", "baisse_prix"),
-        _avec_chaine(_etape_dressing(repub_midi, "Dressing 1", "Republication Dressing 1", plan_d1), "Dressing 1", "republication"),
-        _avec_chaine(_etape_dressing(repub_soir, "Dressing 2", "Republication Dressing 2", plan_d2), "Dressing 2", "republication"),
+        _avec_chaine(_etape_dressing(repub_d1, "Dressing 1", "Republication Dressing 1", plan_d1), "Dressing 1", "republication"),
+        _avec_chaine(_etape_dressing(repub_d2, "Dressing 2", "Republication Dressing 2", plan_d2), "Dressing 2", "republication"),
         _etape_partage(partage),
         _etape_vm(extinction, "Extinction VM"),
     ]

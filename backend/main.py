@@ -127,7 +127,10 @@ async def startup_event():
         if not scheduler.running:
             scheduler.start()
 
-        from services.automation_scheduler import cleanup_stale_running_tasks
+        from services.automation_scheduler import cleanup_stale_running_tasks, migrer_anciennes_republications
+        nb_migrees = migrer_anciennes_republications()
+        if nb_migrees:
+            print(f"🔁 [STARTUP] {nb_migrees} ancienne(s) republication(s) automatique(s) convertie(s) au type 'republication' (routine).")
         nb_cleaned = cleanup_stale_running_tasks()
         if nb_cleaned:
             print(f"🧹 [STARTUP] {nb_cleaned} tâche(s) 'en cours' interrompue(s) par le redémarrage précédent — marquée(s) 'Échec'.")

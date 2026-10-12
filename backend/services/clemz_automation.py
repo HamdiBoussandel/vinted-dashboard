@@ -974,11 +974,11 @@ class ClemzAutomation:
         return {"status": "success"}
 
     # --- Liste "à traiter" (mainList) : lecture / vidage (08/10/2026) ---------
-    # En mode PRIX FIXE, Clemz applique le même prix à TOUTE la liste "à
-    # traiter". Un résidu d'un run précédent interrompu (cf. bug du 17/08/2026
-    # dans _poll_mass_action) recevrait donc ce prix aussi -- ex. un article à
-    # 40€ fixé à 3,90€. D'où : vidage avant constitution de la liste, puis
-    # contrôle du compteur juste avant l'action de masse.
+    # Clemz applique toute action de masse à TOUTE la liste "à traiter". Un
+    # résidu d'un run précédent interrompu (cf. bug du 17/08/2026 dans
+    # _poll_mass_action) serait donc traité aussi -- ex. un article à 40€ fixé
+    # à 3,90€ en prix fixe, ou republié hors volume du jour (12/10/2026). D'où :
+    # vidage avant constitution de la liste, pour toutes les actions.
     # Sélecteurs repris du code source de l'extension (html/toolModals/
     # listsModal.html) : #mainListLink .itemCount affiche "(N)" ; le bouton
     # "🗑️ enlever" (.list-delete-button[data-list-current=mainList]) retire de la
@@ -1047,7 +1047,7 @@ class ClemzAutomation:
             await self._fermer_modale_listes(cdp, main_list_link_id)
             return {"status": "success"}
 
-        logger.warning(f"🧹 [{acc['name']}] Liste 'à traiter' non vide ({avant} article(s) résiduel(s)) — vidage avant prix fixe.")
+        logger.warning(f"🧹 [{acc['name']}] Liste 'à traiter' non vide ({avant} article(s) résiduel(s)) — vidage avant constitution de la liste.")
         resultat = await self._js_sur_noeud(cdp, main_list_link_id, """
             function() {
                 const root = this.getRootNode();
@@ -1075,8 +1075,8 @@ class ClemzAutomation:
         if apres != 0:
             return {
                 "status": "failed",
-                "reason": f"Liste 'à traiter' non vidée ({avant} -> {apres} article(s)) — prix fixe annulé "
-                          f"pour ne pas l'appliquer à des articles hors groupe. À vider à la main dans Clemz.",
+                "reason": f"Liste 'à traiter' non vidée ({avant} -> {apres} article(s)) — action annulée "
+                          f"pour ne pas traiter des articles hors sélection. À vider à la main dans Clemz.",
             }
         logger.info(f"✅ [{acc['name']}] Liste 'à traiter' vidée ({avant} -> 0).")
 
@@ -1520,17 +1520,21 @@ class ClemzAutomation:
             reopened = await ensure_panel_open(cdp, page)
             _pause(f"ensure_panel_open() initial -> {reopened}")
 
-            # --- Étape A0 (prix fixe uniquement) : vidage de la liste "à traiter" ---
+            # --- Étape A0 : vidage de la liste "à traiter" (TOUTES les actions) ---
             # Cf. _vider_liste_a_traiter : sans ça, un résidu recevrait le prix fixe.
-            if self.prix_fixe is not None:
-                vidage = await self._vider_liste_a_traiter(cdp, page, acc)
-                if vidage["status"] != "success":
-                    logger.error(f"❌ [{acc['name']}] {vidage['reason']}")
-                    return {
-                        "account": acc["name"],
-                        "selection_results": [{"nom": p, "status": "failed", "reason": vidage["reason"]} for p in acc["produits"]],
-                        "repost_result": vidage,
-                    }
+            # Étendu à la republication et à la baisse en % le 12/10/2026 : 6 articles
+            # restés dans la liste après l'échec "panneau introuvable" de la baisse D1
+            # de 19h24 ont été REPUBLIÉS avec les 7 du jour (13 au lieu du volume
+            # cible de 7), hors quota et hors suivi en base. Même règle partout :
+            # vidage impossible = aucune action de masse.
+            vidage = await self._vider_liste_a_traiter(cdp, page, acc)
+            if vidage["status"] != "success":
+                logger.error(f"❌ [{acc['name']}] {vidage['reason']}")
+                return {
+                    "account": acc["name"],
+                    "selection_results": [{"nom": p, "status": "failed", "reason": vidage["reason"]} for p in acc["produits"]],
+                    "repost_result": vidage,
+                }
 
             # --- Étape A : Constitution de la liste ---
             selection_results = await self._build_list(page, cdp, acc)
@@ -1892,8 +1896,8 @@ class ClemzAutomation:
                 # agir -- avant, il se basait sur l'index (i > 0), donc se déclenchait
                 # même quand le compte précédent (ou le suivant) n'avait aucun produit
                 # à traiter (retour immédiat dans _run_single_automation), ajoutant une
-                # attente de 2-5 min pour rien (ex: cron "midi"/"soir", qui ne concerne
-                # qu'un seul dressing à la fois par construction).
+                # attente de 2-5 min pour rien (ex: republication automatique, qui ne
+                # concerne qu'un seul dressing à la fois par construction).
                 results = []
                 compte_reel_deja_traite = False
                 for acc in self.accounts:

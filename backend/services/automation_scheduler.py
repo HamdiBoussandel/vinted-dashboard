@@ -8,8 +8,6 @@ _file_lock = Lock()
 
 # Pointe vers backend/ (un niveau au-dessus de services/)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SCHEDULED_REPUBLISH_MIDI_FILE = os.path.join(BASE_DIR, "scheduled_republish_midi.json")
-SCHEDULED_REPUBLISH_SOIR_FILE = os.path.join(BASE_DIR, "scheduled_republish_soir.json")
 TASK_HISTORY_FILE = os.path.join(BASE_DIR, "task_history.json")
 VM_LIFECYCLE_FILE = os.path.join(BASE_DIR, "vm_lifecycle_log.json")
 MAX_VM_LIFECYCLE_ENTRIES = 30
@@ -59,7 +57,7 @@ def _write_json_locked(file_path, data):
     Écriture atomique : on écrit d'abord dans un fichier temporaire, puis on le
     renomme à la place du fichier final via os.replace(). Sur la plupart des
     OS (Windows inclus depuis Python 3.3+), ce renommage est atomique -- un
-    lecteur concurrent (ex: route GET /automation/scheduled-both) voit soit
+    lecteur concurrent (ex: route GET /automation/history) voit soit
     l'ancienne version complète du fichier, soit la nouvelle version complète,
     jamais un JSON tronqué en cas de crash/coupure pendant l'écriture.
     """
@@ -71,10 +69,38 @@ def _write_json_locked(file_path, data):
 
 def _write_json(file_path, data):
     """Écriture autonome (acquiert elle-même le verrou) — pour les cas simples
-    où lecture et écriture ne partagent pas le même verrou (ex: fichiers de
-    créneaux midi/soir, où chaque fonction publique fait sa propre passe)."""
+    où lecture et écriture ne partagent pas le même verrou (ex: plan du jour,
+    où chaque fonction publique fait sa propre passe)."""
     with _file_lock:
         _write_json_locked(file_path, data)
+
+
+def migrer_anciennes_republications():
+    """
+    Migration unique (12/10/2026), appelée au démarrage : l'ancien système de
+    créneaux fixes enregistrait les republications automatiques sous les types
+    "republication_midi" (Dressing 1) / "republication_soir" (Dressing 2) et
+    gardait une liste "programmée" dans scheduled_republish_*.json. Désormais :
+    type "republication", sous-type "routine", et plus aucune programmation
+    manuelle. Idempotente -- ne fait plus rien une fois l'historique converti ;
+    à supprimer quand la VM et le PC de dev ont tous deux redémarré une fois.
+    """
+    anciens_types = ("republication_midi", "republication_soir")
+    with _file_lock:
+        history = _read_json(TASK_HISTORY_FILE, default=[])
+        nb = 0
+        for entry in history:
+            if entry.get("type") in anciens_types:
+                entry["type"] = "republication"
+                entry["sous_type"] = "routine"
+                nb += 1
+        if nb:
+            _write_json_locked(TASK_HISTORY_FILE, history)
+    for nom in ("scheduled_republish_midi.json", "scheduled_republish_soir.json"):
+        chemin = os.path.join(BASE_DIR, nom)
+        if os.path.exists(chemin):
+            os.remove(chemin)
+    return nb
 
 
 def get_routine_du_jour():
@@ -101,83 +127,6 @@ def noter_etape_routine(dressing, etape, statut, raison=None):
             "raison": raison,
         }
         _write_json_locked(ROUTINE_DU_JOUR_FILE, etat)
-
-
-def schedule_republish(items):
-    """
-    Répartit les articles par DRESSING, plus par créneau horaire mélangé :
-    "midi" = Dressing 1 (fenêtre aléatoire ~11h30-12h30), "soir" = Dressing 2
-    (fenêtre aléatoire ~17h00-18h00). Remplace le système précédent qui
-    mélangeait les deux comptes dans un seul lot tiré à une heure aléatoire
-    commune -- décision du 29/08 : republication jamais simultanée entre
-    comptes, chacun sa propre fenêtre, jamais superposée avec l'autre.
-    """
-    today_str = datetime.now().strftime("%Y-%m-%d")
-
-    items_d1 = [i for i in items if i.get("dressing") == "Dressing 1"]
-    items_d2 = [i for i in items if i.get("dressing") == "Dressing 2"]
-
-    task_midi = {
-        "date": today_str,
-        "created_at": datetime.now().isoformat(),
-        "creneau": "midi",
-        "dressing": "Dressing 1",
-        "window_start": "11:30",
-        "window_end": "12:30",
-        "scheduled_run_time": None,
-        "status": "pending",
-        "items": items_d1,
-    }
-    task_soir = {
-        "date": today_str,
-        "created_at": datetime.now().isoformat(),
-        "creneau": "soir",
-        "dressing": "Dressing 2",
-        "window_start": "17:00",
-        "window_end": "18:00",
-        "scheduled_run_time": None,
-        "status": "pending",
-        "items": items_d2,
-    }
-
-    _write_json(SCHEDULED_REPUBLISH_MIDI_FILE, task_midi)
-    _write_json(SCHEDULED_REPUBLISH_SOIR_FILE, task_soir)
-
-    print(f"📋 [SCHEDULER] {len(items_d1)} article(s) Dressing 1 → fenêtre 11h30-12h30 | {len(items_d2)} article(s) Dressing 2 → fenêtre 17h00-18h00")
-    return {"midi": task_midi, "soir": task_soir}
-
-
-def get_scheduled_republish(creneau="soir"):
-    file = SCHEDULED_REPUBLISH_MIDI_FILE if creneau == "midi" else SCHEDULED_REPUBLISH_SOIR_FILE
-    return _read_json(file, default=None)
-
-
-def get_both_scheduled():
-    """Retourne les deux créneaux pour affichage dashboard."""
-    return {
-        "midi": _read_json(SCHEDULED_REPUBLISH_MIDI_FILE, default=None),
-        "soir": _read_json(SCHEDULED_REPUBLISH_SOIR_FILE, default=None),
-    }
-
-
-def mark_scheduled_republish_status(status, creneau="soir"):
-    task = get_scheduled_republish(creneau)
-    if not task:
-        return None
-    task["status"] = status
-    file = SCHEDULED_REPUBLISH_MIDI_FILE if creneau == "midi" else SCHEDULED_REPUBLISH_SOIR_FILE
-    _write_json(file, task)
-    return task
-
-
-def update_scheduled_run_time(run_time_str, creneau="soir"):
-    task = get_scheduled_republish(creneau)
-    if not task:
-        return None
-    task["scheduled_run_time"] = run_time_str
-    file = SCHEDULED_REPUBLISH_MIDI_FILE if creneau == "midi" else SCHEDULED_REPUBLISH_SOIR_FILE
-    _write_json(file, task)
-    return task
 
 
 def save_plan_du_jour(dressing, plan):

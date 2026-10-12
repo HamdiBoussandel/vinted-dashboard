@@ -775,7 +775,7 @@ export default function Dashboard() {
                     handleReconnect={handleReconnect}
                 />
 
-                {/* 🧪 ZONE DE TEST — déclenchement immédiat, hors programmation créneau */}
+                {/* 🧪 ZONE DE TEST — déclenchement immédiat, hors routine automatique */}
                 <div className="flex items-center gap-3 mt-3 mb-3 p-3 bg-slate-50 border border-dashed border-slate-300 rounded-xl">
                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">🧪 Test immédiat :</span>
                     <button

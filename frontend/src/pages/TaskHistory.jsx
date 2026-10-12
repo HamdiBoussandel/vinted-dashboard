@@ -222,11 +222,16 @@ function TaskCard({ task }) {
     // pas un article traité : les compter gonflait le total à tort (ex: "5/7"
     // pour une demande réelle de 6 articles, cf. échange du 13/09/2026).
     const articleResults = task.results?.filter(r => !String(r.id).startsWith('anomaly_')) ?? [];
+    // Les articles écartés AVANT traitement (volume cible du jour, quota --
+    // statut "skipped") ne comptent plus dans le total, affichés à part : sinon
+    // "0/32" pour une republication de 7 articles (25 écartés par le volume
+    // cible), cf. échange du 12/10/2026.
     const counts = isPartageTask(task)
         ? getPartageCounts(task)
         : {
             success: articleResults.filter(r => r.status === 'success').length,
-            total: articleResults.length,
+            total: articleResults.filter(r => r.status !== 'skipped').length,
+            ecartes: articleResults.filter(r => r.status === 'skipped').length,
         };
     const successCount = counts.success;
     const totalCount = counts.total;
@@ -268,20 +273,6 @@ function TaskCard({ task }) {
                         </span>
                     ))}
 
-                    {/* Badge créneau Midi/Soir -- uniquement les republications du cron
-                        programmé (task.type = "republication_midi"/"republication_soir",
-                        cf. automation_service.py). Ne pas se fier à un simple "_" dans
-                        task.type : "baisse_prix" en contient un aussi mais n'a aucun
-                        rapport avec un créneau horaire (cf. échange du 13/09/2026). */}
-                    {(task.type?.endsWith("_midi") || task.type?.endsWith("_soir")) && (
-                        <span className={`flex items-center gap-1 text-[10px] font-black uppercase px-2 py-1 rounded-md border ${task.type?.includes("midi")
-                            ? "bg-yellow-100 text-yellow-700 border-yellow-200"
-                            : "bg-indigo-100 text-indigo-700 border-indigo-200"
-                            }`}>
-                            {task.type?.includes("midi") ? "🌞 Midi" : "🌙 Soir"}
-                        </span>
-                    )}
-
                     {/* Statut global */}
                     <div className={`flex items-center gap-1.5 text-xs font-bold ${status.text}`}>
                         {status.icon}
@@ -291,6 +282,7 @@ function TaskCard({ task }) {
                     {/* Compteur articles */}
                     <span className="text-[11px] text-slate-500 font-medium">
                         {successCount}/{totalCount} {unitLabel}
+                        {counts.ecartes > 0 && <span className="text-slate-400"> · {counts.ecartes} écarté(s)</span>}
                     </span>
                 </div>
 

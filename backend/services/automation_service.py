@@ -22,7 +22,11 @@ from services.planification_republication import generer_plans_du_jour
 scheduler = AsyncIOScheduler()
 scraper = VintedScraper()
 
-def _planifier_republish_oneshot(dressing, plan, job_id, creneau):
+# Un job de republication par dressing, à l'horaire de son plan du jour.
+JOB_ID_REPUBLICATION = {"Dressing 1": "republication_dressing1", "Dressing 2": "republication_dressing2"}
+
+
+def _planifier_republish_oneshot(dressing, plan):
     """
     Factorisé hors de generer_plans_du_jour_cron() pour être réutilisable par
     rattraper_republish_manques() (cf. échange du 21/09/2026) : le job
@@ -44,21 +48,20 @@ def _planifier_republish_oneshot(dressing, plan, job_id, creneau):
     now = datetime.now()
     run_time = now.replace(hour=heure, minute=minute, second=seconde, microsecond=0)
     if run_time <= now:
-        # Garde-fou (le job tourne à minuit normalement, les créneaux sont
-        # 12h-13h/19h-21h, donc toujours dans le futur) -- mais aussi le chemin normal du
-        # rattrapage démarrage quand l'horaire tiré est déjà passé : on ne
-        # perd pas le jour, on republie au plus tôt.
+        # Garde-fou (le job tourne à minuit normalement, les horaires tirés
+        # sont dans la journée, donc toujours dans le futur) -- mais aussi le
+        # chemin normal du rattrapage démarrage quand l'horaire tiré est déjà
+        # passé : on ne perd pas le jour, on republie au plus tôt.
         run_time = now + timedelta(minutes=1)
 
     print(f"🎲 [PLAN DU JOUR] {dressing} — planifié à {run_time.strftime('%H:%M:%S')} "
           f"(niveau : {plan['niveau']}, volume cible : {plan['volume_cible']}).")
 
-    job_func = _execute_republish_midi if creneau == "midi" else _execute_republish_soir
     scheduler.add_job(
-        job_func,
+        _republication_chainee,
         DateTrigger(run_date=run_time),
-        args=[plan["volume_cible"]],
-        id=job_id,
+        args=[dressing, plan["volume_cible"]],
+        id=JOB_ID_REPUBLICATION[dressing],
         replace_existing=True,
     )
 
@@ -78,11 +81,8 @@ async def generer_plans_du_jour_cron():
         return
     plan_d1, plan_d2 = generer_plans_du_jour()
 
-    for dressing, plan, creneau, job_id in [
-        ("Dressing 1", plan_d1, "midi", "republish_oneshot_d1"),
-        ("Dressing 2", plan_d2, "soir", "republish_oneshot_d2"),
-    ]:
-        _planifier_republish_oneshot(dressing, plan, job_id, creneau)
+    for dressing, plan in [("Dressing 1", plan_d1), ("Dressing 2", plan_d2)]:
+        _planifier_republish_oneshot(dressing, plan)
 
 
 async def rattraper_republish_manques():
@@ -117,7 +117,12 @@ async def rattraper_republish_manques():
     plan_d1 = get_plan_du_jour("Dressing 1")
     plan_d2 = get_plan_du_jour("Dressing 2")
     aujourdhui = datetime.now().strftime("%Y-%m-%d")
-    if (plan_d1 and plan_d2 and plan_d1.get("date") == aujourdhui and plan_d2.get("date") == aujourdhui
+    # Pas de continuité si l'un des deux a déjà republié aujourd'hui (cf.
+    # échange du 12/10/2026, même garde que rafraichir_pause_si_necessaire) :
+    # un redémarrage après une republication suivie d'un repos_force ne doit
+    # pas réactiver l'autre dressing.
+    deja_republie = any(get_volume_depuis_minuit(d, "republication") > 0 for d in ("Dressing 1", "Dressing 2"))
+    if (not deja_republie and plan_d1 and plan_d2 and plan_d1.get("date") == aujourdhui and plan_d2.get("date") == aujourdhui
             and not plan_d1.get("actif") and not plan_d2.get("actif")):
         from services.planification_republication import _garantir_un_dressing_actif, _persister_decision, _replanifier_job_oneshot
         decisions = {
@@ -134,10 +139,7 @@ async def rattraper_republish_manques():
                 plan_persiste = _persister_decision(dr, nouvelle)
                 _replanifier_job_oneshot(dr, plan_persiste)
 
-    for dressing, creneau, job_id in [
-        ("Dressing 1", "midi", "republish_oneshot_d1"),
-        ("Dressing 2", "soir", "republish_oneshot_d2"),
-    ]:
+    for dressing in ("Dressing 1", "Dressing 2"):
         plan = get_plan_du_jour(dressing)
         if plan is None or not plan.get("actif") or not plan.get("horaire"):
             continue
@@ -147,7 +149,7 @@ async def rattraper_republish_manques():
         print(f"🩹 [STARTUP] Job de republication manquant pour {dressing} "
               f"(perdu par un redémarrage précédent, plan pourtant actif à "
               f"{plan['horaire']}) — replanification.")
-        _planifier_republish_oneshot(dressing, plan, job_id, creneau)
+        _planifier_republish_oneshot(dressing, plan)
 
 
 async def run_cron_sync(slot):
@@ -174,17 +176,16 @@ async def run_cron_sync(slot):
         print(f"❌ [CRON] Échec de la synchronisation de {slot} : {e}")
 
 
-def _republication_auto_desactivee(creneau):
+def _republication_auto_desactivee(dressing):
     """
     Interrupteur "Republication automatique" (Maintenance, 10/10/2026) --
-    vérifié ICI, dans les deux points d'entrée des jobs planifiés (plan du jour
-    et rattrapage au démarrage passent tous deux par _planifier_republish_oneshot
-    -> ces wrappers), et PAS dans _execute_republish() lui-même, qui reste
-    appelé directement par le déclenchement manuel (routes/inventory.py).
+    vérifié ICI, au point d'entrée des jobs planifiés (plan du jour et
+    rattrapage au démarrage passent tous deux par _planifier_republish_oneshot
+    -> _republication_chainee), et PAS dans _execute_republish() lui-même.
     """
     from services.maintenance_service import maintenance_service
     if not maintenance_service.republication_auto_active:
-        print(f"⏭️  [REPUB {creneau.upper()}] Republication automatique désactivée (Maintenance) — on passe.")
+        print(f"⏭️  [REPUB] {dressing} — republication automatique désactivée (Maintenance) — on passe.")
         return True
     return False
 
@@ -354,11 +355,12 @@ async def _cron_baisse_prix_matin():
         await _baisse_prix_chainee([d for d in DRESSINGS_ROUTINE if get_statut_etape(d, "baisse_prix") is None])
 
 
-async def _republication_chainee(creneau, volume_cible):
+async def _republication_chainee(dressing, volume_cible):
+    """Job de republication automatique d'un dressing (planifié par
+    _planifier_republish_oneshot à l'horaire de son plan du jour)."""
     from services.automation_scheduler import noter_etape_routine
-    if _republication_auto_desactivee(creneau):
+    if _republication_auto_desactivee(dressing):
         return
-    dressing = "Dressing 1" if creneau == "midi" else "Dressing 2"
     async with _verrou_routine:
         await _rattraper_sans_verrou(reprendre_echecs=False)
         for etape in ("scraping", "baisse_prix"):
@@ -368,7 +370,7 @@ async def _republication_chainee(creneau, volume_cible):
                 noter_etape_routine(dressing, "republication", "bloque", raison)
                 return
         try:
-            statut, raison = await _execute_republish(creneau, volume_cible)
+            statut, raison = await _execute_republish(dressing, volume_cible)
         except Exception as e:
             statut, raison = "echec", f"Erreur : {str(e)[:120]}"
         _noter_et_alerter(dressing, "republication", statut, raison)
@@ -376,34 +378,23 @@ async def _republication_chainee(creneau, volume_cible):
             await _declencher_partage_si_dernier(dressing)
 
 
-async def _execute_republish_midi(volume_cible=None):
-    await _republication_chainee("midi", volume_cible)
-
-async def _execute_republish_soir(volume_cible=None):
-    await _republication_chainee("soir", volume_cible)
-
-async def _execute_republish(creneau="soir", volume_cible=None):
+async def _execute_republish(dressing, volume_cible=None):
     """
     volume_cible : plafond décidé par le plan du jour (niveau 3 de la
-    hiérarchie anti-détection, cf. planification_republication.py) -- None si
-    déclenché autrement qu'via generer_plans_du_jour_cron() (aucune limite
-    supplémentaire dans ce cas, seul le quota risk_guard s'applique).
+    hiérarchie anti-détection, cf. planification_republication.py) -- None
+    = aucune limite supplémentaire, seul le quota risk_guard s'applique.
+
+    Tâche enregistrée en type "republication", sous-type "routine" -- le même
+    type que les republications manuelles du dashboard (onglet
+    "Republications" de l'historique), le sous-type les distinguant.
     """
     from services.clemz_automation import ClemzAutomation
     from services.supabase_service import SupabaseService
 
-    dressing = "Dressing 1" if creneau == "midi" else "Dressing 2"
-
-    # AUTO-REMPLISSAGE (cf. échange du 08/10/2026) : remplace la dépendance à
-    # la liste programmée manuellement (bouton "Programmer" du dashboard,
-    # scheduled_republish_*.json, cf. schedule_republish()) -- sans surveillance
-    # sur le VM, personne ne clique ce bouton chaque jour, donc la republication
-    # automatique ne faisait jamais rien (early return silencieux ci-dessus,
-    # "Liste absente ou déjà traitée"). Construit désormais la liste directement
-    # depuis l'inventaire réel, même filtre/tri que l'onglet "À republier" du
-    # dashboard (frontend/src/pages/Dashboard.jsx, articlesToRepublish) : les
-    # plus anciens en ligne d'abord. Le bouton "Programmer" existant reste
-    # disponible (rien supprimé) mais n'est plus un pré-requis bloquant.
+    # Liste construite directement depuis l'inventaire réel (cf. échange du
+    # 08/10/2026), même filtre/tri que l'onglet "À republier" du dashboard
+    # (frontend/src/pages/Dashboard.jsx, articlesToRepublish) : les plus
+    # anciens en ligne d'abord.
     svc = SupabaseService()
     inventaire = await svc.get_processed_inventory()
     today_iso = datetime.now().strftime("%Y-%m-%d")
@@ -418,20 +409,20 @@ async def _execute_republish(creneau="soir", volume_cible=None):
     items = [{"id": a["id"], "nom": a["nom"], "dressing": a["dressing"]} for a in eligibles]
 
     if not items:
-        print(f"⏭️  [REPUB {creneau.upper()}] Aucun article éligible aujourd'hui pour {dressing}.")
+        print(f"⏭️  [REPUB] {dressing} — aucun article éligible aujourd'hui.")
         return ("rien_a_faire", "Aucun article éligible aujourd'hui")
 
     # Bilan de l'étape pour la chaîne de routine (cf. _republication_chainee) --
     # (statut, raison), écrasé ci-dessous selon le résultat réel.
     bilan = ("echec", "Republication interrompue (voir logs)")
 
-    print(f"🚀 [REPUB {creneau.upper()}] Lancement — {len(items)} article(s) éligible(s) pour {dressing}.")
-    task_id = start_task_run(f"republication_{creneau}", items)
+    print(f"🚀 [REPUB] {dressing} — lancement, {len(items)} article(s) éligible(s).")
+    task_id = start_task_run("republication", items, sous_type="routine")
 
     if volume_cible is not None and volume_cible < len(items):
         exclus_volume = items[volume_cible:]
         items = items[:volume_cible]
-        print(f"🎯 [REPUB {creneau.upper()}] Volume cible du plan du jour : {volume_cible} "
+        print(f"🎯 [REPUB] {dressing} — volume cible du plan du jour : {volume_cible} "
               f"— {len(exclus_volume)} article(s) reporté(s).")
         for item in exclus_volume:
             update_task_result(
@@ -536,14 +527,14 @@ async def _execute_republish(creneau="soir", volume_cible=None):
             bilan = ("echec", f"0/{nb_envoyes} article(s) republié(s)" + (f" — {echec_repost}" if echec_repost else ""))
 
     except Exception as e:
-        print(f"❌ [REPUB {creneau.upper()}] Erreur : {e}")
+        print(f"❌ [REPUB] {dressing} — erreur : {e}")
         for item in items:
             update_task_result(task_id, item["id"], status="failed", reason=f"Erreur fatale : {str(e)[:120]}")
         bilan = ("echec", f"Erreur fatale : {str(e)[:120]}")
 
     finally:
         finish_task_run(task_id)
-        print(f"✅ [REPUB {creneau.upper()}] Tâche terminée.")
+        print(f"✅ [REPUB] {dressing} — tâche terminée.")
 
     return bilan
 
@@ -554,9 +545,9 @@ async def _declencher_partage_si_dernier(dressing):
     (cf. échange du 08/10/2026) -- ne se déclenche donc qu'après la
     republication RÉUSSIE (succès, même partiel, ou rien à faire) des DEUX
     dressings, jamais après la première des deux à se terminer. Comme les
-    créneaux sont tirés indépendamment par dressing, "le dernier à finir"
-    n'est pas toujours "soir" -- appelé à chaque fin de republication réussie,
-    on vérifie l'état de L'AUTRE dressing dans la routine du jour (12/10/2026 :
+    horaires sont tirés indépendamment par dressing, "le dernier à finir"
+    n'est pas toujours le même -- appelé à chaque fin de republication
+    réussie, on vérifie l'état de L'AUTRE dressing dans la routine du jour (12/10/2026 :
     une republication en échec/bloquée de l'autre reporte aussi le partage,
     jusqu'à la reprise de sa routine).
     """
@@ -924,7 +915,7 @@ scheduler.add_job(
     replace_existing=True,
 )
 
-# Sync du soir -- conservée à 22h (fraîcheur des données avant l'extinction du
+# Sync de 22h -- conservée (fraîcheur des données avant l'extinction du
 # VM à 23h), indépendante de l'ordre scraping -> baisse -> republication
 # ci-dessus (purpose différent, pas liée aux créneaux de republication).
 scheduler.add_job(

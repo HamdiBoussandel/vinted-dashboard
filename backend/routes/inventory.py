@@ -4,11 +4,7 @@ import google.generativeai as genai
 
 from services.supabase_service import SupabaseService
 
-from services.automation_scheduler import (
-    schedule_republish,
-    get_scheduled_republish,
-    get_task_history,
-)
+from services.automation_scheduler import get_task_history
 import database
 import logging
 from services.clemz_automation import ClemzAutomation
@@ -142,42 +138,6 @@ async def reconnect_session_route(dressing: str, background_tasks: BackgroundTas
     background_tasks.add_task(run_reconnect)
     return {"status": "started", "dressing": dressing}
 
-@router.post("/automation/schedule-republish")
-async def schedule_republish_route(payload: dict = Body(...)):
-    """
-    Enregistre la liste d'articles à republier dans la fenêtre 14h-19h
-    (scheduled_republish_midi.json). Appelée depuis le dashboard quand
-    l'utilisateur clique sur "Programmer".
-
-    Payload attendu :
-    {
-        "items": [
-            {"id": "...", "nom": "...", "dressing": "Dressing 1"},
-            ...
-        ]
-    }
-    """
-    items = payload.get("items", [])
-    if not items:
-        raise HTTPException(status_code=400, detail="La liste d'articles est vide.")
-
-    task = schedule_republish(items)
-    return {
-        "status": "scheduled",
-        "message": f"{len(task['midi']['items'])} article(s) Dressing 1 (11h30-12h30) et {len(task['soir']['items'])} article(s) Dressing 2 (17h00-18h00) programmés.",
-        "task": task,
-    }
-
-@router.get("/automation/scheduled")
-async def get_scheduled_route():
-    """
-    Retourne la tâche de republication programmée pour aujourd'hui, ou null si aucune.
-    Utilisée par le dashboard pour afficher l'état de la programmation en cours.
-    """
-    task = get_scheduled_republish()
-    return {"task": task}
-
-# new_str
 @router.get("/automation/history")
 async def get_task_history_route(limit: int = 50, task_type: str = None):
     """
@@ -449,7 +409,7 @@ async def start_baisse_prix_vinted(background_tasks: BackgroundTasks, payload: d
 async def run_automation_now(background_tasks: BackgroundTasks, payload: dict = Body(...)):
     """
     Déclenche IMMÉDIATEMENT une tâche Clemz (republication OU baisse de prix), sans
-    passer par la programmation créneau midi/soir — pour tests manuels depuis le dashboard.
+    attendre l'horaire du plan du jour — déclenchement manuel depuis le dashboard.
     payload: {"produits": [{"id", "nom", "dressing", "pourcentage"?}, ...], "task_type": "republication"|"baisse_prix"}
 
     Pour "baisse_prix" : aligné sur la logique segmentée (-10%/-20%, cooldown 7j,
@@ -547,7 +507,7 @@ async def run_automation_now(background_tasks: BackgroundTasks, payload: dict = 
         selon le volume_cible du plan du jour actif -- le bouton manuel
         n'appliquait jusqu'ici QUE le quota brut, jamais le tirage aléatoire du
         calendrier anti-détection (Niveau 3), ce qui le rendait inopérant dès
-        qu'on ne passait pas par le cron automatique de midi/soir (cf. échange
+        qu'on ne passait pas par la republication automatique (cf. échange
         du 11/09/2026 : republier au max du quota brut via le bouton manuel
         plusieurs jours de suite recrée exactement le pic de volume que le
         calendrier était censé éviter).
@@ -1044,24 +1004,11 @@ async def generate_description_batch(request: Request):
         raise HTTPException(status_code=500, detail=str(e))
     
 
-@router.get("/automation/scheduled-both")
-async def get_both_scheduled():
-    from services.automation_scheduler import get_both_scheduled
-    return get_both_scheduled()
-
-@router.post("/test-republish")
-async def test_republish(background_tasks: BackgroundTasks):
-    from services.automation_service import _execute_republish
-    # "midi" porte désormais tous les articles de la fenêtre unique 14h-19h
-    # (cf. schedule_republish) -- "soir" reste toujours vide depuis ce changement.
-    background_tasks.add_task(_execute_republish, "midi")
-    return {"status": "launched"}
-
 @router.post("/test-partage-vues-favoris")
 async def test_partage_vues_favoris(background_tasks: BackgroundTasks, payload: dict = Body(default={})):
     """
     Route de test manuel : déclenche l'automatisation Clemz de partage des vues
-    et des favoris, indépendamment du repost soir. payload optionnel :
+    et des favoris, indépendamment de la routine. payload optionnel :
     {"dressing": "Dressing 1"} ou {"dressing": "Dressing 2"} pour ne traiter
     qu'un seul compte -- omis ou vide, traite les deux (comportement historique).
     """

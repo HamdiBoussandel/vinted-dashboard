@@ -265,9 +265,19 @@ def rafraichir_pause_si_necessaire(dressing: str, action_type: str = "republicat
     # journée) -- generer_plans_du_jour() applique la garantie de continuité
     # une seule fois, à minuit, donc un basculement en cours de journée comme
     # celui-ci la contourne complètement si on ne la rejoue pas ici.
+    #
+    # SAUF si `dressing` a déjà republié aujourd'hui (cf. échange du
+    # 12/10/2026) : la continuité ("au moins un dressing republie chaque jour")
+    # est alors déjà acquise -- la bascule en repos ne vaut que pour la suite
+    # de SA journée. Sans cette garde, D2 mis en repos_force juste APRÈS ses 9
+    # republications du jour avait réactivé D1, au repos calendrier, pour 7
+    # republications non prévues à 20h57.
+    from services.risk_guard import get_volume_depuis_minuit
+    deja_republie_aujourdhui = get_volume_depuis_minuit(dressing, action_type) > 0
     autre = "Dressing 2" if dressing == "Dressing 1" else "Dressing 1"
     plan_autre = get_plan_du_jour(autre)
-    if plan_autre is not None and plan_autre.get("date") == datetime.now().strftime("%Y-%m-%d"):
+    if (not deja_republie_aujourdhui and plan_autre is not None
+            and plan_autre.get("date") == datetime.now().strftime("%Y-%m-%d")):
         decision_autre = {
             "niveau": plan_autre.get("niveau"),
             "actif": plan_autre.get("actif", False),
@@ -318,9 +328,7 @@ def _replanifier_job_oneshot(dressing: str, plan: dict):
     / planification_republication).
     """
     from services.automation_service import _planifier_republish_oneshot
-    creneau = "midi" if dressing == "Dressing 1" else "soir"
-    job_id = "republish_oneshot_d1" if dressing == "Dressing 1" else "republish_oneshot_d2"
-    _planifier_republish_oneshot(dressing, plan, job_id, creneau)
+    _planifier_republish_oneshot(dressing, plan)
 
 
 def rafraichir_repos_si_leve(dressing: str, action_type: str = "republication"):
