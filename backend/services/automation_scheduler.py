@@ -27,6 +27,15 @@ PLAN_DU_JOUR_HISTORIQUE_FILE = os.path.join(BASE_DIR, "plan_du_jour_historique.j
 
 MAX_HISTORY_ENTRIES = 200
 
+# État de la routine du jour par dressing (cf. échange du 12/10/2026) : une
+# chaîne scraping -> baisse_prix -> republication PAR dressing, chaque étape
+# devant réussir pour débloquer la suivante. Remis à zéro au changement de date.
+ROUTINE_DU_JOUR_FILE = os.path.join(BASE_DIR, "routine_du_jour.json")
+# "succes" : au moins un article traité (succès partiel = OK) ; "rien_a_faire" :
+# aucun article concerné ; "desactive" : bascule Maintenance coupée -- les
+# trois débloquent l'étape suivante. "echec"/"bloque" l'arrêtent.
+STATUTS_ETAPE_OK = ("succes", "rien_a_faire", "desactive")
+
 
 def _read_json(file_path, default):
     if not os.path.exists(file_path):
@@ -65,6 +74,32 @@ def _write_json(file_path, data):
     créneaux midi/soir, où chaque fonction publique fait sa propre passe)."""
     with _file_lock:
         _write_json_locked(file_path, data)
+
+
+def get_routine_du_jour():
+    """{"date": "AAAA-MM-JJ", "Dressing 1": {etape: {...}}, "Dressing 2": {...}}
+    -- vide (mais daté du jour) si rien n'a encore tourné aujourd'hui."""
+    aujourdhui = datetime.now().strftime("%Y-%m-%d")
+    etat = _read_json(ROUTINE_DU_JOUR_FILE, default={})
+    if etat.get("date") != aujourdhui:
+        return {"date": aujourdhui, "Dressing 1": {}, "Dressing 2": {}}
+    return etat
+
+
+def get_statut_etape(dressing, etape):
+    """Statut du jour d'une étape pour ce dressing, ou None si pas encore passée."""
+    return (get_routine_du_jour().get(dressing) or {}).get(etape, {}).get("statut")
+
+
+def noter_etape_routine(dressing, etape, statut, raison=None):
+    with _file_lock:
+        etat = get_routine_du_jour()
+        etat.setdefault(dressing, {})[etape] = {
+            "statut": statut,
+            "heure": datetime.now().isoformat(),
+            "raison": raison,
+        }
+        _write_json_locked(ROUTINE_DU_JOUR_FILE, etat)
 
 
 def schedule_republish(items):

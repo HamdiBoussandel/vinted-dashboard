@@ -159,19 +159,54 @@ async def get_journal_route(date: str = None):
     plan_d1 = _dernier_plan_historique("Dressing 1", date_str)
     plan_d2 = _dernier_plan_historique("Dressing 2", date_str)
 
+    # État de la chaîne de routine par dressing (12/10/2026) -- seul le jour
+    # courant est conservé (routine_du_jour.json), None pour un jour passé.
+    from services.automation_scheduler import get_routine_du_jour
+    routine = get_routine_du_jour()
+    if routine.get("date") != date_str:
+        routine = None
+
+    def _avec_chaine(etape, dressing, cle):
+        etape["chaine"] = ((routine or {}).get(dressing) or {}).get(cle)
+        return etape
+
     etapes = [
         _etape_vm(demarrage, "Démarrage VM"),
-        _etape_dressing(scraping, "Dressing 1", "Scraping Dressing 1"),
-        _etape_dressing(scraping, "Dressing 2", "Scraping Dressing 2"),
-        _etape_dressing(baisse_prix, "Dressing 1", "Baisse de prix Dressing 1", plan_d1),
-        _etape_dressing(baisse_prix, "Dressing 2", "Baisse de prix Dressing 2", plan_d2),
-        _etape_dressing(repub_midi, "Dressing 1", "Republication Dressing 1", plan_d1),
-        _etape_dressing(repub_soir, "Dressing 2", "Republication Dressing 2", plan_d2),
+        _avec_chaine(_etape_dressing(scraping, "Dressing 1", "Scraping Dressing 1"), "Dressing 1", "scraping"),
+        _avec_chaine(_etape_dressing(scraping, "Dressing 2", "Scraping Dressing 2"), "Dressing 2", "scraping"),
+        _avec_chaine(_etape_dressing(baisse_prix, "Dressing 1", "Baisse de prix Dressing 1", plan_d1), "Dressing 1", "baisse_prix"),
+        _avec_chaine(_etape_dressing(baisse_prix, "Dressing 2", "Baisse de prix Dressing 2", plan_d2), "Dressing 2", "baisse_prix"),
+        _avec_chaine(_etape_dressing(repub_midi, "Dressing 1", "Republication Dressing 1", plan_d1), "Dressing 1", "republication"),
+        _avec_chaine(_etape_dressing(repub_soir, "Dressing 2", "Republication Dressing 2", plan_d2), "Dressing 2", "republication"),
         _etape_partage(partage),
         _etape_vm(extinction, "Extinction VM"),
     ]
 
     return {"date": date_str, "etapes": etapes}
+
+
+_taches_reprise = set()
+
+
+@router.post("/reprendre-routine")
+async def reprendre_routine_route():
+    """
+    Bouton "Reprendre la routine" du Journal (cf. échange du 12/10/2026) :
+    relance, dans l'ordre et en tâche de fond, les étapes du jour manquées ou
+    en échec (scraping -> baisse de prix par dressing), puis replanifie une
+    republication non encore faite aujourd'hui (+1 min) -- celle-ci attend la
+    fin des étapes précédentes via le verrou de routine. Équivalent d'un
+    redémarrage du backend, sans couper une tâche en cours.
+    """
+    from services.plan_source import est_satellite
+    if est_satellite():
+        raise HTTPException(status_code=400, detail="La routine ne tourne que sur la VM.")
+    from services.automation_service import rattraper_routine, rattraper_republish_manques
+    tache = asyncio.create_task(rattraper_routine(reprendre_echecs=True))
+    _taches_reprise.add(tache)  # référence forte, sinon collectable en cours de route
+    tache.add_done_callback(_taches_reprise.discard)
+    await rattraper_republish_manques()
+    return {"status": "reprise lancée"}
 
 
 @router.post("/open-browser")

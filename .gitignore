@@ -19,6 +19,7 @@ scheduled_republish_midi.json
 scheduled_republish_soir.json
 task_history.json
 vm_lifecycle_log.json
+routine_du_jour.json
 cron_status.json
 error_log.txt
 extension_errors.log

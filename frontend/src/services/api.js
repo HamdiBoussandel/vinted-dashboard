@@ -88,6 +88,14 @@ export const maintenanceService = {
     return response.json();
   },
 
+  // Reprise de la chaîne de routine (étapes manquées/en échec) -- même apiUrl
+  // optionnel que getJournal, pour la déclencher sur la VM depuis ce PC.
+  async reprendreRoutine(apiUrl = API_URL) {
+    const response = await fetch(`${apiUrl}/maintenance/reprendre-routine`, { method: 'POST' });
+    if (!response.ok) throw new Error("Erreur réseau");
+    return response.json();
+  },
+
   async openBrowser(profileKey) {
     const response = await fetch(`${API_URL}/maintenance/open-browser`, {
       method: "POST",

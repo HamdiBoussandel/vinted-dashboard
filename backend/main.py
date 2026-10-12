@@ -103,6 +103,17 @@ def _on_watchdog_task_done(task: asyncio.Task):
         # seule la fonctionnalité 'messages automatiques' est down jusqu'au redémarrage.
 
 
+# Référence globale (sinon la task peut être collectée en cours de route)
+rattrapage_matin_task = None
+
+
+def _on_rattrapage_matin_done(task: asyncio.Task):
+    """Même rôle que _on_watchdog_task_done : ne jamais perdre une exception
+    du rattrapage scraping/baisse en silence."""
+    if not task.cancelled() and task.exception() is not None:
+        logger.error(f"❌ [ROUTINE] Rattrapage scraping/baisse de prix en erreur : {task.exception()}")
+
+
 # 4. Événements de cycle de vie (Startup / Shutdown)
 @app.on_event("startup")
 async def startup_event():
@@ -138,6 +149,16 @@ async def startup_event():
             # 21/09/2026, Dressing 2 actif à 11h00 jamais republié après deux
             # redémarrages consécutifs avant cet horaire).
             await rattraper_republish_manques()
+
+        # Chaîne de routine par dressing (cf. échange du 12/10/2026) : scraping
+        # (10h30) et baisse de prix (10h40) manqués ou en échec sont (re)lancés
+        # ici, dans l'ordre, en tâche de fond -- un redémarrage du backend vaut
+        # "reprise de la routine". Une republication de rattrapage planifiée
+        # ci-dessus (+1 min) attend la fin de ces étapes via le verrou partagé.
+        from services.automation_service import rattraper_routine
+        global rattrapage_matin_task
+        rattrapage_matin_task = asyncio.create_task(rattraper_routine(reprendre_echecs=True))
+        rattrapage_matin_task.add_done_callback(_on_rattrapage_matin_done)
 
         global watchdog_task
         # 🔧 TEMPORAIRE : watchdog désactivé le temps de régler le problème de

@@ -1,7 +1,7 @@
 // pages/Journal.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-    CheckCircle, XCircle, AlertCircle, Clock, Loader,
+    CheckCircle, XCircle, AlertCircle, Clock, Loader, Ban, Play,
     Power, ScanLine, TrendingDown, RefreshCw, Heart, ChevronLeft, ChevronRight,
 } from 'lucide-react';
 import { maintenanceService } from '../services/api';
@@ -17,7 +17,22 @@ const STATUS_CONFIG = {
     echec: { label: 'Échec', icon: <XCircle size={14} className="text-red-500" />, bg: 'bg-red-50 border-red-100', text: 'text-red-700' },
     running: { label: 'En cours', icon: <Loader size={14} className="animate-spin text-blue-500" />, bg: 'bg-blue-50 border-blue-100', text: 'text-blue-700' },
     inconnu: { label: 'Pas encore passé', icon: <Clock size={14} className="text-slate-300" />, bg: 'bg-slate-50 border-slate-100', text: 'text-slate-400' },
+    // Statuts propres à la chaîne de routine par dressing (12/10/2026)
+    bloque: { label: 'Bloqué', icon: <Ban size={14} className="text-red-400" />, bg: 'bg-red-50 border-red-100', text: 'text-red-600' },
+    rien_a_faire: { label: 'Rien à faire', icon: <CheckCircle size={14} className="text-slate-400" />, bg: 'bg-slate-50 border-slate-100', text: 'text-slate-500' },
+    desactive: { label: 'Désactivé', icon: <Ban size={14} className="text-slate-300" />, bg: 'bg-slate-50 border-slate-100', text: 'text-slate-400' },
 };
+
+const STATUTS_CHAINE_A_REPRENDRE = ['echec', 'bloque'];
+
+// Le statut de la chaîne est PAR dressing (une tâche scraping/baisse couvre
+// les deux) : il prime, sauf tâche en cours ou succès (le statut de tâche
+// distingue alors "succès partiel").
+function statutAffiche(etape) {
+    const chaine = etape.chaine?.statut;
+    if (chaine && chaine !== 'succes' && etape.statut !== 'running') return chaine;
+    return etape.statut;
+}
 
 const ICONS_ETAPE = [Power, ScanLine, ScanLine, TrendingDown, TrendingDown, RefreshCw, RefreshCw, Heart, Power];
 
@@ -27,9 +42,11 @@ function formatHeure(iso) {
 }
 
 function EtapeCard({ etape, index }) {
-    const cfg = STATUS_CONFIG[etape.statut] || STATUS_CONFIG.inconnu;
+    const statut = statutAffiche(etape);
+    const cfg = STATUS_CONFIG[statut] || STATUS_CONFIG.inconnu;
     const Icon = ICONS_ETAPE[index];
-    const heure = formatHeure(etape.heure);
+    const heure = formatHeure(etape.heure || etape.chaine?.heure);
+    const raisonChaine = STATUTS_CHAINE_A_REPRENDRE.includes(statut) ? etape.chaine?.raison : null;
 
     return (
         <div className={`rounded-xl border p-4 flex items-center justify-between gap-4 ${cfg.bg}`}>
@@ -61,6 +78,9 @@ function EtapeCard({ etape, index }) {
                     )}
                     {etape.detail && (
                         <p className="text-[10px] text-slate-400 mt-0.5">{etape.detail}</p>
+                    )}
+                    {raisonChaine && (
+                        <p className="text-[11px] text-red-600 font-semibold mt-0.5">{raisonChaine}</p>
                     )}
                 </div>
             </div>
@@ -137,6 +157,26 @@ export default function Journal() {
     };
 
     const estAujourdhui = date === new Date().toISOString().slice(0, 10);
+
+    const [repriseEnCours, setRepriseEnCours] = useState(false);
+    const [messageReprise, setMessageReprise] = useState(null);
+    const aReprendre = estAujourdhui && journal?.etapes.some(
+        (e) => STATUTS_CHAINE_A_REPRENDRE.includes(e.chaine?.statut)
+    );
+
+    const reprendreRoutine = async () => {
+        setRepriseEnCours(true);
+        setMessageReprise(null);
+        try {
+            if (lectureVm) await maintenanceService.reprendreRoutine(`http://${adresseVm}:8000/api`);
+            else await maintenanceService.reprendreRoutine();
+            setMessageReprise('Reprise lancée — les étapes en échec repartent dans l\'ordre. Recharge le journal dans quelques minutes.');
+        } catch {
+            setMessageReprise('Impossible de lancer la reprise (backend injoignable, ou ce PC n\'est pas la VM).');
+        } finally {
+            setRepriseEnCours(false);
+        }
+    };
 
     return (
         <div className="p-8">
@@ -217,6 +257,24 @@ export default function Journal() {
                 </p>
             ) : (
                 <div className="space-y-2 max-w-3xl">
+                    {aReprendre && (
+                        <div className="rounded-xl border border-red-100 bg-white p-4 mb-2 flex items-center justify-between gap-4">
+                            <p className="text-xs text-slate-600">
+                                Une étape a échoué : la suite de la routine de ce dressing est arrêtée. Corrige la cause (ex. session Vinted), puis reprends.
+                            </p>
+                            <button
+                                onClick={reprendreRoutine}
+                                disabled={repriseEnCours}
+                                className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black uppercase bg-slate-800 text-white hover:bg-slate-700 disabled:opacity-50"
+                            >
+                                <Play size={12} />
+                                {repriseEnCours ? 'Lancement...' : 'Reprendre la routine'}
+                            </button>
+                        </div>
+                    )}
+                    {messageReprise && (
+                        <p className="text-xs text-slate-500 mb-2">{messageReprise}</p>
+                    )}
                     {journal.etapes.map((etape, i) => (
                         <EtapeCard key={i} etape={etape} index={i} />
                     ))}

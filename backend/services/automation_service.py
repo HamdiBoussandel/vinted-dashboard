@@ -188,15 +188,190 @@ def _republication_auto_desactivee(creneau):
         return True
     return False
 
-async def _execute_republish_midi(volume_cible=None):
-    if _republication_auto_desactivee("midi"):
+# =============================================================================
+# CHAÎNE DE ROUTINE PAR DRESSING (cf. échange du 12/10/2026)
+# =============================================================================
+# Pour CHAQUE dressing, indépendamment : scraping -> baisse de prix ->
+# republication. Une étape ne se lance que si la précédente a RÉUSSI pour ce
+# dressing (succès partiel = OK, "rien à faire" / bascule désactivée = OK). Un
+# échec arrête la suite de CE dressing seulement (l'autre continue), avec un
+# e-mail. Reprise à l'étape échouée : au prochain démarrage du backend, ou via
+# le bouton "Reprendre la routine" du Journal (POST /api/maintenance/
+# reprendre-routine) -- jamais de réessai automatique en boucle.
+#
+# Origine : VM rallumée à 18h41 le 12/10, le scraping de 10h30 et la baisse de
+# 10h40 avaient été manqués (APScheduler ne rejoue pas un cron passé pendant
+# que le PC était éteint), mais la republication D2 était relancée seule à
+# 18h42. Les étapes manquées sont donc aussi rattrapées, dans l'ordre, avant
+# toute republication.
+#
+# _verrou_routine sérialise toutes les étapes (crons, rattrapages,
+# republications) : une republication de rattrapage planifiée à +1 min attend
+# la fin du scraping/de la baisse rattrapés au lieu de les doubler.
+DRESSINGS_ROUTINE = ("Dressing 1", "Dressing 2")
+HEURE_SCRAPING_MATIN = (10, 30)  # = CronTrigger "sync_14h" plus bas
+HEURE_BAISSE_PRIX = (10, 40)     # = CronTrigger "baisse_prix_auto" plus bas
+LIBELLES_ETAPES = {"scraping": "Scraping", "baisse_prix": "Baisse de prix", "republication": "Republication"}
+_verrou_routine = asyncio.Lock()
+
+
+def _etape_ok(dressing, etape):
+    from services.automation_scheduler import get_statut_etape, STATUTS_ETAPE_OK
+    return get_statut_etape(dressing, etape) in STATUTS_ETAPE_OK
+
+
+def _noter_et_alerter(dressing, etape, statut, raison=None):
+    from services.automation_scheduler import noter_etape_routine
+    noter_etape_routine(dressing, etape, statut, raison)
+    if statut != "echec":
         return
-    await _execute_republish("midi", volume_cible)
+    libelle = LIBELLES_ETAPES[etape]
+    print(f"🛑 [ROUTINE] {dressing} — {libelle} en échec : {raison} — suite de la routine de {dressing} arrêtée.")
+    try:
+        from services.email_notifier import envoyer_notification_echec
+        envoyer_notification_echec(
+            f"Routine {dressing} arrêtée — {libelle} en échec",
+            f"L'étape « {libelle} » a échoué pour {dressing} : {raison or 'raison inconnue'}.\n\n"
+            f"Les étapes suivantes de {dressing} ne seront pas lancées (l'autre dressing "
+            f"continue normalement). Une fois le problème corrigé (ex. reconnexion de la "
+            f"session via AnyDesk), clique sur « Reprendre la routine » dans le Journal du "
+            f"dashboard de la VM, ou redémarre le backend : la routine reprendra à cette étape.",
+        )
+    except Exception as e:
+        print(f"⚠️ [ROUTINE] Échec envoi e-mail d'alerte : {e}")
+
+
+async def _etape_scraping(slot):
+    """Scraping des deux dressings (un seul run_full_sync, lecture seule) puis
+    bilan PAR dressing depuis les résultats de la tâche "scraping" créée."""
+    from services.maintenance_service import maintenance_service
+    from services.automation_scheduler import get_task_history
+    if not maintenance_service.scraping_auto_active:
+        print(f"⏭️  [SCRAPING] Synchronisation automatique désactivée (Maintenance) — {slot} ignorée.")
+        for dressing in DRESSINGS_ROUTINE:
+            _noter_et_alerter(dressing, "scraping", "desactive")
+        return
+
+    debut = datetime.now().isoformat()
+    await run_cron_sync(slot)
+    tache = next(
+        (h for h in get_task_history(limit=200, task_type="scraping") if (h.get("started_at") or "") >= debut),
+        None,
+    )
+    for dressing in DRESSINGS_ROUTINE:
+        resultat = next(
+            (r for r in (tache or {}).get("results", [])
+             if r.get("dressing") == dressing and not str(r.get("id", "")).startswith("anomaly_")),
+            None,
+        )
+        if resultat and resultat.get("status") == "success":
+            _noter_et_alerter(dressing, "scraping", "succes")
+        else:
+            raison = (resultat or {}).get("reason") or "Synchronisation interrompue (voir logs)"
+            _noter_et_alerter(dressing, "scraping", "echec", raison)
+
+
+async def _etape_baisse_prix(dressings):
+    from services.maintenance_service import maintenance_service
+    if not maintenance_service.baisse_prix_auto_active:
+        print("⏭️  [BAISSE PRIX] Automatisation quotidienne désactivée (Maintenance) — on passe.")
+        for dressing in dressings:
+            _noter_et_alerter(dressing, "baisse_prix", "desactive")
+        return
+    try:
+        bilan = await run_baisse_prix_auto(dressings=dressings)
+    except Exception as e:
+        print(f"❌ [BAISSE PRIX] Erreur : {e}")
+        bilan = {d: ("echec", f"Erreur : {str(e)[:120]}") for d in dressings}
+    for dressing in dressings:
+        statut, raison = bilan.get(dressing, ("echec", "Aucun bilan retourné"))
+        _noter_et_alerter(dressing, "baisse_prix", statut, raison)
+
+
+async def _rattraper_sans_verrou(reprendre_echecs):
+    """
+    Relance, dans l'ordre, les étapes du matin manquées (horaire de cron passé,
+    jamais exécutées aujourd'hui) -- et, si reprendre_echecs (démarrage du
+    backend, bouton du Journal), aussi celles en échec/bloquées. `maintenant`
+    est figé à l'entrée : une étape dont le cron n'est pas encore passé est
+    laissée à son cron. L'appelant tient _verrou_routine.
+    """
+    from services.plan_source import est_satellite
+    from services.automation_scheduler import get_statut_etape
+    if est_satellite():
+        return  # la VM fait foi, le satellite n'exécute aucune routine
+
+    def a_refaire(dressing, etape):
+        statut = get_statut_etape(dressing, etape)
+        return statut is None or (reprendre_echecs and statut in ("echec", "bloque"))
+
+    maintenant = (datetime.now().hour, datetime.now().minute)
+    if maintenant >= HEURE_SCRAPING_MATIN and any(a_refaire(d, "scraping") for d in DRESSINGS_ROUTINE):
+        print("🩹 [ROUTINE] Scraping du jour manquant ou en échec — (re)lancement avant la suite de la routine.")
+        await _etape_scraping("rattrapage")
+    if maintenant >= HEURE_BAISSE_PRIX:
+        await _baisse_prix_chainee([d for d in DRESSINGS_ROUTINE if a_refaire(d, "baisse_prix")])
+
+
+async def _baisse_prix_chainee(dressings_candidats):
+    """Baisse de prix pour les dressings dont le scraping du jour a réussi ;
+    les autres sont notés "bloqué" (pas d'e-mail : celui du scraping suffit)."""
+    autorises = []
+    for dressing in dressings_candidats:
+        if _etape_ok(dressing, "scraping"):
+            autorises.append(dressing)
+        else:
+            print(f"⛔ [ROUTINE] {dressing} — baisse de prix bloquée : scraping du jour non réussi.")
+            from services.automation_scheduler import noter_etape_routine
+            noter_etape_routine(dressing, "baisse_prix", "bloque", "Scraping du jour non réussi")
+    if autorises:
+        await _etape_baisse_prix(autorises)
+
+
+async def rattraper_routine(reprendre_echecs=False):
+    async with _verrou_routine:
+        await _rattraper_sans_verrou(reprendre_echecs)
+
+
+async def _cron_scraping_matin():
+    async with _verrou_routine:
+        await _etape_scraping("10h30")
+
+
+async def _cron_baisse_prix_matin():
+    from services.automation_scheduler import get_statut_etape
+    async with _verrou_routine:
+        # Ignore un dressing déjà traité aujourd'hui (rattrapage antérieur).
+        await _baisse_prix_chainee([d for d in DRESSINGS_ROUTINE if get_statut_etape(d, "baisse_prix") is None])
+
+
+async def _republication_chainee(creneau, volume_cible):
+    from services.automation_scheduler import noter_etape_routine
+    if _republication_auto_desactivee(creneau):
+        return
+    dressing = "Dressing 1" if creneau == "midi" else "Dressing 2"
+    async with _verrou_routine:
+        await _rattraper_sans_verrou(reprendre_echecs=False)
+        for etape in ("scraping", "baisse_prix"):
+            if not _etape_ok(dressing, etape):
+                raison = f"{LIBELLES_ETAPES[etape]} du jour non réussi(e)"
+                print(f"⛔ [ROUTINE] {dressing} — republication bloquée : {raison}.")
+                noter_etape_routine(dressing, "republication", "bloque", raison)
+                return
+        try:
+            statut, raison = await _execute_republish(creneau, volume_cible)
+        except Exception as e:
+            statut, raison = "echec", f"Erreur : {str(e)[:120]}"
+        _noter_et_alerter(dressing, "republication", statut, raison)
+        if _etape_ok(dressing, "republication"):
+            await _declencher_partage_si_dernier(dressing)
+
+
+async def _execute_republish_midi(volume_cible=None):
+    await _republication_chainee("midi", volume_cible)
 
 async def _execute_republish_soir(volume_cible=None):
-    if _republication_auto_desactivee("soir"):
-        return
-    await _execute_republish("soir", volume_cible)
+    await _republication_chainee("soir", volume_cible)
 
 async def _execute_republish(creneau="soir", volume_cible=None):
     """
@@ -235,7 +410,11 @@ async def _execute_republish(creneau="soir", volume_cible=None):
 
     if not items:
         print(f"⏭️  [REPUB {creneau.upper()}] Aucun article éligible aujourd'hui pour {dressing}.")
-        return
+        return ("rien_a_faire", "Aucun article éligible aujourd'hui")
+
+    # Bilan de l'étape pour la chaîne de routine (cf. _republication_chainee) --
+    # (statut, raison), écrasé ci-dessous selon le résultat réel.
+    bilan = ("echec", "Republication interrompue (voir logs)")
 
     print(f"🚀 [REPUB {creneau.upper()}] Lancement — {len(items)} article(s) éligible(s) pour {dressing}.")
     task_id = start_task_run(f"republication_{creneau}", items)
@@ -333,52 +512,59 @@ async def _execute_republish(creneau="soir", volume_cible=None):
                     category="erreur_clemz",
                 )
 
+        nb_envoyes = len(produits_d1 if dressing == "Dressing 1" else produits_d2)
+        traites = traites_d1 if dressing == "Dressing 1" else traites_d2
+        if nb_envoyes == 0:
+            bilan = ("rien_a_faire", "Quota anti-détection atteint — aucun article envoyé")
+        elif traites > 0:
+            bilan = ("succes", f"{traites}/{nb_envoyes} article(s) republié(s)")
+        else:
+            echec_repost = next(
+                (r["repost_result"]["reason"] for r in results
+                 if (r.get("repost_result") or {}).get("status") == "failed"),
+                None,
+            )
+            bilan = ("echec", f"0/{nb_envoyes} article(s) republié(s)" + (f" — {echec_repost}" if echec_repost else ""))
+
     except Exception as e:
         print(f"❌ [REPUB {creneau.upper()}] Erreur : {e}")
         for item in items:
             update_task_result(task_id, item["id"], status="failed", reason=f"Erreur fatale : {str(e)[:120]}")
+        bilan = ("echec", f"Erreur fatale : {str(e)[:120]}")
 
     finally:
         finish_task_run(task_id)
         print(f"✅ [REPUB {creneau.upper()}] Tâche terminée.")
 
-    # Le partage vues/favoris est la DERNIÈRE étape de la routine journalière
-    # (cf. échange du 08/10/2026) -- ne se déclenche donc qu'après la
-    # republication des DEUX dressings, jamais après la première des deux à
-    # se terminer. Comme les créneaux (12h-13h/19h-21h, CRENEAUX_HORAIRES)
-    # sont tirés indépendamment par dressing, "le dernier à finir" n'est pas
-    # toujours "soir" -- on vérifie donc explicitement l'état de L'AUTRE
-    # dressing à chaque fin de republication : s'il est encore à venir
-    # aujourd'hui, on ne déclenche rien ici, ce sera lui qui déclenchera le
-    # partage en terminant à son tour (même code, exécuté pour les deux creneaux).
+    return bilan
+
+
+async def _declencher_partage_si_dernier(dressing):
+    """
+    Le partage vues/favoris est la DERNIÈRE étape de la routine journalière
+    (cf. échange du 08/10/2026) -- ne se déclenche donc qu'après la
+    republication RÉUSSIE (succès, même partiel, ou rien à faire) des DEUX
+    dressings, jamais après la première des deux à se terminer. Comme les
+    créneaux sont tirés indépendamment par dressing, "le dernier à finir"
+    n'est pas toujours "soir" -- appelé à chaque fin de republication réussie,
+    on vérifie l'état de L'AUTRE dressing dans la routine du jour (12/10/2026 :
+    une republication en échec/bloquée de l'autre reporte aussi le partage,
+    jusqu'à la reprise de sa routine).
+    """
     from services.automation_scheduler import get_task_history, get_plan_du_jour
-
-    history = get_task_history(limit=200, task_type=f"republication_{creneau}")
-    today_str = datetime.now().strftime("%Y-%m-%d")
-    current_entry = next((h for h in history if h["task_id"].startswith(f"republication_{creneau}_{today_str}")), None)
-    repost_ok = current_entry is not None and current_entry.get("global_status") in ("success", "partial_success")
-
     from services.maintenance_service import maintenance_service
 
+    today_str = datetime.now().strftime("%Y-%m-%d")
     if not maintenance_service.partage_vues_favoris_auto_active:
         print("⏭️  [PARTAGE] Automatisation désactivée (Maintenance) — on passe.")
-    elif not repost_ok:
-        print("⏭️  [PARTAGE] Repost non réussi — partage vues/favoris non déclenché aujourd'hui.")
     else:
-        autre_creneau = "soir" if creneau == "midi" else "midi"
         autre_dressing = "Dressing 2" if dressing == "Dressing 1" else "Dressing 1"
         plan_autre = get_plan_du_jour(autre_dressing)
         autre_actif_aujourdhui = bool(plan_autre and plan_autre.get("actif"))
 
-        if autre_actif_aujourdhui:
-            historique_autre = get_task_history(limit=200, task_type=f"republication_{autre_creneau}")
-            autre_deja_termine = any(
-                h["task_id"].startswith(f"republication_{autre_creneau}_{today_str}") and h.get("finished_at")
-                for h in historique_autre
-            )
-            if not autre_deja_termine:
-                print(f"⏭️  [PARTAGE] {autre_dressing} republie encore aujourd'hui — partage reporté à la fin de SA republication.")
-                return
+        if autre_actif_aujourdhui and not _etape_ok(autre_dressing, "republication"):
+            print(f"⏭️  [PARTAGE] Republication de {autre_dressing} pas encore réussie aujourd'hui — partage reporté à la fin de SA republication.")
+            return
 
         partage_history = get_task_history(limit=50, task_type="partage_vues_favoris")
         already_run_today = any(
@@ -428,7 +614,7 @@ async def run_partage_vues_favoris_task(dressing: str = None):
     else:
         print(f"✅ [PARTAGE] Terminé à {end_time.strftime('%H:%M:%S')}.")
 
-async def run_baisse_prix_auto(article_ids_restriction=None):
+async def run_baisse_prix_auto(article_ids_restriction=None, dressings=None):
     """
     Identifie les articles en Mauvaise Performance, les répartit en lots
     -10%/-20% selon le sous-cas déjà calculé par get_processed_inventory,
@@ -449,14 +635,24 @@ async def run_baisse_prix_auto(article_ids_restriction=None):
     Un seul historique (task_history, type='baisse_prix') est créé pour tout le
     run, quel que soit le nombre de lots -- le pourcentage réellement appliqué à
     chaque produit apparaît dans le champ 'taux' et dans le 'reason' de succès.
+
+    dressings : si fourni, restreint aux articles de ces dressings -- utilisé
+    par la chaîne de routine (12/10/2026) pour ne pas baisser les prix d'un
+    dressing dont le scraping du jour a échoué. None = les deux.
+
+    Retourne le bilan par dressing traité, {dressing: (statut, raison)} avec
+    statut "succes" (au moins un article baissé), "rien_a_faire" ou "echec".
     """
     from services.supabase_service import SupabaseService
     from services.clemz_automation import ClemzAutomation
 
+    dressings_vises = tuple(dressings) if dressings is not None else ("Dressing 1", "Dressing 2")
+    rien_a_faire = {d: ("rien_a_faire", "Aucun article à baisser") for d in dressings_vises}
+
     svc = SupabaseService()
     articles = await svc.get_processed_inventory()
 
-    candidats = [a for a in articles if not a["is_done"] and not a["is_vendu"]]
+    candidats = [a for a in articles if not a["is_done"] and not a["is_vendu"] and a["dressing"] in dressings_vises]
     if article_ids_restriction is not None:
         restriction = set(article_ids_restriction)
         candidats = [a for a in candidats if a["id"] in restriction]
@@ -485,7 +681,7 @@ async def run_baisse_prix_auto(article_ids_restriction=None):
 
     if not lots_par_taux:
         print("💸 [BAISSE PRIX] Aucun article à traiter (rien en attente, tout en cooldown, ou sélection vide).")
-        return
+        return rien_a_faire
 
     # --- Quota anti-détection (risk_guard.py) -- jusqu'ici jamais vérifié pour
     # la baisse de prix (seule la republication passait par get_allowed_quantity),
@@ -606,24 +802,27 @@ async def run_baisse_prix_auto(article_ids_restriction=None):
     finish_task_run(task_id)
     print("✅ [BAISSE PRIX] Traitement terminé.")
 
-# Baisse de prix automatique quotidienne -- déclenchée à 10h40, après la sync
-# de 10h30 (données fraîches) et avant le premier créneau de republication
-# (12h00, cf. CRENEAUX_HORAIRES) -- voir le commentaire détaillé au niveau des
-# scheduler.add_job() plus bas dans ce fichier pour le calcul de marge.
-async def _run_baisse_prix_auto_cron():
-    """
-    Wrapper appelé uniquement par le cron quotidien -- vérifie le toggle
-    "Baisse de prix automatique" (page Maintenance) avant de lancer. Le
-    déclenchement MANUEL ("Forcer baisse de prix" depuis le dashboard) appelle
-    run_baisse_prix_auto() directement et n'est donc jamais affecté par ce
-    toggle : celui-ci ne coupe que l'automatisation quotidienne, pas le
-    contrôle manuel explicite de l'utilisateur.
-    """
-    from services.maintenance_service import maintenance_service
-    if not maintenance_service.baisse_prix_auto_active:
-        print("⏭️  [BAISSE PRIX] Automatisation quotidienne désactivée (Maintenance) — on passe.")
-        return
-    await run_baisse_prix_auto()
+    bilan = dict(rien_a_faire)
+    for dressing, a_des_lots, traites in (
+        ("Dressing 1", d1_a_des_lots, traites_d1),
+        ("Dressing 2", d2_a_des_lots, traites_d2),
+    ):
+        if dressing not in dressings_vises or not a_des_lots:
+            continue
+        nb_envoyes = sum(1 for lot in lots_par_taux.values() for a in lot if a["dressing"] == dressing)
+        if traites > 0:
+            bilan[dressing] = ("succes", f"{traites}/{nb_envoyes} article(s) baissé(s)")
+        else:
+            bilan[dressing] = ("echec", f"0/{nb_envoyes} article(s) baissé(s) — voir TaskHistory")
+    return bilan
+
+# Baisse de prix automatique quotidienne -- déclenchée à 10h40 par
+# _cron_baisse_prix_matin (chaîne de routine, plus haut), après la sync de
+# 10h30 et avant le premier créneau de republication (12h00). Le toggle
+# "Baisse de prix automatique" (Maintenance) y est vérifié par
+# _etape_baisse_prix ; le déclenchement MANUEL ("Forcer baisse de prix")
+# appelle run_baisse_prix_auto() directement et n'est jamais affecté par ce
+# toggle ni par la chaîne.
 
 
 async def _check_watchdog_health_cron():
@@ -703,15 +902,14 @@ scheduler.add_job(
 # qu'il est encore tenu attend simplement son tour, elle ne se chevauche
 # jamais avec une autre automatisation sur le même profil.
 scheduler.add_job(
-    run_cron_sync,
+    _cron_scraping_matin,
     CronTrigger(hour=10, minute=30),
-    args=["10h30"],
     id="sync_14h",
     replace_existing=True,
 )
 
 scheduler.add_job(
-    _run_baisse_prix_auto_cron,
+    _cron_baisse_prix_matin,
     CronTrigger(hour=10, minute=40),
     id="baisse_prix_auto",
     replace_existing=True,
