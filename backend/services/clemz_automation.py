@@ -790,7 +790,21 @@ class ClemzAutomation:
 
             major_error = await _check_and_dismiss_major_error(cdp)
             if major_error:
-                erreurs_majeures.append(major_error)
+                # Faux positif constaté les 07/10 et 09/10/2026 (T-shirt NBA, D2) : Clemz
+                # RÉAFFICHE au lancement de chaque nouvelle action de masse la modale d'une
+                # erreur survenue lors d'un run PRÉCÉDENT (ici le 07/10 22:30) -- détectée
+                # 0,3s après 'Go Clemz !', avant tout traitement. Le 09/10, l'article a
+                # ensuite été republié avec succès dans ce même lot, mais restait marqué
+                # erreur_clemz et privé de sa date_republication. Une vraie erreur de CE
+                # run ne peut survenir qu'en cours de traitement, donc après l'apparition
+                # du premier compteur de progression.
+                if last_progress is None:
+                    logger.warning(
+                        f"⚠️ [{acc['name']}] Erreur majeure Clemz sur '{major_error['nom']}' détectée "
+                        f"AVANT tout traitement — rappel d'un run précédent, ignorée pour ce lot."
+                    )
+                else:
+                    erreurs_majeures.append(major_error)
                 continue  # revérifie immédiatement (une autre erreur peut être empilée)
 
             by_id_poll = await snapshot_by_id(cdp)
