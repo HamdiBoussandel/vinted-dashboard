@@ -9,7 +9,8 @@ import {
     Camera,
     TrendingUp,
     Flame,
-    CalendarCheck
+    CalendarCheck,
+    Tag
 } from 'lucide-react';
 
 
@@ -20,6 +21,7 @@ export default function Sidebar() {
   const menuItems = [
       { name: 'Tableau de bord',   path: '/',                  icon: LayoutDashboard },
       { name: 'Liquidation',       path: '/liquidation',       icon: Flame },
+      { name: 'Prix de boucher',   path: '/prix-boucher',      icon: Tag },
       { name: 'Sourcing',          path: '/sourcing',          icon: Search },
       { name: 'Préparer Annonces', path: '/preparer-annonces', icon: Camera },
       { name: 'Achats',            path: '/achats',            icon: Package },

@@ -284,6 +284,9 @@ function TaskCard({ task }) {
                         {successCount}/{totalCount} {unitLabel}
                         {counts.ecartes > 0 && <span className="text-slate-400"> · {counts.ecartes} écarté(s)</span>}
                     </span>
+                    {task.interruption && (
+                        <span className="text-[10px] text-orange-600 font-semibold">{task.interruption}</span>
+                    )}
                 </div>
 
                 <div className="flex items-center gap-4 text-right">

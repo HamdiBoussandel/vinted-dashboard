@@ -140,17 +140,27 @@ async def get_journal_route(date: str = None):
             "detail": event.get("detail"),
         }
 
+    # Progression live des actions Clemz en cours (12/10/2026) -- jour courant
+    # seulement, attachée à l'étape "running" du dressing concerné.
+    from services.clemz_automation import PROGRESSION
+    est_aujourdhui = date_str == dt.now().strftime("%Y-%m-%d")
+
     def _etape_dressing(task, dressing, label, plan=None):
         if not task:
-            return {"label": label, "statut": "inconnu", "heure": None, "task_id": None, "compteurs": None, "prevu": plan}
+            return {"label": label, "dressing": dressing, "statut": "inconnu", "heure": None,
+                    "task_id": None, "compteurs": None, "prevu": plan}
         compteurs = _compter_resultats(task, dressing)
+        en_cours = task.get("global_status") == "running"
         return {
             "label": label,
+            "dressing": dressing,
             "statut": task.get("global_status"),
             "heure": task.get("started_at"),
             "task_id": task.get("task_id"),
             "compteurs": compteurs,
             "prevu": plan,
+            "detail": task.get("interruption"),
+            "progression": PROGRESSION.get(dressing) if (en_cours and est_aujourdhui) else None,
         }
 
     def _etape_partage(task):
@@ -172,6 +182,7 @@ async def get_journal_route(date: str = None):
             "task_id": task.get("task_id"),
             "compteurs": {"succes": succes, "total": len(resultats), "bloques_quota": 0, "erreurs_clemz": 0},
             "prevu": None,
+            "detail": task.get("interruption"),
         }
 
     plan_d1 = _dernier_plan_historique("Dressing 1", date_str)
@@ -200,31 +211,96 @@ async def get_journal_route(date: str = None):
         _etape_vm(extinction, "Extinction VM"),
     ]
 
-    return {"date": date_str, "etapes": etapes}
+    from services.automation_scheduler import get_pause_routine
+    return {
+        "date": date_str,
+        "etapes": etapes,
+        "pause": get_pause_routine() if est_aujourdhui else None,
+    }
 
 
 _taches_reprise = set()
+
+
+def _lancer_en_fond(coro):
+    tache = asyncio.create_task(coro)
+    _taches_reprise.add(tache)  # référence forte, sinon collectable en cours de route
+    tache.add_done_callback(_taches_reprise.discard)
+
+
+def _refuser_sur_satellite():
+    from services.plan_source import est_satellite
+    if est_satellite():
+        raise HTTPException(status_code=400, detail="La routine ne tourne que sur la VM.")
 
 
 @router.post("/reprendre-routine")
 async def reprendre_routine_route():
     """
     Bouton "Reprendre la routine" du Journal (cf. échange du 12/10/2026) :
-    relance, dans l'ordre et en tâche de fond, les étapes du jour manquées ou
-    en échec (scraping -> baisse de prix par dressing), puis replanifie une
-    republication non encore faite aujourd'hui (+1 min) -- celle-ci attend la
-    fin des étapes précédentes via le verrou de routine. Équivalent d'un
-    redémarrage du backend, sans couper une tâche en cours.
+    relance, dans l'ordre et en tâche de fond, les étapes du jour manquées,
+    en échec, bloquées ou interrompues (scraping -> baisse de prix par
+    dressing), puis replanifie une republication à reprendre (+1 min) --
+    celle-ci attend la fin des étapes précédentes via le verrou de routine.
+    Seul moyen de reprendre une étape en échec : le redémarrage du backend ne
+    le fait plus. Une étape arrêtée à la main n'est jamais relancée.
     """
-    from services.plan_source import est_satellite
-    if est_satellite():
-        raise HTTPException(status_code=400, detail="La routine ne tourne que sur la VM.")
+    _refuser_sur_satellite()
     from services.automation_service import rattraper_routine, rattraper_republish_manques
-    tache = asyncio.create_task(rattraper_routine(reprendre_echecs=True))
-    _taches_reprise.add(tache)  # référence forte, sinon collectable en cours de route
-    tache.add_done_callback(_taches_reprise.discard)
-    await rattraper_republish_manques()
+    _lancer_en_fond(rattraper_routine(reprendre_echecs=True))
+    await rattraper_republish_manques(reprendre=True)
     return {"status": "reprise lancée"}
+
+
+@router.post("/arreter-tache")
+async def arreter_tache_route(data: dict = Body(...)):
+    """
+    Bouton "Arrêter" d'une étape en cours (12/10/2026) : demande l'arrêt de
+    l'action Clemz en cours sur ce dressing. Honoré à un point sûr (avant la
+    suppression d'une annonce) via le STOP natif de Clemz, forcé après 5 min
+    sans point sûr -- cf. clemz_automation._poll_mass_action. Les articles
+    déjà traités restent enregistrés ; l'étape est notée "arrêtée" et n'est
+    plus relancée automatiquement de la journée.
+    """
+    from services.clemz_automation import demander_arret, PROGRESSION
+    from services.clemz_auto_message import get_profile_lock
+    dressing = data.get("dressing")
+    cle_profil = {"Dressing 1": "chrome_clemz", "Dressing 2": "edge_clemz"}.get(dressing)
+    if not cle_profil:
+        raise HTTPException(status_code=400, detail="Dressing inconnu.")
+    if dressing not in PROGRESSION and not get_profile_lock(cle_profil).locked():
+        raise HTTPException(status_code=409, detail=f"Aucune action Clemz en cours sur {dressing}.")
+    demander_arret(dressing)
+    logger.warning(f"🛑 [MAINTENANCE] Arrêt demandé depuis le Journal pour {dressing}.")
+    return {"status": "arret_demande", "dressing": dressing}
+
+
+@router.get("/routine-pause")
+async def get_routine_pause_route():
+    from services.automation_scheduler import get_pause_routine
+    return {"pause": get_pause_routine()}
+
+
+@router.post("/routine-pause")
+async def set_routine_pause_route(data: dict = Body(...)):
+    """
+    Pause globale de la routine (12/10/2026) : {"mode": "jour"} jusqu'à
+    minuit, {"mode": "indefini"} jusqu'à reprise, {"mode": null} pour lever.
+    Une action déjà en cours continue (bouton "Arrêter" pour la couper). À la
+    levée, les étapes du jour non commencées sont rattrapées dans l'ordre.
+    """
+    _refuser_sur_satellite()
+    from services.automation_scheduler import set_pause_routine
+    mode = data.get("mode")
+    if mode not in ("jour", "indefini", None):
+        raise HTTPException(status_code=400, detail="mode attendu : 'jour', 'indefini' ou null.")
+    pause = set_pause_routine(mode)
+    logger.info(f"⏸️ [MAINTENANCE] Pause de la routine : {mode or 'levée'}.")
+    if mode is None:
+        from services.automation_service import rattraper_routine, rattraper_republish_manques
+        _lancer_en_fond(rattraper_routine(reprendre_echecs=False))
+        await rattraper_republish_manques(reprendre=False)
+    return {"pause": pause}
 
 
 @router.post("/open-browser")

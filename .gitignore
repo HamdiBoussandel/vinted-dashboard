@@ -18,6 +18,8 @@ backend/clemz_session_edge/
 task_history.json
 vm_lifecycle_log.json
 routine_du_jour.json
+routine_pause.json
+prix_boucher_observation.jsonl
 cron_status.json
 error_log.txt
 extension_errors.log

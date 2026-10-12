@@ -30,6 +30,14 @@ from services.automation_scheduler import save_plan_du_jour
 
 PROBABILITE_JOUR_ACTIF = 0.75
 
+# PLAN FIGÉ POUR LA JOURNÉE (essai décidé le 12/10/2026) : une fois tiré, le
+# plan ne peut plus que PASSER en repos (rafraichir_pause_si_necessaire),
+# jamais revenir actif par un nouveau tirage en cours de journée
+# (rafraichir_repos_si_leve neutralisée). Remettre à False pour revenir au
+# comportement du 11/09/2026 (re-tirage dès qu'un repos Niveau 1/2 n'est plus
+# justifié).
+PLAN_FIGE_JOURNEE = True
+
 # Créneaux de republication -- choisis le 07/10/2026 pour viser les heures de
 # forte affluence acheteurs sur Vinted (pause déjeuner, soirée), DÉCISION
 # BUSINESS explicite de l'utilisateur, pas une recalibration anti-détection.
@@ -55,7 +63,8 @@ CRENEAUX_HORAIRES = [
 # réellement utilisé pour le calendrier (cf. échange du 05/10/2026).
 VOLUME_MIN_JOUR_ACTIF = 5
 
-# Écart entre le plancher du tirage calendrier et le plafond du jour (12-15,
+# Écart entre le plancher du tirage calendrier et le plafond du jour (19-21
+# depuis le 13/10/2026 -- exemples ci-dessous écrits avec l'ancien 12-15,
 # cf. risk_guard._plafond_republication_du_jour) -- resserré le 05/10/2026 :
 # avec l'ancien plancher fixe à 5, la cible du jour (ex: "8 AUJ.") pouvait
 # retomber très loin du plafond réellement autorisé (moyenne ~10 sur un
@@ -360,6 +369,8 @@ def rafraichir_repos_si_leve(dressing: str, action_type: str = "republication"):
 
     if est_satellite():
         return  # jamais de re-tirage sur le satellite : la VM fait foi
+    if PLAN_FIGE_JOURNEE:
+        return  # essai du 12/10/2026 : le repos du matin vaut pour toute la journée
 
     plan = get_plan_du_jour(dressing)
     if plan is None or plan.get("date") != datetime.now().strftime("%Y-%m-%d"):

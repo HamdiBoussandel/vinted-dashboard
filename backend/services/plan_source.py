@@ -6,7 +6,7 @@ Jusqu'ici, chaque PC tirait son propre plan à 00:05 et le stockait localement
 (plan_du_jour_d1/d2.json) : la VM et le PC de dev avaient des plans
 différents le même jour, et le PC de dev appliquait le sien à ses actions
 manuelles. Les quotas consommés et les convalescences, eux, sont déjà
-partagés (Supabase), et le plafond quotidien 12-15 est seedé par
+partagés (Supabase), et le plafond quotidien (19-21) est seedé par
 (dressing, date) donc identique partout -- seul le plan restait local.
 
 Rôle de la machine, décidé par backend/.env :

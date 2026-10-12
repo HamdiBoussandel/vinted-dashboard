@@ -96,6 +96,31 @@ export const maintenanceService = {
     return response.json();
   },
 
+  // Arrêt propre de l'action Clemz en cours sur un dressing (point sûr).
+  async arreterTache(dressing, apiUrl = API_URL) {
+    const response = await fetch(`${apiUrl}/maintenance/arreter-tache`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ dressing }),
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.detail || "Erreur réseau");
+    }
+    return response.json();
+  },
+
+  // Pause globale de la routine : mode "jour" | "indefini" | null (levée).
+  async setPauseRoutine(mode, apiUrl = API_URL) {
+    const response = await fetch(`${apiUrl}/maintenance/routine-pause`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mode }),
+    });
+    if (!response.ok) throw new Error("Erreur réseau");
+    return response.json();
+  },
+
   async openBrowser(profileKey) {
     const response = await fetch(`${API_URL}/maintenance/open-browser`, {
       method: "POST",
@@ -457,6 +482,16 @@ export const riskGuardService = {
   // purement informatif, cf. services/risk_guard.py.
   async getStatut() {
     const response = await fetch(`${API_URL}/risk-guard/statut`);
+    if (!response.ok) throw new Error("Erreur réseau");
+    return response.json();
+  },
+};
+
+export const prixBoucherService = {
+  // Mode observation de la stratégie "prix de boucher" (13/10/2026) --
+  // lecture seule, aucun prix modifié, cf. services/prix_boucher.py.
+  async getObservation() {
+    const response = await fetch(`${API_URL}/prix-boucher/observation`);
     if (!response.ok) throw new Error("Erreur réseau");
     return response.json();
   },

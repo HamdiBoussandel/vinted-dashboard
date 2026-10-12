@@ -570,7 +570,7 @@ async def run_automation_now(background_tasks: BackgroundTasks, payload: dict = 
 
     async def run_now_task(items, task_type, lots_a_traiter, forcer_niveau2=False):
         from services.automation_scheduler import start_task_run, update_task_result, finish_task_run, add_task_global_anomaly, fail_pending_results
-        from services.risk_guard import get_allowed_quantity, log_action, get_jour_pause_volume
+        from services.risk_guard import get_allowed_quantity, get_jour_pause_volume
 
         task_id = start_task_run(task_type, items)
         if forcer_niveau2:
@@ -614,41 +614,10 @@ async def run_automation_now(background_tasks: BackgroundTasks, payload: dict = 
                     continue
 
                 bot_kwargs = {"pourcentage_baisse_prix": pct} if (task_type == "baisse_prix" and pct is not None) else {}
-                bot = ClemzAutomation(lot1, lot2, task_type=task_type, **bot_kwargs)
+                # Quota anti-détection et dates en base : enregistrés par
+                # ClemzAutomation article par article (12/10/2026).
+                bot = ClemzAutomation(lot1, lot2, task_type=task_type, task_id=task_id, **bot_kwargs)
                 results = await bot.run()
-
-                # CORRIGÉ (11/09/2026) : le quota compte le nombre d'items ayant
-                # RÉELLEMENT reçu un résultat de Clemz (présents dans
-                # selection_results), pas la taille brute du lot envoyé --
-                # une interruption en cours d'exécution (ex: navigateur fermé
-                # manuellement pendant le run) peut faire revenir des
-                # selection_results VIDES sans lever d'exception (catchée en
-                # interne par ClemzAutomation) : décompter tout le lot dans ce
-                # cas gaspillerait du quota anti-détection pour un envoi qui
-                # n'a concrètement rien délivré à Vinted.
-                #
-                # RE-CORRIGÉ (21/09/2026) : "présent dans selection_results" ne
-                # veut pas dire "réussi" -- chaque item y apparaît avec son
-                # propre status "success"/"failed" (cf. docstring de
-                # ClemzAutomation.run()), y compris les échecs individuels en
-                # cours de lot (ex: panneau Clemz perdu à mi-parcours, qui a
-                # fait compter 7 republications alors que seules 4 avaient
-                # réellement été faites sur Vinted, bloquant à tort les
-                # tentatives suivantes du même jour). Ne compter que les
-                # succès réels, pas la taille de la liste de résultats.
-                traites_d1 = traites_d2 = 0
-                for account_result in results:
-                    nb_traites = sum(
-                        1 for r in account_result.get("selection_results", [])
-                        if r.get("status") == "success"
-                    )
-                    if "Dressing 1" in account_result.get("account", ""):
-                        traites_d1 += nb_traites
-                    elif "Dressing 2" in account_result.get("account", ""):
-                        traites_d2 += nb_traites
-
-                log_action("Dressing 1", task_type, traites_d1)
-                log_action("Dressing 2", task_type, traites_d2)
 
                 ids_avec_resultat = set()
                 for account_result in results:
@@ -854,7 +823,9 @@ async def _run_liquidation_task(groupes):
             produits_d1 = noms if dressing == "Dressing 1" else []
             produits_d2 = noms if dressing == "Dressing 2" else []
 
-            bot = ClemzAutomation(produits_d1, produits_d2, task_type="baisse_prix", prix_fixe=prix_fixe)
+            # Hors quota anti-détection (cf. docstring) : compter_quota=False.
+            bot = ClemzAutomation(produits_d1, produits_d2, task_type="baisse_prix", prix_fixe=prix_fixe,
+                                  task_id=task_id, compter_quota=False)
             results = await bot.run()
 
             for account_result in results:

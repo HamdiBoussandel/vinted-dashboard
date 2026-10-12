@@ -31,9 +31,18 @@ MAX_HISTORY_ENTRIES = 200
 ROUTINE_DU_JOUR_FILE = os.path.join(BASE_DIR, "routine_du_jour.json")
 # "succes" : au moins un article traité (succès partiel = OK) ; "rien_a_faire" :
 # aucun article concerné ; "desactive" : bascule Maintenance coupée ; "repos" :
-# dressing au repos aujourd'hui selon son plan du jour (aucune action Clemz) --
-# les quatre débloquent l'étape suivante. "echec"/"bloque" l'arrêtent.
-STATUTS_ETAPE_OK = ("succes", "rien_a_faire", "desactive", "repos")
+# dressing au repos aujourd'hui selon son plan du jour (aucune action Clemz) ;
+# "arrete" : arrêtée à la demande de l'utilisateur (bouton Arrêter du Journal,
+# décision définitive pour la journée) -- débloquent l'étape suivante.
+# "echec"/"bloque"/"interrompue" (coupée par un redémarrage) l'arrêtent et
+# attendent "Reprendre la routine".
+STATUTS_ETAPE_OK = ("succes", "rien_a_faire", "desactive", "repos", "arrete")
+STATUTS_ETAPE_A_REPRENDRE = ("echec", "bloque", "interrompue")
+
+# Pause globale de la routine (bouton du Journal, 12/10/2026) -- {"mode":
+# "jour"|"indefini", "date": "AAAA-MM-JJ", "depuis": iso}. Mode "jour" : levée
+# d'elle-même au changement de date.
+ROUTINE_PAUSE_FILE = os.path.join(BASE_DIR, "routine_pause.json")
 
 
 def _read_json(file_path, default):
@@ -73,6 +82,28 @@ def _write_json(file_path, data):
     où chaque fonction publique fait sa propre passe)."""
     with _file_lock:
         _write_json_locked(file_path, data)
+
+
+DATE_DEBUT_HISTORIQUE = "2026-10-12"
+
+
+def purger_historique_anterieur():
+    """
+    Purge unique demandée le 12/10/2026, appelée au démarrage : efface de
+    task_history.json (page "Historique des automatisations", Journal des
+    jours passés) toutes les tâches démarrées avant DATE_DEBUT_HISTORIQUE --
+    l'historique d'avant la refonte de la routine mélangeait anciens types et
+    statuts. Ne touche à AUCUNE donnée de calcul (quota anti-détection
+    Supabase, plans du jour, price_drops). Idempotente ; à supprimer avec
+    migrer_anciennes_republications une fois la VM redémarrée.
+    """
+    with _file_lock:
+        history = _read_json(TASK_HISTORY_FILE, default=[])
+        conservees = [h for h in history if (h.get("started_at") or "") >= DATE_DEBUT_HISTORIQUE]
+        nb = len(history) - len(conservees)
+        if nb:
+            _write_json_locked(TASK_HISTORY_FILE, conservees)
+    return nb
 
 
 def migrer_anciennes_republications():
@@ -116,6 +147,27 @@ def get_routine_du_jour():
 def get_statut_etape(dressing, etape):
     """Statut du jour d'une étape pour ce dressing, ou None si pas encore passée."""
     return (get_routine_du_jour().get(dressing) or {}).get(etape, {}).get("statut")
+
+
+def get_pause_routine():
+    """La pause en vigueur ({"mode", "date", "depuis"}) ou None."""
+    pause = _read_json(ROUTINE_PAUSE_FILE, default=None)
+    if not pause:
+        return None
+    if pause.get("mode") == "jour" and pause.get("date") != datetime.now().strftime("%Y-%m-%d"):
+        return None
+    return pause
+
+
+def set_pause_routine(mode):
+    """mode : "jour" (jusqu'à minuit), "indefini" (jusqu'à reprise), None (levée)."""
+    if mode is None:
+        if os.path.exists(ROUTINE_PAUSE_FILE):
+            os.remove(ROUTINE_PAUSE_FILE)
+        return None
+    pause = {"mode": mode, "date": datetime.now().strftime("%Y-%m-%d"), "depuis": datetime.now().isoformat()}
+    _write_json(ROUTINE_PAUSE_FILE, pause)
+    return pause
 
 
 def noter_etape_routine(dressing, etape, statut, raison=None):
@@ -295,6 +347,10 @@ def cleanup_stale_running_tasks():
                 continue
             entry["global_status"] = "failed"
             entry["finished_at"] = datetime.now().isoformat()
+            # Raison visible même sans résultat par article (ex. partage
+            # vues/favoris, dont les résultats ne sont écrits qu'à la fin --
+            # sinon "Échec 0/0" sans explication, cf. 12/10/2026).
+            entry["interruption"] = "Interrompue par un redémarrage du serveur."
             for result in entry.get("results", []):
                 if result.get("status") in ("pending", "running"):
                     result["status"] = "failed"
@@ -357,6 +413,56 @@ def update_task_result(task_id, item_id, status, reason=None):
                     break
             break
         _write_json_locked(TASK_HISTORY_FILE, history)
+
+
+def update_task_result_par_nom(task_id, nom, status, reason=None):
+    """Comme update_task_result, mais par nom d'article (insensible à la casse)
+    -- pour l'enregistrement au fil de l'eau, où seul le nom affiché par Clemz
+    est connu. Sans effet si l'article n'est pas dans la tâche (ex. reste d'un
+    run précédent dans la liste Clemz)."""
+    cible = (nom or "").strip().lower()
+    with _file_lock:
+        history = _read_json(TASK_HISTORY_FILE, default=[])
+        for entry in history:
+            if entry["task_id"] != task_id:
+                continue
+            for result in entry["results"]:
+                if (result.get("nom") or "").strip().lower() == cible:
+                    result["status"] = status
+                    if reason:
+                        result["reason"] = reason
+                    _write_json_locked(TASK_HISTORY_FILE, history)
+                    return
+            return
+
+
+def marquer_etapes_interrompues():
+    """
+    À appeler au démarrage, AVANT cleanup_stale_running_tasks() (12/10/2026) :
+    une baisse de prix ou une republication de la routine encore "en cours"
+    a été coupée par l'arrêt du serveur. L'étape est notée "interrompue" pour
+    chaque dressing concerné -- elle ne sera PAS relancée automatiquement
+    (plus de relance surprise au redémarrage), seulement via "Reprendre la
+    routine" dans le Journal. Le scraping (lecture seule) n'est pas concerné :
+    resté sans statut, il est simplement refait.
+    """
+    aujourdhui = datetime.now().strftime("%Y-%m-%d")
+    heure = datetime.now().strftime("%H:%M")
+    for entry in _read_json(TASK_HISTORY_FILE, default=[]):
+        if entry.get("global_status") != "running" or not (entry.get("started_at") or "").startswith(aujourdhui):
+            continue
+        if entry.get("type") == "baisse_prix":
+            etape = "baisse_prix"
+        elif entry.get("type") == "republication" and entry.get("sous_type") == "routine":
+            etape = "republication"
+        else:
+            continue
+        dressings = {r.get("dressing") for r in entry.get("results", [])} & {"Dressing 1", "Dressing 2"}
+        for dressing in dressings:
+            noter_etape_routine(
+                dressing, etape, "interrompue",
+                f"Coupée par un redémarrage du serveur (détecté à {heure}) — à reprendre depuis le Journal.",
+            )
 
 
 def fail_pending_results(task_id, reason):

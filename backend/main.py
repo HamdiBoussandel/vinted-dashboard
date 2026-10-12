@@ -58,7 +58,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # Imports des routes
-from routes import inventory, sourcing, price_estimation, preparer_annonces, maintenance, risk_guard
+from routes import inventory, sourcing, price_estimation, preparer_annonces, maintenance, risk_guard, prix_boucher
 # On importe l'état global et le config depuis database pour la cohérence
 from database import app_state 
 # On importe le scheduler pour le piloter au démarrage
@@ -127,10 +127,20 @@ async def startup_event():
         if not scheduler.running:
             scheduler.start()
 
-        from services.automation_scheduler import cleanup_stale_running_tasks, migrer_anciennes_republications
+        from services.automation_scheduler import (
+            cleanup_stale_running_tasks, migrer_anciennes_republications, marquer_etapes_interrompues,
+            purger_historique_anterieur,
+        )
+        nb_purgees = purger_historique_anterieur()
+        if nb_purgees:
+            print(f"🧽 [STARTUP] {nb_purgees} tâche(s) d'avant le 12/10/2026 effacée(s) de l'historique des automatisations.")
         nb_migrees = migrer_anciennes_republications()
         if nb_migrees:
             print(f"🔁 [STARTUP] {nb_migrees} ancienne(s) republication(s) automatique(s) convertie(s) au type 'republication' (routine).")
+        # Avant le nettoyage (qui efface le statut "running") : une baisse de prix
+        # ou une republication de la routine coupée par l'arrêt du serveur est
+        # notée "interrompue" -- reprise seulement via le Journal (12/10/2026).
+        marquer_etapes_interrompues()
         nb_cleaned = cleanup_stale_running_tasks()
         if nb_cleaned:
             print(f"🧹 [STARTUP] {nb_cleaned} tâche(s) 'en cours' interrompue(s) par le redémarrage précédent — marquée(s) 'Échec'.")
@@ -154,13 +164,15 @@ async def startup_event():
             await rattraper_republish_manques()
 
         # Chaîne de routine par dressing (cf. échange du 12/10/2026) : scraping
-        # (10h30) et baisse de prix (10h40) manqués ou en échec sont (re)lancés
-        # ici, dans l'ordre, en tâche de fond -- un redémarrage du backend vaut
-        # "reprise de la routine". Une republication de rattrapage planifiée
-        # ci-dessus (+1 min) attend la fin de ces étapes via le verrou partagé.
+        # (10h30) et baisse de prix (10h40) JAMAIS COMMENCÉS aujourd'hui (VM
+        # allumée en retard) sont lancés ici, dans l'ordre, en tâche de fond.
+        # Une étape en échec ou interrompue n'est PAS relancée au démarrage --
+        # seulement via "Reprendre la routine" dans le Journal. Une
+        # republication planifiée ci-dessus (+1 min) attend la fin de ces
+        # étapes via le verrou partagé.
         from services.automation_service import rattraper_routine
         global rattrapage_matin_task
-        rattrapage_matin_task = asyncio.create_task(rattraper_routine(reprendre_echecs=True))
+        rattrapage_matin_task = asyncio.create_task(rattraper_routine(reprendre_echecs=False))
         rattrapage_matin_task.add_done_callback(_on_rattrapage_matin_done)
 
         global watchdog_task
@@ -221,6 +233,7 @@ app.include_router(sourcing.router)
 app.include_router(preparer_annonces.router)
 app.include_router(maintenance.router)
 app.include_router(risk_guard.router)
+app.include_router(prix_boucher.router)
 # app.include_router(price_estimation.router)  # TODO: routeur pas encore implémenté (price_estimation.py n'expose que des fonctions, pas d'APIRouter)
 
 if __name__ == "__main__":

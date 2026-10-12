@@ -7,6 +7,7 @@ import PreparerAnnonces from './pages/PreparerAnnonces';
 import DescriptionGenerator from "./pages/DescriptionGenerator"
 import TaskHistory from './pages/TaskHistory';
 import Journal from './pages/Journal';
+import PrixBoucher from './pages/PrixBoucher';
 import Maintenance from './pages/Maintenance';
 import Achats from './pages/Achats';
 import Ventes from './pages/Ventes';
@@ -34,6 +35,7 @@ function App() {
           <Route path="/ventes" element={<Ventes />} />
           <Route path="/historique" element={<TaskHistory />} />
           <Route path="/journal" element={<Journal />} />
+          <Route path="/prix-boucher" element={<PrixBoucher />} />
           <Route path="/maintenance" element={<Maintenance />} />
         </Routes>
       </main>

@@ -7,6 +7,7 @@ import re
 from playwright.async_api import async_playwright
 import random
 from datetime import date
+from datetime import datetime as _dt
 
 # Import robuste : fonctionne à la fois en exécution directe depuis services/
 # (python run_test_baisse_prix.py, run_test_complet.py) et en import package
@@ -54,6 +55,53 @@ REPOST_TIMEOUT_PER_ITEM_SECONDS = 240  # relevé de 90s -> 240s (4 min) suite au
 
 # --- Mode pas-à-pas : passe à False pour désactiver toutes les pauses d'un coup ---
 STEP_BY_STEP = False
+
+
+# =============================================================================
+# PILOTAGE EN COURS D'ACTION (12/10/2026) : arrêt propre + progression en direct
+# =============================================================================
+# Le seul moyen d'arrêter une action de masse était de fermer le backend --
+# brutal (article possiblement à moitié traité) et sans rien enregistrer. Une
+# demande d'arrêt (bouton "Arrêter" du Journal) est désormais honorée par
+# _poll_mass_action à un POINT SÛR, via le bouton STOP natif de Clemz.
+ARRETS_DEMANDES = set()        # dressings ("Dressing 1"/"Dressing 2") dont l'arrêt est demandé
+PROGRESSION = {}               # dressing -> état live de l'action de masse en cours (Journal)
+DELAI_ARRET_FORCE_SECONDES = 300  # sans point sûr pendant 5 min (Clemz figé) : arrêt forcé
+
+# Étapes Clemz AVANT la suppression de l'ancienne annonce (relevées dans les
+# logs des 07-12/10/2026) : arrêter là ne peut pas laisser un article supprimé
+# sans sa copie. "suppression", "envoi des photos", "préparation nouvelle
+# annonce", "enregistrement", "publication de la copie" ne le sont PAS.
+_MARQUEURS_POINT_SUR = ("pause", "lecture de l'annonce", "préparation des photos")
+# Lignes de progression qui ne sont pas un nom d'article
+_LIGNE_NON_ARTICLE = re.compile(r"termin|pause|sauvegard|attente", re.IGNORECASE)
+_COMPTEUR = re.compile(r"(\d+)\s*/\s*(\d+)")
+
+
+def demander_arret(dressing):
+    ARRETS_DEMANDES.add(dressing)
+
+
+def arret_demande(dressing):
+    return dressing in ARRETS_DEMANDES
+
+
+def dressing_du_compte(acc):
+    return "Dressing 1" if "Dressing 1" in acc["name"] else "Dressing 2"
+
+
+def lire_progression(texte):
+    """(compteur, total, nom_article_ou_None) depuis le texte #progressContent
+    de Clemz ("12 / 13\\nPolo Lacoste ...\\npréparation des photos (33%)"),
+    ou (None, None, None) si aucun compteur."""
+    lignes = [l.strip() for l in (texte or "").split("\n") if l.strip()]
+    for i, ligne in enumerate(lignes):
+        m = _COMPTEUR.search(ligne)
+        if m:
+            suivante = lignes[i + 1] if i + 1 < len(lignes) else None
+            nom = suivante if suivante and not _LIGNE_NON_ARTICLE.search(suivante) else None
+            return int(m.group(1)), int(m.group(2)), nom
+    return None, None, None
 
 
 def _pause(message):
@@ -281,10 +329,19 @@ def _args_et_kwargs_navigateur(acc, args_specifiques):
 
 
 class ClemzAutomation:
-    def __init__(self, produits_d1, produits_d2, task_type="republication", pourcentage_baisse_prix=20, prix_fixe=None):
+    def __init__(self, produits_d1, produits_d2, task_type="republication", pourcentage_baisse_prix=20, prix_fixe=None,
+                 task_id=None, compter_quota=True):
         self.clean_d1 = [p.strip() for p in produits_d1 if p]
         self.clean_d2 = [p.strip() for p in produits_d2 if p]
         self.task_type = task_type  # "republication" ou "baisse_prix" — seule l'étape d'action change
+        # Enregistrement au fil de l'eau (12/10/2026, cf. _article_termine) :
+        # task_id = tâche task_history à mettre à jour article par article ;
+        # compter_quota = False pour les actions hors quota anti-détection
+        # (liquidation). Le quota est désormais compté ICI, article par
+        # article -- les appelants n'appellent plus log_action() eux-mêmes.
+        self.task_id = task_id
+        self.compter_quota = compter_quota
+        self.enregistres = {"Dressing 1": set(), "Dressing 2": set()}  # {(action, nom.lower())}
         # Centralisé ici (au lieu d'être répété en dur à chaque appel de
         # _trigger_baisse_prix) pour garantir que la valeur RÉELLEMENT appliquée
         # est celle enregistrée dans price_drops -- une seule source de vérité.
@@ -329,6 +386,98 @@ class ClemzAutomation:
                 "channel": "chrome",
             }
         ]
+
+    # --- Enregistrement au fil de l'eau (12/10/2026) --------------------------
+    # Jusqu'ici, quota et dates n'étaient écrits qu'à la FIN de toute la tâche :
+    # une republication coupée à 12/13 laissait 0 en quota et des dates
+    # périmées, d'où une relance complète au redémarrage suivant. Chaque article
+    # terminé est désormais enregistré dès que le compteur Clemz avance ; la fin
+    # de tâche (run) ne fait plus que compléter ce qui aurait été manqué.
+
+    def _action_quota(self):
+        """Action qui compte dans le quota pour ce type de tâche (une seule par article)."""
+        return "republication" if self.task_type in ("republication", "republication_baisse") else "baisse_prix"
+
+    async def _article_termine(self, acc, nom, action):
+        dressing = dressing_du_compte(acc)
+        cle = (action, nom.strip().lower())
+        if cle in self.enregistres[dressing]:
+            return
+        self.enregistres[dressing].add(cle)
+        # Appels Supabase synchrones : hors de la boucle asyncio, pour ne pas
+        # figer le backend (cf. "Backend HORS LIGNE" du 12/10 à 22h07).
+        if action == "republication":
+            await asyncio.to_thread(self._maj_republication, nom)
+            raison = "Republié"
+        else:
+            await asyncio.to_thread(self._maj_baisse, acc, nom)
+            raison = "Prix fixé" if self.prix_fixe is not None else f"Baisse -{self.pourcentage_baisse_prix}% appliquée"
+        if self.compter_quota and action == self._action_quota():
+            from services.risk_guard import log_action
+            await asyncio.to_thread(log_action, dressing, self.task_type, 1)
+        if self.task_id:
+            from services.automation_scheduler import update_task_result_par_nom
+            await asyncio.to_thread(update_task_result_par_nom, self.task_id, nom, "success", raison)
+        logger.info(f"📝 [{acc['name']}] '{nom}' enregistré ({action}) dès la fin de son traitement.")
+
+    @staticmethod
+    def _article_unique(db_client, nom):
+        matches = db_client.table("articles").select("id, nb_republications_sans_vente, prix_vente") \
+            .ilike("nom", nom).execute().data or []
+        if len(matches) == 1:
+            return matches[0]
+        if not matches:
+            logger.info(f"ℹ️  '{nom}' traité sur Vinted, mais absent de Supabase (pas suivi dans le catalogue).")
+        else:
+            logger.warning(f"⚠️  '{nom}' correspond à {len(matches)} articles Supabase (nom dupliqué) — "
+                           f"mise à jour ignorée pour ne pas cibler le mauvais article. À corriger à la main.")
+        return None
+
+    def _maj_republication(self, nom):
+        from database import supabase as db_client
+        article = self._article_unique(db_client, nom)
+        if not article:
+            return
+        nouveau = (article.get("nb_republications_sans_vente") or 0) + 1
+        db_client.table("articles").update({
+            "nb_republications_sans_vente": nouveau,
+            "date_republication": date.today().isoformat(),
+            # Une republication rouvre le cycle : une nouvelle baisse redevient
+            # possible (cf. échange du 20/09/2026).
+            "est_traite": False,
+        }).eq("id", article["id"]).execute()
+        logger.info(f"📊 {nom} → {nouveau} republication(s) sans vente, republié le {date.today().isoformat()}")
+
+    def _maj_baisse(self, acc, nom):
+        """est_traite=True (disparaît de "Mauvaise Performance") + trace price_drops
+        (mesure d'impact des baisses ; prix après exact en mode prix fixe)."""
+        from database import supabase as db_client
+        article = self._article_unique(db_client, nom)
+        if article:
+            db_client.table("articles").update({"est_traite": True}).eq("id", article["id"]).execute()
+            prix_avant = float(article.get("prix_vente") or 0)
+            if self.prix_fixe is not None:
+                prix_apres = self.prix_fixe
+                pourcentage = round((1 - self.prix_fixe / prix_avant) * 100, 1) if prix_avant > 0 else None
+            else:
+                prix_apres = round(prix_avant * (1 - self.pourcentage_baisse_prix / 100), 2)
+                pourcentage = self.pourcentage_baisse_prix
+        else:
+            prix_avant = None
+            prix_apres = self.prix_fixe
+            pourcentage = None if self.prix_fixe is not None else self.pourcentage_baisse_prix
+        try:
+            db_client.table("price_drops").insert({
+                "article_id": article["id"] if article else None,
+                "nom": nom,
+                "dressing": acc["name"],
+                "prix_avant": prix_avant,
+                "pourcentage_applique": pourcentage,
+                "prix_apres_estime": prix_apres,
+            }).execute()
+        except Exception as e:
+            logger.warning(f"⚠️ Impossible d'enregistrer price_drops pour '{nom}' : {e}")
+        logger.info(f"📉 {nom} → baisse de prix appliquée, marqué comme traité (est_traite=True)")
 
     async def _build_list(self, page, cdp, acc):
         """
@@ -719,8 +868,7 @@ class ClemzAutomation:
 
         return {"status": "success"}
 
-    # new_str
-    async def _poll_mass_action(self, page, cdp, acc, expected_count, action_label):
+    async def _poll_mass_action(self, page, cdp, acc, expected_count, action_label, on_article_termine=None):
         """
         Poll générique de fin d'action de masse Clemz (republication, baisse de
         prix, sauvegarde) via #processStage + #progressContent, jusqu'au mot
@@ -742,6 +890,16 @@ class ClemzAutomation:
         côté Clemz -- d'où un timeout silencieux malgré une republication réelle.
         Le vrai total est donc lu dynamiquement depuis le premier texte de
         progression ('X / VRAI_TOTAL'), plutôt que supposé égal à expected_count.
+
+        Pilotage (12/10/2026) :
+          - on_article_termine(nom) : appelé dès que le compteur Clemz avance,
+            avec le nom de l'article qui vient d'être terminé -- enregistrement
+            au fil de l'eau (cf. _article_termine), pour qu'une interruption ne
+            laisse plus quota et dates en base faux.
+          - arrêt demandé (ARRETS_DEMANDES) : clic sur le STOP natif de Clemz
+            dès un point sûr (_MARQUEURS_POINT_SUR), forcé après
+            DELAI_ARRET_FORCE_SECONDES. Retourne alors {"status": "stopped"}.
+          - PROGRESSION[dressing] : état live affiché par le Journal.
         """
         MAX_WAIT = max(REPOST_TIMEOUT_MIN_SECONDS, expected_count * (REPOST_TIMEOUT_PER_ITEM_SECONDS + 60))
         POLL_INTERVAL = 3
@@ -751,6 +909,11 @@ class ClemzAutomation:
         real_total = expected_count  # ajusté dès qu'on lit le vrai total Clemz
         expected_progress_full = f"{expected_count} / {expected_count}"
         total_pattern = re.compile(r"\d+\s*/\s*(\d+)")
+        dressing = dressing_du_compte(acc)
+        compteur_precedent = None
+        nom_en_cours = None
+        attente_arret_depuis = None
+        derniere_avancee = _dt.now().isoformat()
 
         logger.info(
             f"👀 [{acc['name']}] Début du poll {action_label} — "
@@ -841,6 +1004,7 @@ class ClemzAutomation:
                     resume = progress_text.replace("\n", " · ")
                     logger.info(f"⏳ [{acc['name']}] [{elapsed}s/{MAX_WAIT}s] {resume}")
                     last_progress = progress_text
+                    derniere_avancee = _dt.now().isoformat()
 
                 # Ajuste le total réel dès qu'on le voit divergent de notre estimation
                 # (liste Clemz contenant plus d'articles que ceux qu'on vient d'ajouter).
@@ -856,6 +1020,56 @@ class ClemzAutomation:
                         real_total = detected_total
                         expected_progress_full = f"{real_total} / {real_total}"
                         MAX_WAIT = max(MAX_WAIT, real_total * (REPOST_TIMEOUT_PER_ITEM_SECONDS + 60))
+
+            # --- Enregistrement au fil de l'eau : le compteur avance = l'article
+            # affiché jusque-là est terminé (nom lu au compteur précédent).
+            compteur, _, nom_lu = lire_progression(progress_text)
+            if compteur is not None:
+                if (compteur_precedent is not None and compteur > compteur_precedent
+                        and nom_en_cours and on_article_termine
+                        and nom_en_cours not in {e["nom"] for e in erreurs_majeures}):
+                    try:
+                        await on_article_termine(nom_en_cours)
+                    except Exception as e:
+                        logger.warning(f"⚠️ [{acc['name']}] Enregistrement en cours de route de '{nom_en_cours}' impossible : {e}")
+                if compteur_precedent is None or compteur > compteur_precedent:
+                    compteur_precedent = compteur
+                if nom_lu:
+                    nom_en_cours = nom_lu
+
+            PROGRESSION[dressing] = {
+                "action": action_label,
+                "compteur": compteur_precedent,
+                "total": real_total,
+                "article": nom_en_cours,
+                "texte": (progress_text or stage_text).replace("\n", " · "),
+                "derniere_avancee": derniere_avancee,
+                "maj": _dt.now().isoformat(),
+                "arret_demande": arret_demande(dressing),
+            }
+
+            # --- Arrêt demandé depuis le Journal : STOP natif Clemz à un point sûr
+            if arret_demande(dressing):
+                if attente_arret_depuis is None:
+                    attente_arret_depuis = elapsed
+                    logger.warning(f"🛑 [{acc['name']}] Arrêt demandé — attente d'un point sûr (avant suppression d'une annonce).")
+                texte_bas = (progress_text + " " + stage_text).lower()
+                point_sur = any(m in texte_bas for m in _MARQUEURS_POINT_SUR)
+                force = elapsed - attente_arret_depuis >= DELAI_ARRET_FORCE_SECONDES
+                if "progressStopButton" in by_id_poll and (point_sur or force):
+                    x, y = await get_center_coords(cdp, by_id_poll["progressStopButton"]["node_id"])
+                    await real_mouse_click(page, x, y)
+                    await asyncio.sleep(5)  # Clemz recharge la page après son STOP
+                    if point_sur:
+                        reason = f"Arrêtée à ta demande ({compteur_precedent or 0}/{real_total} traité(s))."
+                    else:
+                        reason = (
+                            f"Arrêt FORCÉ à ta demande ({compteur_precedent or 0}/{real_total} traité(s)) : Clemz "
+                            f"sans point sûr depuis {DELAI_ARRET_FORCE_SECONDES // 60} min — vérifie sur Vinted "
+                            f"l'article en cours : {nom_en_cours or 'inconnu'}."
+                        )
+                    logger.warning(f"🛑 [{acc['name']}] {action_label} — {reason}")
+                    return {"status": "stopped", "reason": reason, "erreurs_majeures": erreurs_majeures}
 
             combined = (stage_text + " " + progress_text).lower()
             if "termin" in combined and expected_progress_full in progress_text:
@@ -923,7 +1137,10 @@ class ClemzAutomation:
             # indéfiniment sans jamais être cliquée).
             _pause("Le poll de progression va démarrer maintenant (gère aussi les modales de confirmation en continu)")
 
-            poll_result = await self._poll_mass_action(page, cdp, acc, expected_count, action_label="Republication")
+            poll_result = await self._poll_mass_action(
+                page, cdp, acc, expected_count, action_label="Republication",
+                on_article_termine=lambda nom: self._article_termine(acc, nom, "republication"),
+            )
             if poll_result["status"] != "success":
                 return poll_result
 
@@ -1185,7 +1402,10 @@ class ClemzAutomation:
 
             _pause("Le poll de progression va démarrer maintenant (aucune pause pendant le poll lui-même)")
 
-            poll_result = await self._poll_mass_action(page, cdp, acc, expected_count, action_label="Baisse de prix")
+            poll_result = await self._poll_mass_action(
+                page, cdp, acc, expected_count, action_label="Baisse de prix",
+                on_article_termine=lambda nom: self._article_termine(acc, nom, "baisse_prix"),
+            )
             if poll_result["status"] != "success":
                 return poll_result
             
@@ -1466,6 +1686,11 @@ class ClemzAutomation:
             logger.info(f"⏭️  [{acc['name']}] Aucun produit à traiter, on passe.")
             return {"account": acc["name"], "selection_results": [], "repost_result": None}
 
+        if arret_demande(dressing_du_compte(acc)):
+            arret = {"status": "stopped", "reason": "Arrêtée à ta demande avant le démarrage."}
+            logger.warning(f"🛑 [{acc['name']}] {arret['reason']}")
+            return {"account": acc["name"], "selection_results": [], "repost_result": arret}
+
         context = None
         try:
             account_key = acc["account_key"]
@@ -1683,7 +1908,6 @@ class ClemzAutomation:
                 )
 
             erreurs_majeures = repost_result.get("erreurs_majeures", [])
-            noms_erreurs_majeures = {erreur["nom"] for erreur in erreurs_majeures}
             if erreurs_majeures:
                 from database import supabase as db_client
                 from datetime import datetime as dt
@@ -1698,139 +1922,10 @@ class ClemzAutomation:
                     except Exception as e:
                         logger.error(f"❌ [{acc['name']}] Échec marquage erreur Clemz pour '{erreur['nom']}' : {e}")
 
-            if repost_result.get("status") == "success" and self.task_type in ("republication", "republication_baisse"):
-                from database import supabase as db_client
-                from datetime import date
-
-                # Un seul calcul de date : identique pour tous les produits de ce lot,
-                # puisqu'ils partagent le même message de succès final de republication.
-                today_str = date.today().isoformat()
-
-                # EXCLUT les items en erreur_clemz (cf. ci-dessus) -- un repost_result
-                # "success" au niveau du LOT n'empêche pas un échec INDIVIDUEL pour un
-                # article précis (ancienne annonce supprimée, nouvelle jamais créée).
-                # Sans cette exclusion, date_republication était quand même mis à jour
-                # pour cet article -- il paraissait "frais" et disparaissait des alertes
-                # de republication pendant des semaines, alors qu'il n'a AUCUNE annonce
-                # active sur Vinted (cf. échange du 24/09/2026, Jean Diesel Fayza).
-                produits_reussis = [
-                    r["nom"] for r in selection_results
-                    if r["status"] == "success" and r["nom"] not in noms_erreurs_majeures
-                ]
-                for product_name in produits_reussis:
-                    try:
-                        res = db_client.table("articles") \
-                            .select("id, nb_republications_sans_vente") \
-                            .ilike("nom", product_name) \
-                            .execute()
-
-                        matches = res.data or []
-
-                        if len(matches) == 0:
-                            logger.info(f"ℹ️  '{product_name}' republié sur Vinted, mais absent de Supabase "
-                                        f"(pas suivi dans le catalogue — probablement non scrapé car masqué).")
-                            continue
-
-                        if len(matches) > 1:
-                            logger.warning(f"⚠️  '{product_name}' correspond à {len(matches)} articles Supabase "
-                                           f"(nom dupliqué) — mise à jour de nb_republications_sans_vente ignorée "
-                                           f"pour éviter de cibler le mauvais article. À corriger manuellement si besoin.")
-                            continue
-
-                        article = matches[0]
-                        new_count = (article.get("nb_republications_sans_vente") or 0) + 1
-                        db_client.table("articles") \
-                            .update({
-                                "nb_republications_sans_vente": new_count,
-                                "date_republication": today_str,
-                                # Une republication rouvre le cycle : une nouvelle baisse
-                                # redevient possible. Sans ça, est_traite (posé par la baisse
-                                # de prix) restait à True indéfiniment après une republication
-                                # Clemz -- seul republish_by_name_logic (bouton dashboard) le
-                                # remettait à False, contrairement à ce que disait le commentaire
-                                # de la branche baisse_prix plus bas (cf. échange du 20/09/2026).
-                                "est_traite": False,
-                            }) \
-                            .eq("id", article["id"]) \
-                            .execute()
-                        logger.info(f"📊 {product_name} → {new_count} republication(s) sans vente, republié le {today_str}")
-                    except Exception as e:
-                        logger.warning(f"⚠️ Impossible de mettre à jour '{product_name}' : {e}")
-
-            elif repost_result.get("status") == "success" and self.task_type in ("baisse_prix", "republication_baisse"):
-                from database import supabase as db_client
-
-                # Marque les produits comme traités pour qu'ils disparaissent immédiatement
-                # de "Mauvaise Performance" côté dashboard (même convention que le bouton
-                # manuel "Marquer comme traité" -> est_traite=True). Le scraper ne remet
-                # jamais ce champ à False sur un article déjà existant, donc ça persiste
-                # jusqu'à une éventuelle republication future (qui remet est_traite=False).
-                # Même exclusion que la branche republication ci-dessus -- pas la peine de
-                # marquer "traité" un article dont l'annonce vient d'être perdue.
-                produits_reussis = [
-                    r["nom"] for r in selection_results
-                    if r["status"] == "success" and r["nom"] not in noms_erreurs_majeures
-                ]
-                for product_name in produits_reussis:
-                    try:
-                        check = db_client.table("articles") \
-                            .select("id, prix_vente") \
-                            .ilike("nom", product_name) \
-                            .execute()
-                        matches = check.data or []
-
-                        if len(matches) > 1:
-                            logger.warning(f"⚠️  '{product_name}' correspond à {len(matches)} articles Supabase "
-                                           f"(nom dupliqué) — marquage est_traite ignoré pour éviter de traiter "
-                                           f"le mauvais article. À corriger manuellement si besoin.")
-                            continue
-
-                        article = matches[0] if matches else None
-
-                        db_client.table("articles") \
-                            .update({"est_traite": True}) \
-                            .ilike("nom", product_name) \
-                            .execute()
-                        logger.info(f"📉 {product_name} → baisse de prix appliquée, marqué comme traité (est_traite=True)")
-
-                        # Capture pour analyse ultérieure (chantier "mesure d'impact des
-                        # baisses de prix par tranche de valeur"), même si l'article n'est
-                        # pas suivi dans Supabase (article_id reste None dans ce cas, mais
-                        # on garde quand même la trace via le nom).
-                        # Mode prix fixe (self.prix_fixe) : le prix après coup est CONNU
-                        # exactement (pas besoin de l'estimer), et le pourcentage réellement
-                        # appliqué varie par article (même prix fixe, prix de départ
-                        # différents) -- calculé ici à partir du vrai prix_avant, au lieu de
-                        # réutiliser self.pourcentage_baisse_prix qui n'a pas de sens dans ce mode.
-                        if article:
-                            prix_avant = float(article.get("prix_vente") or 0)
-                            if self.prix_fixe is not None:
-                                prix_apres_estime = self.prix_fixe
-                                pourcentage_applique = (
-                                    round((1 - self.prix_fixe / prix_avant) * 100, 1) if prix_avant > 0 else None
-                                )
-                            else:
-                                prix_apres_estime = round(prix_avant * (1 - self.pourcentage_baisse_prix / 100), 2)
-                                pourcentage_applique = self.pourcentage_baisse_prix
-                        else:
-                            prix_avant = None
-                            prix_apres_estime = self.prix_fixe  # connu même sans l'article Supabase
-                            pourcentage_applique = None if self.prix_fixe is not None else self.pourcentage_baisse_prix
-
-                        try:
-                            db_client.table("price_drops").insert({
-                                "article_id": article["id"] if article else None,
-                                "nom": product_name,
-                                "dressing": acc["name"],
-                                "prix_avant": prix_avant,
-                                "pourcentage_applique": pourcentage_applique,
-                                "prix_apres_estime": prix_apres_estime,
-                            }).execute()
-                        except Exception as e:
-                            logger.warning(f"⚠️ Impossible d'enregistrer price_drops pour '{product_name}' : {e}")
-
-                    except Exception as e:
-                        logger.warning(f"⚠️ Impossible de marquer '{product_name}' comme traité : {e}")
+            # Quota, dates de republication, est_traite et price_drops : enregistrés
+            # article par article pendant l'action de masse (_article_termine), et
+            # complétés en fin de tâche par run() pour les succès qui n'auraient pas
+            # été vus passer au compteur (cf. 12/10/2026).
 
             return {
                 "account": acc["name"],
@@ -1852,12 +1947,37 @@ class ClemzAutomation:
             }
 
         finally:
+            PROGRESSION.pop(dressing_du_compte(acc), None)
             if context:
                 try:
                     await context.close()
                     logger.info(f"🔒 [{acc['name']}] Navigateur fermé proprement.")
                 except Exception:
                     pass
+
+    async def _completer_enregistrements(self, normalized):
+        """
+        Fin de tâche (12/10/2026) : enregistre les succès que le compteur Clemz
+        n'aurait pas laissé voir passer (poll manqué, format inattendu), et
+        remet en "success" dans les résultats les articles déjà enregistrés en
+        cours de route -- _selection_results_finaux les aurait sinon passés en
+        échec si le lot s'est terminé en erreur, en arrêt ou en timeout, alors
+        qu'ils ont réellement été traités sur Vinted.
+        """
+        action_finale = self._action_quota()
+        for acc, resultat in zip(self.accounts, normalized):
+            dressing = dressing_du_compte(acc)
+            noms_erreurs = {e["nom"] for e in (resultat.get("repost_result") or {}).get("erreurs_majeures", [])}
+            for r in resultat.get("selection_results", []):
+                deja = (action_finale, r["nom"].strip().lower()) in self.enregistres[dressing]
+                if r["status"] == "success" and not deja and r["nom"] not in noms_erreurs:
+                    try:
+                        await self._article_termine(acc, r["nom"], action_finale)
+                    except Exception as e:
+                        logger.warning(f"⚠️ [{acc['name']}] Enregistrement de fin de '{r['nom']}' impossible : {e}")
+                elif deja and r["status"] != "success":
+                    r["status"] = "success"
+                    r["reason"] = "Traité avant l'interruption du lot"
 
     async def run(self):
         from services.clemz_auto_message import request_preemption, release_preemption, get_profile_lock
@@ -1917,6 +2037,11 @@ class ClemzAutomation:
                 lock.release()
             if active_account_keys:
                 await asyncio.gather(*[release_preemption(key) for key in active_account_keys])
+            # Une demande d'arrêt ne vaut que pour la tâche en cours -- jamais
+            # pour la suivante sur le même dressing.
+            for acc in self.accounts:
+                if acc["produits"]:
+                    ARRETS_DEMANDES.discard(dressing_du_compte(acc))
 
         normalized = []
         for acc, result in zip(self.accounts, results):
@@ -1929,6 +2054,7 @@ class ClemzAutomation:
             else:
                 normalized.append(result)
 
+        await self._completer_enregistrements(normalized)
         return normalized
 
 
@@ -1954,11 +2080,8 @@ if __name__ == "__main__":
             result = await automation._run_single_automation(p, automation.accounts[0])
             print(result)
 
-        from services.risk_guard import log_action
-        nb_succes = sum(1 for r in result.get("selection_results", []) if r.get("status") == "success")
-        dressing = next((d for d in ("Dressing 1", "Dressing 2") if d in result.get("account", "")), None)
-        if dressing and nb_succes > 0:
-            log_action(dressing, automation.task_type, nb_succes)
-            print(f"📊 [TEST CLI] {nb_succes} succès loggé(s) dans le quota anti-détection pour {dressing}.")
+        # Quota et base : enregistrés article par article pendant l'action, puis
+        # complétés ici exactement comme le fait run() en fin de tâche.
+        await automation._completer_enregistrements([result])
 
     asyncio.run(_test())

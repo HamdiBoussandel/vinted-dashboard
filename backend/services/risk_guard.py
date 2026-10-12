@@ -55,8 +55,9 @@ DAILY_THRESHOLDS = {
         # qui tire désormais un plafond entre PLAFOND_REPUBLICATION_MIN (12) et
         # PLAFOND_REPUBLICATION_MAX (15) chaque jour. Gardées comme borne haute
         # de référence et comme fallback pour un dressing hors D1/D2.
-        "Dressing 1": 15,
-        "Dressing 2": 15,
+        # Borne haute alignée sur PLAFOND_REPUBLICATION_MAX (21) le 13/10/2026.
+        "Dressing 1": 21,
+        "Dressing 2": 21,
         "_default": 3,
     },
     "baisse_prix": {
@@ -80,8 +81,11 @@ DAILY_THRESHOLDS = {
 # casser encore la prévisibilité mécanique d'un plafond fixe à 15, en plus du
 # tirage triangulaire du volume CIBLE (Niveau 3, planification_republication.py)
 # qui choisit déjà entre VOLUME_MIN_JOUR_ACTIF (5) et ce plafond.
-PLAFOND_REPUBLICATION_MIN = 12
-PLAFOND_REPUBLICATION_MAX = 15
+# Relevé le 13/10/2026 de 12-15 à 19-21 (décision explicite de l'utilisateur,
+# cf. SEUIL_VOLUME_GLISSANT) : la cible du jour, tirée entre plafond - 3 et
+# plafond, tombe entre 16 et 21, ~18,5 en moyenne.
+PLAFOND_REPUBLICATION_MIN = 19
+PLAFOND_REPUBLICATION_MAX = 21
 
 
 def _plafond_republication_du_jour(dressing: str) -> int:
@@ -145,8 +149,19 @@ RAMP_QUOTA_DEPART = 5
 # déclencher le Niveau 2, le minimum visé par l'utilisateur. Chaque palier
 # s'éloigne davantage de la marge de sécurité d'origine -- à ne RE-remonter
 # que sur nouvelle décision explicite, jamais par extrapolation automatique.
+#
+# Remonté une 3e fois le 13/10/2026, de 24 à 46 -- décision explicite de
+# l'utilisateur ("on abaissera si une restriction Vinted arrive") pour viser
+# 17-20 republications par jour actif et par dressing, 2 jours actifs sur 3.
+# Fenêtre passée en JOURS CALENDAIRES (aujourd'hui + 2 précédents) au lieu de
+# 72h glissantes : avec 72h, la fenêtre du jour 4 à 10h contenait encore toute
+# l'activité du jour 1 (baisse de 10h40), d'où 2 jours de repos au lieu d'un.
+# Simulation du 13/10 (120 j x 40 tirages, règles complètes) : ~63 % de jours
+# actifs, ~18,5 republications par jour actif, ~23/jour pour les 2 dressings.
+# ATTENTION : très au-dessus des 18-21 sur 3 jours des 4 restrictions réelles
+# ayant servi à la calibration du 10/09/2026.
 JOURS_FENETRE_VOLUME = 3
-SEUIL_VOLUME_GLISSANT = 24
+SEUIL_VOLUME_GLISSANT = 46
 
 _supabase = SupabaseService()
 
@@ -176,7 +191,15 @@ def get_volume_last_hours(dressing: str, action_type: str, hours: int = 24) -> i
     return sum(r["quantity"] for r in res.data)
 
 
-def get_volume_depuis_minuit(dressing: str, action_type: str) -> int:
+def _minuit_utc(jours_avant: int = 0) -> datetime:
+    """Minuit (heure locale) d'il y a `jours_avant` jours, exprimé en UTC
+    naïf comme les created_at d'automation_actions_log."""
+    local_now = datetime.now()
+    local_minuit = local_now.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=jours_avant)
+    return datetime.utcnow() - (local_now - local_minuit)
+
+
+def get_volume_depuis_minuit(dressing: str, action_type: str, jours_avant: int = 0) -> int:
     """
     Volume réellement loggé depuis MINUIT (heure locale) aujourd'hui -- DISTINCT
     de get_volume_last_hours(..., hours=24), qui est une fenêtre ROULANTE et
@@ -188,30 +211,29 @@ def get_volume_depuis_minuit(dressing: str, action_type: str) -> int:
     articles faits la veille au soir bloquaient totalement les 8 nouveaux
     articles tirés le lendemain, alors qu'aucun n'avait encore été fait ce
     jour-là).
+
+    jours_avant : 0 = depuis minuit aujourd'hui ; 2 = depuis minuit avant-hier
+    (fenêtre de 3 jours calendaires, cf. get_volume_glissant_combine).
     """
-    local_now = datetime.now()
-    local_minuit = local_now.replace(hour=0, minute=0, second=0, microsecond=0)
-    minuit_utc_equivalent = datetime.utcnow() - (local_now - local_minuit)
     res = (
         _supabase.db.table("automation_actions_log")
         .select("quantity")
         .eq("dressing", dressing)
         .eq("action_type", action_type)
-        .gte("created_at", minuit_utc_equivalent.isoformat())
+        .gte("created_at", _minuit_utc(jours_avant).isoformat())
         .execute()
     )
     return sum(r["quantity"] for r in res.data)
 
 
 def get_volume_glissant_combine(dressing: str, jours: int = JOURS_FENETRE_VOLUME) -> int:
-    """Cumul RÉEL envoyé sur les `jours` derniers jours, republication ET
-    baisse de prix ADDITIONNÉES -- contrairement à get_volume_last_hours, ne
-    filtre pas par action_type : c'est le volume total qui compte pour ce
-    dressing, peu importe le mélange entre les deux types d'action."""
-    hours = jours * 24
+    """Cumul RÉEL envoyé sur les `jours` derniers jours CALENDAIRES (aujourd'hui
+    compris, depuis minuit il y a jours-1 jours -- cf. SEUIL_VOLUME_GLISSANT,
+    13/10/2026), republication ET baisse de prix ADDITIONNÉES : c'est le volume
+    total qui compte pour ce dressing, peu importe le mélange entre les deux."""
     return (
-        get_volume_last_hours(dressing, "republication", hours=hours)
-        + get_volume_last_hours(dressing, "baisse_prix", hours=hours)
+        get_volume_depuis_minuit(dressing, "republication", jours_avant=jours - 1)
+        + get_volume_depuis_minuit(dressing, "baisse_prix", jours_avant=jours - 1)
     )
 
 
@@ -413,7 +435,7 @@ def get_allowed_quantity(dressing: str, action_type: str, requested_quantity: in
         return requested_quantity, False, None
 
     if action_type == "republication" and dressing in ("Dressing 1", "Dressing 2"):
-        # Plafond tiré au hasard du jour (12-15) depuis le 02/10/2026 -- cf.
+        # Plafond tiré au hasard du jour (19-21 depuis le 13/10/2026) -- cf.
         # _plafond_republication_du_jour(). Le dict DAILY_THRESHOLDS["republication"]
         # ne sert plus que de fallback pour un dressing hors D1/D2.
         threshold = _plafond_republication_du_jour(dressing)
@@ -451,7 +473,11 @@ def get_allowed_quantity(dressing: str, action_type: str, requested_quantity: in
         forced_rest = True
         ramp_en_cours = False  # le repos total prime sur le ramp-up dans le message d'explication
 
-    already_done = get_volume_last_hours(dressing, action_type, hours=24)
+    # Quota du JOUR CALENDAIRE (depuis minuit), plus 24h glissantes (13/10/2026) :
+    # le plan est tiré à ~10h, et une republication de la veille à 19h épuisait
+    # encore le plafond du jour -- deux jours actifs consécutifs étaient
+    # impossibles. Le volume multi-jours reste borné par SEUIL_VOLUME_GLISSANT.
+    already_done = get_volume_depuis_minuit(dressing, action_type)
     remaining = max(0, threshold - already_done)
     allowed = min(requested_quantity, remaining)
     was_truncated = allowed < requested_quantity
@@ -480,7 +506,7 @@ def get_allowed_quantity(dressing: str, action_type: str, requested_quantity: in
                 )
             reason = (
                 f"Quota sécurité anti-détection atteint pour {action_type} sur {dressing}{contexte_convalescence} : "
-                f"{already_done}/{threshold} déjà effectué(s) sur 24h glissantes. "
+                f"{already_done}/{threshold} déjà effectué(s) aujourd'hui. "
                 f"{requested_quantity - allowed} article(s) reporté(s) au prochain cycle."
             )
     return allowed, was_truncated, reason

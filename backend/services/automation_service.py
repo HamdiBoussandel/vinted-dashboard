@@ -85,7 +85,7 @@ async def generer_plans_du_jour_cron():
         _planifier_republish_oneshot(dressing, plan)
 
 
-async def rattraper_republish_manques():
+async def rattraper_republish_manques(reprendre=False):
     """
     Rattrapage démarrage (cf. échange du 21/09/2026) : contrairement au cas
     "aucun plan du jour" déjà géré dans startup_event(), ce cas-ci concerne un
@@ -139,16 +139,25 @@ async def rattraper_republish_manques():
                 plan_persiste = _persister_decision(dr, nouvelle)
                 _replanifier_job_oneshot(dr, plan_persiste)
 
+    # DÉMARRAGE PRUDENT (12/10/2026) : ne reprogramme automatiquement QUE la
+    # republication jamais commencée aujourd'hui. Une republication en échec,
+    # bloquée ou interrompue (coupée par l'arrêt du serveur) attend "Reprendre
+    # la routine" (reprendre=True) -- une republication arrêtée à la main
+    # n'est jamais relancée. Avant, toute republication sans quota enregistré
+    # repartait au redémarrage, y compris celle que l'utilisateur venait de
+    # couper. Le volume déjà fait est déduit dans _execute_republish.
+    from services.automation_scheduler import get_statut_etape, STATUTS_ETAPE_A_REPRENDRE
     for dressing in ("Dressing 1", "Dressing 2"):
         plan = get_plan_du_jour(dressing)
         if plan is None or not plan.get("actif") or not plan.get("horaire"):
             continue
-        if get_volume_depuis_minuit(dressing, "republication") > 0:
-            continue  # déjà fait aujourd'hui -- le job a dû tourner avant le redémarrage
+        statut = get_statut_etape(dressing, "republication")
+        if statut is not None and not (reprendre and statut in STATUTS_ETAPE_A_REPRENDRE):
+            continue
 
-        print(f"🩹 [STARTUP] Job de republication manquant pour {dressing} "
-              f"(perdu par un redémarrage précédent, plan pourtant actif à "
-              f"{plan['horaire']}) — replanification.")
+        print(f"🩹 [ROUTINE] Republication {dressing} "
+              f"{'à reprendre (' + statut + ')' if statut else 'non encore faite aujourd’hui'} "
+              f"— plan actif à {plan['horaire']}, replanification.")
         _planifier_republish_oneshot(dressing, plan)
 
 
@@ -194,11 +203,14 @@ def _republication_auto_desactivee(dressing):
 # =============================================================================
 # Pour CHAQUE dressing, indépendamment : scraping -> baisse de prix ->
 # republication. Une étape ne se lance que si la précédente a RÉUSSI pour ce
-# dressing (succès partiel = OK, "rien à faire" / bascule désactivée = OK). Un
-# échec arrête la suite de CE dressing seulement (l'autre continue), avec un
-# e-mail. Reprise à l'étape échouée : au prochain démarrage du backend, ou via
-# le bouton "Reprendre la routine" du Journal (POST /api/maintenance/
-# reprendre-routine) -- jamais de réessai automatique en boucle.
+# dressing (succès partiel = OK, "rien à faire" / bascule désactivée / repos /
+# arrêtée à la main = OK). Un échec arrête la suite de CE dressing seulement
+# (l'autre continue), avec un e-mail. Reprise d'une étape en échec, bloquée ou
+# interrompue UNIQUEMENT via le bouton "Reprendre la routine" du Journal (POST
+# /api/maintenance/reprendre-routine) -- jamais au simple redémarrage du
+# backend (12/10/2026 : plus de relance surprise), jamais en boucle. Le
+# démarrage ne rattrape que les étapes jamais commencées (VM allumée en retard).
+# Pause globale (bouton du Journal, get_pause_routine) : aucune étape ne part.
 #
 # Origine : VM rallumée à 18h41 le 12/10, le scraping de 10h30 et la baisse de
 # 10h40 avaient été manqués (APScheduler ne rejoue pas un cron passé pendant
@@ -221,6 +233,18 @@ def _etape_ok(dressing, etape):
     return get_statut_etape(dressing, etape) in STATUTS_ETAPE_OK
 
 
+def _routine_en_pause(contexte):
+    """Pause globale en vigueur : l'étape ne part pas et ne note AUCUN statut
+    -- restée "jamais commencée", elle est rattrapée à la levée de la pause."""
+    from services.automation_scheduler import get_pause_routine
+    pause = get_pause_routine()
+    if not pause:
+        return False
+    duree = "jusqu'à demain" if pause.get("mode") == "jour" else "jusqu'à reprise"
+    print(f"⏸️  [ROUTINE] En pause ({duree}) — {contexte} non lancé(e).")
+    return True
+
+
 def _noter_et_alerter(dressing, etape, statut, raison=None):
     from services.automation_scheduler import noter_etape_routine
     noter_etape_routine(dressing, etape, statut, raison)
@@ -236,7 +260,7 @@ def _noter_et_alerter(dressing, etape, statut, raison=None):
             f"Les étapes suivantes de {dressing} ne seront pas lancées (l'autre dressing "
             f"continue normalement). Une fois le problème corrigé (ex. reconnexion de la "
             f"session via AnyDesk), clique sur « Reprendre la routine » dans le Journal du "
-            f"dashboard de la VM, ou redémarre le backend : la routine reprendra à cette étape.",
+            f"dashboard de la VM : la routine reprendra à cette étape.",
         )
     except Exception as e:
         print(f"⚠️ [ROUTINE] Échec envoi e-mail d'alerte : {e}")
@@ -292,19 +316,22 @@ async def _etape_baisse_prix(dressings):
 async def _rattraper_sans_verrou(reprendre_echecs):
     """
     Relance, dans l'ordre, les étapes du matin manquées (horaire de cron passé,
-    jamais exécutées aujourd'hui) -- et, si reprendre_echecs (démarrage du
-    backend, bouton du Journal), aussi celles en échec/bloquées. `maintenant`
-    est figé à l'entrée : une étape dont le cron n'est pas encore passé est
-    laissée à son cron. L'appelant tient _verrou_routine.
+    jamais exécutées aujourd'hui) -- et, si reprendre_echecs (bouton
+    "Reprendre la routine" uniquement), aussi celles en échec, bloquées ou
+    interrompues. `maintenant` est figé à l'entrée : une étape dont le cron
+    n'est pas encore passé est laissée à son cron. L'appelant tient
+    _verrou_routine.
     """
     from services.plan_source import est_satellite
-    from services.automation_scheduler import get_statut_etape
+    from services.automation_scheduler import get_statut_etape, STATUTS_ETAPE_A_REPRENDRE
     if est_satellite():
         return  # la VM fait foi, le satellite n'exécute aucune routine
+    if _routine_en_pause("rattrapage des étapes du matin"):
+        return
 
     def a_refaire(dressing, etape):
         statut = get_statut_etape(dressing, etape)
-        return statut is None or (reprendre_echecs and statut in ("echec", "bloque"))
+        return statut is None or (reprendre_echecs and statut in STATUTS_ETAPE_A_REPRENDRE)
 
     maintenant = (datetime.now().hour, datetime.now().minute)
     if maintenant >= HEURE_SCRAPING_MATIN and any(a_refaire(d, "scraping") for d in DRESSINGS_ROUTINE):
@@ -344,12 +371,16 @@ async def rattraper_routine(reprendre_echecs=False):
 
 
 async def _cron_scraping_matin():
+    if _routine_en_pause("scraping de 10h30"):
+        return
     async with _verrou_routine:
         await _etape_scraping("10h30")
 
 
 async def _cron_baisse_prix_matin():
     from services.automation_scheduler import get_statut_etape
+    if _routine_en_pause("baisse de prix de 10h40"):
+        return
     async with _verrou_routine:
         # Ignore un dressing déjà traité aujourd'hui (rattrapage antérieur).
         await _baisse_prix_chainee([d for d in DRESSINGS_ROUTINE if get_statut_etape(d, "baisse_prix") is None])
@@ -359,7 +390,7 @@ async def _republication_chainee(dressing, volume_cible):
     """Job de republication automatique d'un dressing (planifié par
     _planifier_republish_oneshot à l'horaire de son plan du jour)."""
     from services.automation_scheduler import noter_etape_routine
-    if _republication_auto_desactivee(dressing):
+    if _republication_auto_desactivee(dressing) or _routine_en_pause(f"republication {dressing}"):
         return
     async with _verrou_routine:
         await _rattraper_sans_verrou(reprendre_echecs=False)
@@ -412,6 +443,20 @@ async def _execute_republish(dressing, volume_cible=None):
         print(f"⏭️  [REPUB] {dressing} — aucun article éligible aujourd'hui.")
         return ("rien_a_faire", "Aucun article éligible aujourd'hui")
 
+    # Volume RESTANT du jour, pas la cible brute (12/10/2026) : une reprise
+    # après interruption ou une republication manuelle du jour ne doit pas
+    # refaire tout le volume cible -- les articles déjà faits sont comptés
+    # (quota enregistré article par article).
+    if volume_cible is not None:
+        from services.risk_guard import get_volume_depuis_minuit
+        deja_faits = get_volume_depuis_minuit(dressing, "republication")
+        restant = max(0, volume_cible - deja_faits)
+        if restant == 0:
+            print(f"⏭️  [REPUB] {dressing} — volume du jour déjà atteint ({deja_faits}/{volume_cible}).")
+            return ("rien_a_faire", f"Volume du jour déjà atteint ({deja_faits}/{volume_cible})")
+    else:
+        restant = None
+
     # Bilan de l'étape pour la chaîne de routine (cf. _republication_chainee) --
     # (statut, raison), écrasé ci-dessous selon le résultat réel.
     bilan = ("echec", "Republication interrompue (voir logs)")
@@ -419,10 +464,10 @@ async def _execute_republish(dressing, volume_cible=None):
     print(f"🚀 [REPUB] {dressing} — lancement, {len(items)} article(s) éligible(s).")
     task_id = start_task_run("republication", items, sous_type="routine")
 
-    if volume_cible is not None and volume_cible < len(items):
-        exclus_volume = items[volume_cible:]
-        items = items[:volume_cible]
-        print(f"🎯 [REPUB] {dressing} — volume cible du plan du jour : {volume_cible} "
+    if restant is not None and restant < len(items):
+        exclus_volume = items[restant:]
+        items = items[:restant]
+        print(f"🎯 [REPUB] {dressing} — volume restant du jour : {restant} (cible {volume_cible}) "
               f"— {len(exclus_volume)} article(s) reporté(s).")
         for item in exclus_volume:
             update_task_result(
@@ -431,7 +476,7 @@ async def _execute_republish(dressing, volume_cible=None):
             )
 
     try:
-        from services.risk_guard import get_allowed_quantity, log_action
+        from services.risk_guard import get_allowed_quantity
 
         produits_d1 = [i["nom"] for i in items if i.get("dressing") == "Dressing 1"]
         produits_d2 = [i["nom"] for i in items if i.get("dressing") == "Dressing 2"]
@@ -457,16 +502,11 @@ async def _execute_republish(dressing, volume_cible=None):
                 if matched:
                     update_task_result(task_id, matched["id"], status="skipped", reason="Quota anti-détection atteint — reporté au prochain cycle.")
 
-        automation = ClemzAutomation(produits_d1, produits_d2)
+        # Quota anti-détection, dates en base et résultats de la tâche :
+        # enregistrés par ClemzAutomation article par article (12/10/2026).
+        automation = ClemzAutomation(produits_d1, produits_d2, task_id=task_id)
         results = await automation.run()
 
-        # CORRIGÉ (02/10/2026) : log_action() comptait jusqu'ici len(produits_d1)/
-        # len(produits_d2) -- le nombre ENVOYÉ à Clemz, pas le nombre RÉELLEMENT
-        # réussi sur Vinted. Même bug déjà corrigé le 21/09/2026 côté run_now_task()
-        # (bouton manuel du dashboard) et le 02/10/2026 côté run_baisse_prix_auto(),
-        # mais jamais reporté ici -- alors que c'est la tâche qui s'exécute TOUS LES
-        # JOURS automatiquement (horaire tiré dans 12h-13h/19h-21h), sans aucune intervention
-        # manuelle pour remarquer un comptage faussé par un échec partiel Clemz.
         traites_d1 = traites_d2 = 0
         for account_result in results:
             nb_succes = sum(
@@ -477,8 +517,6 @@ async def _execute_republish(dressing, volume_cible=None):
             elif "Dressing 2" in account_result.get("account", ""):
                 traites_d2 += nb_succes
 
-        log_action("Dressing 1", "republication", traites_d1)
-        log_action("Dressing 2", "republication", traites_d2)
         from services.planification_republication import rafraichir_pause_si_necessaire
         rafraichir_pause_si_necessaire("Dressing 1")
         rafraichir_pause_si_necessaire("Dressing 2")
@@ -514,8 +552,12 @@ async def _execute_republish(dressing, volume_cible=None):
 
         nb_envoyes = len(produits_d1 if dressing == "Dressing 1" else produits_d2)
         traites = traites_d1 if dressing == "Dressing 1" else traites_d2
+        arret = next((r["repost_result"]["reason"] for r in results
+                      if (r.get("repost_result") or {}).get("status") == "stopped"), None)
         if nb_envoyes == 0:
             bilan = ("rien_a_faire", "Quota anti-détection atteint — aucun article envoyé")
+        elif arret:
+            bilan = ("arrete", f"{traites}/{nb_envoyes} article(s) republié(s) — {arret}")
         elif traites > 0:
             bilan = ("succes", f"{traites}/{nb_envoyes} article(s) republié(s)")
         else:
@@ -557,6 +599,8 @@ async def _declencher_partage_si_dernier(dressing):
     today_str = datetime.now().strftime("%Y-%m-%d")
     if not maintenance_service.partage_vues_favoris_auto_active:
         print("⏭️  [PARTAGE] Automatisation désactivée (Maintenance) — on passe.")
+    elif _routine_en_pause("partage vues/favoris"):
+        return
     else:
         autre_dressing = "Dressing 2" if dressing == "Dressing 1" else "Dressing 1"
         plan_autre = get_plan_du_jour(autre_dressing)
@@ -652,7 +696,36 @@ async def run_baisse_prix_auto(article_ids_restriction=None, dressings=None):
     svc = SupabaseService()
     articles = await svc.get_processed_inventory()
 
-    candidats = [a for a in articles if not a["is_done"] and not a["is_vendu"] and a["dressing"] in dressings_vises]
+    # --- Stratégie "prix de boucher" (activée le 13/10/2026, cf.
+    # services/prix_boucher.py) : un article publié ou republié depuis moins de
+    # 15 jours relève UNIQUEMENT de cette logique (marches de -10 % tous les
+    # 3 jours jusqu'au plancher de sa tranche, tant qu'il n'a pas 5 vrais
+    # favoris) -- jamais aussi de la "mauvaise performance", pour ne pas
+    # cumuler deux baisses. Ignore est_traite : une marche marque l'article
+    # "traité", ce qui bloquerait la suivante jusqu'à sa republication. Pas
+    # appliqué au déclenchement manuel (article_ids_restriction), qui garde la
+    # sélection faite par l'utilisateur.
+    marches_boucher = []
+    ids_suivis_boucher = set()
+    if article_ids_restriction is None:
+        from services import prix_boucher
+        evaluations = await asyncio.to_thread(prix_boucher.evaluer_articles, articles)
+        ids_suivis_boucher = {e["id"] for e in evaluations}
+        a_baisser = [e for e in evaluations if e["statut"] == "ne_fonctionne_pas" and e["dressing"] in dressings_vises]
+        recents = svc.get_articles_baisses_recentes(
+            [e["id"] for e in a_baisser], jours_cooldown=prix_boucher.COOLDOWN_MARCHE_JOURS
+        )
+        par_id = {a["id"]: a for a in articles}
+        for e in a_baisser:
+            taux_marche = round((1 - e["prix_conseille"] / e["prix_actuel"]) * 100) if e["prix_actuel"] else 0
+            if e["id"] in recents or taux_marche < 1:
+                continue
+            marches_boucher.append({**par_id[e["id"]], "baisse_prix_taux": taux_marche, "_boucher": True})
+        print(f"🥩 [BAISSE PRIX] Prix de boucher : {len(marches_boucher)} marche(s) due(s) "
+              f"sur {len(a_baisser)} article(s) qui ne fonctionnent pas à leur prix.")
+
+    candidats = [a for a in articles if not a["is_done"] and not a["is_vendu"] and a["dressing"] in dressings_vises
+                 and a["id"] not in ids_suivis_boucher]
     if article_ids_restriction is not None:
         restriction = set(article_ids_restriction)
         candidats = [a for a in candidats if a["id"] in restriction]
@@ -665,7 +738,10 @@ async def run_baisse_prix_auto(article_ids_restriction=None, dressings=None):
     # _get_taux_baisse_low_perf), plutôt que les deux lots figés -10%/-20%
     # d'avant. Le reste de la fonction (quota, cooldown, lancement séquentiel)
     # ne change pas de logique, juste le nombre de groupes possibles.
+    # Les marches "prix de boucher" passent en premier (priorité dans le quota).
     lots_par_taux = {}
+    for a in marches_boucher:
+        lots_par_taux.setdefault(a["baisse_prix_taux"], []).append(a)
     for a in candidats:
         taux = a["baisse_prix_taux"]
         if taux is None or a["id"] in deja_baisses_recemment:
@@ -688,9 +764,13 @@ async def run_baisse_prix_auto(article_ids_restriction=None, dressings=None):
     # alors que c'est la même automatisation Clemz, donc le même risque de
     # détection. Un seul quota par dressing, PARTAGÉ entre tous les taux (pas un
     # quota par taux) -- calculé sur le total demandé avant de répartir en lots.
-    from services.risk_guard import get_allowed_quantity, log_action
+    from services.risk_guard import get_allowed_quantity
 
-    tous_les_demandes = [a for lot in lots_par_taux.values() for a in lot]
+    # Tri stable : marches "prix de boucher" d'abord, quel que soit leur taux --
+    # ce sont elles qui passent si le quota du jour ne suffit pas pour tout.
+    tous_les_demandes = sorted(
+        (a for lot in lots_par_taux.values() for a in lot), key=lambda a: not a.get("_boucher")
+    )
     demandes_d1 = [a for a in tous_les_demandes if a["dressing"] == "Dressing 1"]
     demandes_d2 = [a for a in tous_les_demandes if a["dressing"] == "Dressing 2"]
 
@@ -710,7 +790,11 @@ async def run_baisse_prix_auto(article_ids_restriction=None, dressings=None):
         + [{"id": a["id"], "nom": a["nom"], "dressing": a["dressing"], "taux": a["baisse_prix_taux"]} for a in exclus_quota]
     )
 
-    task_id = start_task_run("baisse_prix", tous_les_items, sous_type="mauvaise_performance")
+    nb_boucher = sum(1 for a in tous_les_demandes if a.get("_boucher"))
+    sous_type = ("prix_boucher" if nb_boucher == len(tous_les_demandes)
+                 else "mauvaise_performance" if nb_boucher == 0
+                 else "prix_boucher_et_mauvaise_performance")
+    task_id = start_task_run("baisse_prix", tous_les_items, sous_type=sous_type)
 
     if truncated_d1:
         add_task_global_anomaly(task_id, "Quota anti-détection atteint", "Dressing 1", reason_d1, category="quota")
@@ -735,18 +819,32 @@ async def run_baisse_prix_auto(article_ids_restriction=None, dressings=None):
     # (par taux) mélangeait les deux comptes dans un seul appel, avec une pause
     # interne à ClemzAutomation.run() seulement si les deux avaient du travail.
     async def _traiter_lots_dressing(dressing):
+        """Retourne (nb articles baissés, raison d'arrêt ou None)."""
         traites = 0
+        arret = None
         for taux, lot_complet in sorted(lots_par_taux.items()):
             lot = [a for a in lot_complet if a["dressing"] == dressing]
             if not lot:
+                continue
+            if arret:
+                # Arrêt demandé pendant un lot précédent : les lots suivants de
+                # CE dressing ne partent pas (la demande ne vaut que pour la
+                # tâche en cours, ClemzAutomation l'efface en fin de lot).
+                for a in lot:
+                    update_task_result(task_id, a["id"], status="skipped", reason="Arrêtée à ta demande — lot non lancé.")
                 continue
             noms = [a["nom"] for a in lot]
             produits_d1 = noms if dressing == "Dressing 1" else []
             produits_d2 = noms if dressing == "Dressing 2" else []
             print(f"🚀 [BAISSE PRIX] {dressing} — lancement du lot -{taux}% — {len(lot)} article(s).")
             try:
-                automation = ClemzAutomation(produits_d1, produits_d2, task_type="baisse_prix", pourcentage_baisse_prix=taux)
+                # Quota et price_drops enregistrés par ClemzAutomation article par
+                # article (12/10/2026).
+                automation = ClemzAutomation(produits_d1, produits_d2, task_type="baisse_prix",
+                                             pourcentage_baisse_prix=taux, task_id=task_id)
                 results = await automation.run()
+                arret = next((r["repost_result"]["reason"] for r in results
+                              if (r.get("repost_result") or {}).get("status") == "stopped"), None)
 
                 for account_result in results:
                     nb_succes = sum(
@@ -779,22 +877,20 @@ async def run_baisse_prix_auto(article_ids_restriction=None, dressings=None):
                 print(f"❌ [BAISSE PRIX] {dressing} — erreur sur le lot -{taux}% : {e}")
                 for a in lot:
                     update_task_result(task_id, a["id"], status="failed", reason=f"Erreur lot -{taux}% : {str(e)[:100]}")
-        return traites
+        return traites, arret
 
     d1_a_des_lots = any(a["dressing"] == "Dressing 1" for lot in lots_par_taux.values() for a in lot)
     d2_a_des_lots = any(a["dressing"] == "Dressing 2" for lot in lots_par_taux.values() for a in lot)
 
-    traites_d1 = await _traiter_lots_dressing("Dressing 1")
+    traites_d1, arret_d1 = await _traiter_lots_dressing("Dressing 1")
 
     if d1_a_des_lots and d2_a_des_lots:
         pause_secondes = random.uniform(300, 600)
         print(f"⏸️  [BAISSE PRIX] Pause de {pause_secondes / 60:.1f} min avant Dressing 2...")
         await asyncio.sleep(pause_secondes)
 
-    traites_d2 = await _traiter_lots_dressing("Dressing 2")
+    traites_d2, arret_d2 = await _traiter_lots_dressing("Dressing 2")
 
-    log_action("Dressing 1", "baisse_prix", traites_d1)
-    log_action("Dressing 2", "baisse_prix", traites_d2)
     from services.planification_republication import rafraichir_pause_si_necessaire
     rafraichir_pause_si_necessaire("Dressing 1")
     rafraichir_pause_si_necessaire("Dressing 2")
@@ -803,14 +899,16 @@ async def run_baisse_prix_auto(article_ids_restriction=None, dressings=None):
     print("✅ [BAISSE PRIX] Traitement terminé.")
 
     bilan = dict(rien_a_faire)
-    for dressing, a_des_lots, traites in (
-        ("Dressing 1", d1_a_des_lots, traites_d1),
-        ("Dressing 2", d2_a_des_lots, traites_d2),
+    for dressing, a_des_lots, traites, arret in (
+        ("Dressing 1", d1_a_des_lots, traites_d1, arret_d1),
+        ("Dressing 2", d2_a_des_lots, traites_d2, arret_d2),
     ):
         if dressing not in dressings_vises or not a_des_lots:
             continue
         nb_envoyes = sum(1 for lot in lots_par_taux.values() for a in lot if a["dressing"] == dressing)
-        if traites > 0:
+        if arret:
+            bilan[dressing] = ("arrete", f"{traites}/{nb_envoyes} article(s) baissé(s) — {arret}")
+        elif traites > 0:
             bilan[dressing] = ("succes", f"{traites}/{nb_envoyes} article(s) baissé(s)")
         else:
             bilan[dressing] = ("echec", f"0/{nb_envoyes} article(s) baissé(s) — voir TaskHistory")
@@ -864,6 +962,17 @@ async def _verifier_plan_du_jour_cron():
     from services.plan_source import est_satellite
     if est_satellite():
         return  # la VM fait foi, rien à vérifier ni régénérer ici
+
+    # Journal quotidien du mode observation "prix de boucher" (13/10/2026) --
+    # une fois par jour, après le scraping de 10h30 (données fraîches), quelle
+    # que soit l'heure d'allumage de la VM. Idempotent.
+    if (datetime.now().hour, datetime.now().minute) >= (10, 45):
+        try:
+            from services.prix_boucher import enregistrer_observation_du_jour
+            await enregistrer_observation_du_jour()
+        except Exception as e:
+            print(f"⚠️ [PRIX BOUCHER] Journal d'observation non enregistré : {e}")
+
     from services.automation_scheduler import get_plan_du_jour
     if get_plan_du_jour("Dressing 1") is None or get_plan_du_jour("Dressing 2") is None:
         print("🩹 [PLAN DU JOUR] Plan manquant détecté en cours de journée (vérification périodique) — génération de rattrapage.")
