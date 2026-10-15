@@ -251,6 +251,7 @@
       </ul>
       <span class="font-weight-normal text-sm lh-120 text-justify mt-2" style="display: none;" id="importItemWarning" data-i18n="actionInterface_importItemWarning"></span>
       <span class="font-weight-bolder mt-2" id="selectArticlesTitle" data-i18n="actionInterface_selectArticles"></span>
+      <span class="text-sm font-weight-normal mt-0 lh-110" style="display: none;" id="checkBoxesOnClemz" data-i18n="actionInterface_checkBoxesOnClemz"></span>
       <div class="d-flex justify-content-center align-items-center my-1">
         <button role="button" id="selectItemsButton" class="btn btn-primary btn-sm" data-i18n="actionInterface_startSelection"></button>
         <span class="ml-2 text-bold" id="selectedCount" style="display: none;" data-i18n="actionInterface_selectedCount"></span>
@@ -447,7 +448,14 @@
 
   <!-- Modify Tab -->
   <div aria-labelledby="modifyTabLink" class="tabContent" style="display: none;">
-    <p class="h4 font-weight-bolder text-primary mt-0 d-flex align-items-center justify-content-center" data-i18n="actionInterface_bulkModify"></p>
+    <div id="modifyTabAction" class="d-flex mt-0">
+      <button type="button" id="modifyTabActionModify" data-value="modify" class="btn btn-primary btn-sm flex-fill" aria-pressed="true" style="border-top-right-radius: 0; border-bottom-right-radius: 0;">
+        <span data-i18n="actionInterface_modifyTabActionModify"></span>
+      </button>
+      <button type="button" id="modifyTabActionDelete" data-value="delete" class="btn btn-outline-danger btn-sm flex-fill" aria-pressed="false" style="border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: -1px;">
+        <span data-i18n="actionInterface_modifyTabActionDelete"></span>
+      </button>
+    </div>
     <div class="d-flex flex-column">
 
       <!-- 1. Check toDoList -->
@@ -456,6 +464,7 @@
 
       <!-- 2. Choose options -->
       <div class="font-weight-bolder mt-1" data-i18n="actionInterface_chooseOptions2"></div>
+      <div id="modifyActionOptions">
       <div class="d-flex align-items-center mt-0">
         <div id="modifyPriceControl" class="custom-control custom-switch ml-n4">
           <input type="checkbox" class="custom-control-input" id="modifyPrice">
@@ -501,6 +510,15 @@
           <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle mb-0 " src="">
         </div>
       </div>
+      </div>
+      <div id="deleteActionOptions" class="d-none">
+        <div class="d-flex align-items-center mt-0">
+          <div id="addToClemzListDeleteControl" class="custom-control custom-switch ml-n4">
+            <input type="checkbox" class="custom-control-input" id="addToClemzListDelete">
+            <label class="custom-control-label align-middle text-sm" for="addToClemzListDelete" data-i18n="actionInterface_addToClemzListDelete"></label>
+          </div>
+        </div>
+      </div>
       <!-- Protection settings (gear button + summary badge) -->
       <div class="d-flex align-items-center mt-2">
         <button type="button" id="openModifyProtectionSettings" class="badge btn-outline-primary cursor-pointer border text-md can-be-disabled mr-2 p-1" style="min-width: 28px;">
@@ -513,17 +531,16 @@
       <!-- 3. Choose an action -->
       <div class="font-weight-bolder mt-1" data-i18n="actionInterface_chooseActionModify"></div>
       <div class="d-flex flex-column align-items-center justify-content-center mt-2">
-        <div>
+        <div id="modifyActionLaunch">
           <button role="button" id="modifyButton" class="btn btn-primary btn-sm can-be-disabled" style="position: relative;">
             <span data-i18n="actionInterface_modifyAds"></span>
             <div class="spinner-border text-white" role="status" style="position: absolute; left: 8%; top:9px; display: inline;"></div>
           </button>
         </div>
-        <div data-i18n="actionInterface_or"></div>
-        <div>
-          <button role="button" id="deleteButton" class="btn btn-danger btn-xs py-0 px-2 can-be-disabled" style="position: relative;">
+        <div id="deleteActionLaunch" class="d-none">
+          <button role="button" id="deleteButton" class="btn btn-danger btn-sm can-be-disabled" style="position: relative;">
             <span data-i18n="actionInterface_deleteAds"></span>
-            <div class="spinner-border text-white" role="status" style="position: absolute; left: 3%; top:9px; display: none;"></div>
+            <div class="spinner-border text-white" role="status" style="position: absolute; left: 8%; top:9px; display: none;"></div>
           </button>
         </div>
       </div>

@@ -1203,10 +1203,25 @@ class ClemzAutomation:
     # chrome.storage.local, aucune action sur Vinted.
 
     async def _ouvrir_modale_listes(self, cdp, page, acc):
-        """Ouvre 'Voir mes listes' et retourne le node_id de #mainListLink (ou None)."""
+        """Ouvre 'Voir mes listes' et retourne le node_id de #mainListLink (ou None).
+
+        #showListsButton1 n'existe que dans l'onglet "listes" (#listsTabLink,
+        actionInterface.html) : au chargement, Clemz rouvre le DERNIER onglet
+        utilisé (ex. "Modifier" après une baisse de prix), d'où l'échec du
+        vidage -- et de toute la baisse D2 -- le 13/10/2026 à 10h40 ("Modale
+        'Voir mes listes' introuvable"). On passe donc d'abord sur cet onglet,
+        comme le fait déjà _build_list.
+        """
         await ensure_panel_open(cdp, page)
         by_id = await snapshot_by_id(cdp)
+        if "showListsButton1" not in by_id and "listsTabLink" in by_id:
+            await click_element(cdp, by_id["listsTabLink"]["node_id"])
+            await asyncio.sleep(0.5)
+            await ensure_panel_open(cdp, page)
+            by_id = await snapshot_by_id(cdp)
         if "showListsButton1" not in by_id:
+            logger.error(f"   🔬 [{acc['name']}] 'Voir mes listes' introuvable même après l'onglet listes "
+                         f"(listsTabLink={'listsTabLink' in by_id}, toolBody={'toolBody' in by_id})")
             return None
         await click_element(cdp, by_id["showListsButton1"]["node_id"])
         await asyncio.sleep(0.8)

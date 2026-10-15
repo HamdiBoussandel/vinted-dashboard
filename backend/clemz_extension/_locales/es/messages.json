@@ -29,6 +29,9 @@
    "actionInterface_activeModificationChoice": {
       "message": "🖼️ Modificación actual"
    },
+   "actionInterface_addToClemzListDelete": {
+      "message": "\u003Cimg class=\"font-icon align-middle pb-1 mr-1 vinz-image\" data-image-name=\"list-solid.svg\" src=\"\">\u003Cb>Añadir a una lista clemz.app\u003C/b> después de borrar"
+   },
    "actionInterface_addToList": {
       "message": "3. Añadir la selección a una lista"
    },
@@ -55,6 +58,9 @@
    },
    "actionInterface_bulkModify": {
       "message": "Modificar en masa \u003Ca class=\"text-sm ml-2 tooltip tooltip-left\" href=\"https://www.clemz.app/documentation/modifier-en-masse\" target=\"_blank\" data-tooltip=\"Haz clic para aprender cómo modificar tus anuncios\">\u003Cimg class=\"font-icon align-middle pb-1 vinz-image\" data-image-name=\"question-circle-solid.svg\" src=\"\">\u003C/a>"
+   },
+   "actionInterface_checkBoxesOnClemz": {
+      "message": "Marca las casillas de los artículos directamente en clemz.app"
    },
    "actionInterface_checkMyLists": {
       "message": "4. Revisa mis listas"
@@ -170,8 +176,20 @@
    "actionInterface_exchangeViewsFavsTitle": {
       "message": "Intercambiar vistas y favs"
    },
+   "actionInterface_executionModeApi": {
+      "message": "Estándar"
+   },
+   "actionInterface_executionModeApiTooltip": {
+      "message": "Republicación totalmente automatizada.\u003Cbr>\u003Cb>Velocidad máxima, riesgo alto.\u003C/b>"
+   },
    "actionInterface_executionModeBadge": {
       "message": "Nav. humana"
+   },
+   "actionInterface_executionModeBetaBadge": {
+      "message": "Prueba beta"
+   },
+   "actionInterface_executionModeHeading": {
+      "message": "Modo"
    },
    "actionInterface_executionModeInfo": {
       "message": "⚠️ No tocar el navegador durante el uso — los anuncios pueden quedar incompletos"
@@ -179,8 +197,17 @@
    "actionInterface_executionModeLabel": {
       "message": "Navegación humana"
    },
+   "actionInterface_executionModeManualValidation": {
+      "message": "Validación manual"
+   },
+   "actionInterface_executionModeManualValidationBadge": {
+      "message": "Valid. manual"
+   },
+   "actionInterface_executionModeManualValidationTooltip": {
+      "message": "Clemz completa el formulario de 1 anuncio a la vez. Puedes modificar y luego guardar o publicar.\u003Cbr>\u003Cb>Velocidad muy lenta, riesgo mínimo.\u003C/b>"
+   },
    "actionInterface_executionModeTooltip": {
-      "message": "Clemz abre páginas reales de Vinted, como lo haría un humano. Reduce el riesgo de detección pero es más lento."
+      "message": "Clemz abre páginas reales de Vinted, como lo haría un humano.\u003Cbr>\u003Cb>Velocidad lenta, riesgo reducido.\u003C/b>"
    },
    "actionInterface_executionTransportFrame": {
       "message": "misma pestaña"
@@ -367,6 +394,12 @@
    },
    "actionInterface_modifyPriceSet": {
       "message": "fijar precio 💲"
+   },
+   "actionInterface_modifyTabActionDelete": {
+      "message": "Borrar"
+   },
+   "actionInterface_modifyTabActionModify": {
+      "message": "Modificar"
    },
    "actionInterface_modifyToDoList": {
       "message": "Las modificaciones se aplican a la lista \"📥 a tratar\""
@@ -565,6 +598,9 @@
    },
    "actionInterface_profileInstructions": {
       "message": "(Haz clic en el menú de Vinted ↗️,\u003Cbr> luego \"\u003Cb>Mi perfil\u003C/b>\")"
+   },
+   "actionInterface_protectionDocLink": {
+      "message": "Leer doc"
    },
    "actionInterface_protectionLabel": {
       "message": "Protección"
@@ -1022,6 +1058,9 @@
    },
    "autoComplete_searchingSavedItem": {
       "message": "Buscando el artículo en tu copia…"
+   },
+   "autoComplete_seeMyLists": {
+      "message": "Ver mis listas"
    },
    "autoComplete_started": {
       "message": "Mantén esta pestaña abierta delante de ti."
@@ -2287,6 +2326,14 @@
    "modify": {
       "message": "Modificar"
    },
+   "modifyArticles_addToListOnceDeleted": {
+      "message": "\u003Cdiv class=\"mt-3 text-center\">Una vez borrados, estos artículos se añadirán a la lista \"\u003Cb>$listTitle$\u003C/b>\" en clemz.app.\u003C/div>",
+      "placeholders": {
+         "listTitle": {
+            "content": "$1"
+         }
+      }
+   },
    "modifyArticles_bugFetchingPhotos": {
       "message": "Bug al leer una foto guardada. Intenta de nuevo"
    },
@@ -2457,6 +2504,22 @@
          }
       }
    },
+   "modifyArticles_saveUnsavedItemsButton": {
+      "message": "Guardar ahora estos $articleCount$ artículos",
+      "placeholders": {
+         "articleCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "modifyArticles_seeClemzList": {
+      "message": "\u003Cdiv class=\"mt-3 text-center\">\u003Ca href=\"$listUrl$\" target=\"_blank\">Ver la lista en clemz.app\u003C/a>\u003C/div>",
+      "placeholders": {
+         "listUrl": {
+            "content": "$1"
+         }
+      }
+   },
    "modifyArticles_setPriceWarning": {
       "message": "\u003Cdiv class=\"mt-3\">- ⚠️ Fijarás el precio de \u003Cb>$modifyPriceValue$ $modifyPriceType$\u003C/b> a TODOS\u003C/div>",
       "placeholders": {
@@ -2472,6 +2535,14 @@
       "message": "\u003Cdiv class=\"mt-3\">- \u003Cb>$soldArticlesCount$ articulo(s) Vendido(s)\u003C/b> no seran modificado (modificación imposible)\u003C/div>",
       "placeholders": {
          "soldArticlesCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "modifyArticles_unsavedItemsBeforeDelete": {
+      "message": "$articleCount$ artículos no están guardados en clemz.app y no se pueden añadir a una lista. Guárdalos para continuar.",
+      "placeholders": {
+         "articleCount": {
             "content": "$1"
          }
       }
@@ -2888,11 +2959,14 @@
    "progressInterface_closetButton": {
       "message": "👗 Mi armario"
    },
+   "progressInterface_correctFormButton": {
+      "message": "✏️ Asistente formulario"
+   },
    "progressInterface_errorTitle": {
       "message": "Error"
    },
    "progressInterface_humanNavWarning": {
-      "message": "📵 Nav. Humana: No toques tu dispositivo durante la actividad, riesgo de artículos incompletos"
+      "message": "📵 No toques tu dispositivo durante la actividad, riesgo de artículos incompletos"
    },
    "progressInterface_minimizeButton": {
       "message": "🔽 Minimizar"
@@ -2913,7 +2987,7 @@
       "message": "Ver articulos"
    },
    "repostArticles_alreadyLiveImportedWarning": {
-      "message": "\u003Cb>⚠️ $articleCount$ anuncio(s) a importar ya existen en este armario\u003C/b>. Los hemos sustituido en tu lista para evitar un duplicado: se republicarán, no se importarán",
+      "message": "\u003Cb>⚠️ $articleCount$ anuncio(s) a importar ya existen en este armario\u003C/b>. Los hemos sustituido en tu lista para evitar un duplicado: se republicarán, no se importarán. Si querías hacer un anuncio nuevo, \u003Ca href=\"https://www.clemz.app/documentation/sauver-mes-annonces#similar-listing\" target=\"_blank\">lee aquí cómo hacerlo\u003C/a>.",
       "placeholders": {
          "articleCount": {
             "content": "$1"
@@ -3015,6 +3089,12 @@
    },
    "repostArticles_forbiddenWithoutSubscription": {
       "message": "\u003Cb>Prohibido sin suscripción\u003C/b>\u003Cbr>=> Suscríbete \u003Ca href=\"https://www.clemz.app/users/pricing\" target=\"_blank\">aquí\u003C/a> para usar esta función"
+   },
+   "repostArticles_humanNavFinish": {
+      "message": "Finalización de la republicación"
+   },
+   "repostArticles_humanNavPrep": {
+      "message": "Preparación de la republicación"
    },
    "repostArticles_humanNavWarning": {
       "message": "⚠️ No tocar el navegador — riesgo de anuncios incompletos"
@@ -3126,6 +3206,9 @@
             "content": "$1"
          }
       }
+   },
+   "repostArticles_manualValidationHandover": {
+      "message": "Guarda en borrador o publica.\u003Cbr>\u003Cb>Consejo:\u003C/b> desplázate, haz clic y usa el teclado para demostrar que eres humano."
    },
    "repostArticles_missingItemsCount": {
       "message": "➡️ $missingItemsCount$ articulos ya no existen\u003Cbr>",
@@ -3412,16 +3495,13 @@
       "message": "🛑 Restricción Vinted 🛑"
    },
    "restrictionWarningModal_learnMore": {
-      "message": "👉 \u003Ca href=\"https://www.clemz.app/documentation/republier-des-articles#deceive\" target=\"_blank\">\u003Cu>Este artículo\u003C/u>\u003C/a> de la documentación da consejos sobre el tema"
+      "message": "👉 \u003Ca href=\"https://www.clemz.app/documentation/republier-des-articles#deceive\" target=\"_blank\">\u003Cu>Este artículo\u003C/u>\u003C/a> de la documentación da consejos más detallados sobre el tema."
    },
    "restrictionWarningModal_message": {
-      "message": "Para reducir el riesgo de restricciones, puedes:\u003Cul class=\"pl-3 mb-0\">\u003Cli>Activar las opciones de \u003Cb>Navegación humana\u003C/b> y \u003Cb>Ritmo natural\u003C/b> (lento / muy lento)\u003C/li>\u003Cli>\u003Cb>Reducir las republicaciones diarias\u003C/b> (según el tamaño de tu armario — 20-30 de media por ejemplo)\u003C/li>\u003Cli>\u003Cb>Eliminar y volver a importar con Clemz\u003C/b> en vez de republicar directamente\u003C/li>\u003C/ul>"
+      "message": "Para reducir el riesgo de restricciones, puedes:\u003Cul class=\"pl-3 mb-0\">\u003Cli class=\"mt-2\">\u003Cb>Activar las opciones de Protección\u003C/b>: Validación manual / Navegación humana así como Ritmo natural lento / muy lento\u003C/li>\u003Cli class=\"mt-2\">\u003Cb>Reducir las republicaciones diarias\u003C/b>: según el tamaño de tu armario, apunta para empezar a 20-30 máx. por ejemplo\u003C/li>\u003Cli class=\"mt-2\">\u003Cb>Eliminar, esperar unas horas/días y volver a importar con Clemz\u003C/b> en vez de republicar directamente\u003C/li>\u003C/ul>"
    },
    "restrictionWarningModal_openSettings": {
       "message": "Ver estas opciones"
-   },
-   "restrictionWarningModal_refund": {
-      "message": "👉 \u003Ca href=\"https://www.clemz.app/dashboard/restriction\" target=\"_blank\">\u003Cu>Esta página\u003C/u>\u003C/a> está a tu disposición si no consigues evitar las restricciones pese a todos nuestros consejos"
    },
    "restrictionWarningModal_title": {
       "message": "⚠️Tu armario ha sido restringido recientemente👮"

@@ -1,3 +1,20 @@
-2026/10/06-07:22:07.833 a7c4 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\clemz_session_chrome_d1_reel\Default\Local Storage\leveldb/MANIFEST-000001
-2026/10/06-07:22:07.834 a7c4 Recovering log #2361
-2026/10/06-07:22:07.835 a7c4 Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\clemz_session_chrome_d1_reel\Default\Local Storage\leveldb/002361.log 
+2026/10/14-23:04:16.981 8564 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\clemz_session_chrome_d1_reel\Default\Local Storage\leveldb/MANIFEST-000001
+2026/10/14-23:04:16.982 8564 Recovering log #2616
+2026/10/14-23:04:16.982 8564 Level-0 table #2619: started
+2026/10/14-23:04:16.986 8564 Level-0 table #2619: 254917 bytes OK
+2026/10/14-23:04:16.990 8564 Delete type=0 #2616
+2026/10/14-23:05:17.003 2fdc Level-0 table #2622: started
+2026/10/14-23:05:17.009 2fdc Level-0 table #2622: 254319 bytes OK
+2026/10/14-23:05:17.012 2fdc Delete type=0 #2620
+2026/10/14-23:06:56.502 2fdc Level-0 table #2624: started
+2026/10/14-23:06:56.510 2fdc Level-0 table #2624: 254303 bytes OK
+2026/10/14-23:06:56.516 2fdc Delete type=0 #2621
+2026/10/14-23:06:56.517 2fdc Compacting 4@0 + 1@1 files
+2026/10/14-23:06:56.557 2fdc Generated table #2625@0: 182 keys, 878290 bytes
+2026/10/14-23:06:56.557 2fdc Compacted 4@0 + 1@1 files => 878290 bytes
+2026/10/14-23:06:56.569 2fdc compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/10/14-23:06:56.571 2fdc Delete type=2 #2615
+2026/10/14-23:06:56.571 2fdc Delete type=2 #2617
+2026/10/14-23:06:56.571 2fdc Delete type=2 #2619
+2026/10/14-23:06:56.572 2fdc Delete type=2 #2622
+2026/10/14-23:06:56.572 2fdc Delete type=2 #2624

@@ -5,6 +5,10 @@
   </div>
   <div class="toolModal-tabContent px-0" style="display: block;">
     <div class="p-2 mx-2" id="protectionSettingsForm">
+      <a class="d-inline-flex align-items-center text-sm" href="https://www.clemz.app/documentation/republier-des-articles#options" target="_blank">
+        <span data-i18n="actionInterface_protectionDocLink"></span>
+        <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon text-primary align-middle ml-1 mb-0" src="">
+      </a>
 
       <!-- Pacing: label + select + sub-options in a flex column -->
       <div class="d-flex align-items-start mt-2">
@@ -43,16 +47,17 @@
       <!-- Execution mode (repost only, hidden for modify) -->
       <div id="executionModeSection" class="d-none">
         <hr class="my-2">
-        <div class="custom-control custom-switch ml-n4">
-          <div class="d-flex justify-content-start align-items-start">
-            <input type="checkbox" class="custom-control-input mt-1" id="executionModeCheckbox">
-            <label class="d-flex flex-column custom-control-label align-middle text-sm" for="executionModeCheckbox">
-              <span class="align-middle" data-i18n="actionInterface_executionModeLabel"></span>
-              <div class="text-sm text-danger mt-1 lh-110" data-i18n="actionInterface_executionModeInfo"></div>
-            </label>
-            <span class="tooltip tooltip-left mb-1 text-sm ml-5" data-i18n-tooltip="actionInterface_executionModeTooltip">
-              <img data-image-name="question-circle-solid.svg" class="vinz-image font-icon align-middle mb-0" src="">
-            </span>
+        <div class="d-flex align-items-start">
+          <span class="font-weight-bolder text-sm mr-2 flex-shrink-0" style="line-height: 28px;" data-i18n="actionInterface_executionModeHeading"></span>
+          <div class="flex-grow-1" style="min-width: 0;">
+            <select id="executionModeSelect" class="custom-select custom-select-sm text-sm" style="width: 220px; max-width: 100%;">
+              <option value="api" data-i18n="actionInterface_executionModeApi"></option>
+              <option value="humanNav" data-i18n="actionInterface_executionModeLabel"></option>
+              <option value="manualValidation" data-i18n="actionInterface_executionModeManualValidation"></option>
+            </select>
+            <div class="mt-1"><span id="executionModeBetaBadge" class="badge badge-warning text-dark d-none">🧪 <span data-i18n="actionInterface_executionModeBetaBadge"></span></span></div>
+            <div id="executionModeExplain" class="text-sm mt-1 lh-110"></div>
+            <div id="executionModeHumanInfo" class="text-sm text-danger mt-1 lh-110 d-none" data-i18n="actionInterface_executionModeInfo"></div>
           </div>
         </div>
       </div>

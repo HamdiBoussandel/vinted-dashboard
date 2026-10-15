@@ -1,3 +1,25 @@
-2026/10/06-07:22:07.974 2428 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\clemz_session_chrome_d1_reel\Default\Local Extension Settings\eaanfjklgfappgagmggaholpednnndob/MANIFEST-000001
-2026/10/06-07:22:07.975 2428 Recovering log #846
-2026/10/06-07:22:07.978 2428 Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\clemz_session_chrome_d1_reel\Default\Local Extension Settings\eaanfjklgfappgagmggaholpednnndob/000846.log 
+2026/10/14-23:04:17.112 85f4 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\clemz_session_chrome_d1_reel\Default\Local Extension Settings\eaanfjklgfappgagmggaholpednnndob/MANIFEST-000001
+2026/10/14-23:04:17.112 85f4 Recovering log #1226
+2026/10/14-23:04:17.114 85f4 Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\clemz_session_chrome_d1_reel\Default\Local Extension Settings\eaanfjklgfappgagmggaholpednnndob/001226.log 
+2026/10/14-23:04:45.266 9a2c Level-0 table #1232: started
+2026/10/14-23:04:45.275 9a2c Level-0 table #1232: 3858570 bytes OK
+2026/10/14-23:04:45.278 9a2c Delete type=0 #1226
+2026/10/14-23:05:24.441 9a2c Level-0 table #1234: started
+2026/10/14-23:05:24.447 9a2c Level-0 table #1234: 4250389 bytes OK
+2026/10/14-23:05:24.449 9a2c Delete type=0 #1231
+2026/10/14-23:06:00.576 9a2c Level-0 table #1236: started
+2026/10/14-23:06:00.583 9a2c Level-0 table #1236: 4281167 bytes OK
+2026/10/14-23:06:00.585 9a2c Delete type=0 #1233
+2026/10/14-23:06:22.937 9a2c Compacting 2@0 + 1@1 files
+2026/10/14-23:06:22.943 9a2c Generated table #1237@0: 13 keys, 140232 bytes
+2026/10/14-23:06:22.943 9a2c Compacted 2@0 + 1@1 files => 140232 bytes
+2026/10/14-23:06:22.945 9a2c compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/10/14-23:06:22.945 9a2c Delete type=2 #1232
+2026/10/14-23:06:22.945 9a2c Delete type=2 #1234
+2026/10/14-23:06:22.945 9a2c Delete type=2 #1236
+2026/10/14-23:06:29.052 9a2c Compacting 1@1 + 1@2 files
+2026/10/14-23:06:29.057 9a2c Generated table #1238@1: 50 keys, 146218 bytes
+2026/10/14-23:06:29.057 9a2c Compacted 1@1 + 1@2 files => 146218 bytes
+2026/10/14-23:06:29.058 9a2c compacted to: files[ 0 0 1 0 0 0 0 ]
+2026/10/14-23:06:29.059 9a2c Delete type=2 #1229
+2026/10/14-23:06:29.059 9a2c Delete type=2 #1237

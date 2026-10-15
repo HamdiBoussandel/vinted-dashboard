@@ -29,6 +29,9 @@
    "actionInterface_activeModificationChoice": {
       "message": "🖼️ Modifica del momento"
    },
+   "actionInterface_addToClemzListDelete": {
+      "message": "\u003Cimg class=\"font-icon align-middle pb-1 mr-1 vinz-image\" data-image-name=\"list-solid.svg\" src=\"\">\u003Cb>Aggiungi a una lista clemz.app\u003C/b> dopo l'eliminazione"
+   },
    "actionInterface_addToList": {
       "message": "3. Aggiungi la selezione a una lista"
    },
@@ -55,6 +58,9 @@
    },
    "actionInterface_bulkModify": {
       "message": "Modifica in massa \u003Ca class=\"text-sm ml-2 tooltip tooltip-left\" href=\"https://www.clemz.app/documentation/modifier-en-masse\" target=\"_blank\" data-tooltip=\"Clicca qui per capire come modificare i tuoi annunci\">\u003Cimg class=\"font-icon align-middle pb-1 vinz-image\" data-image-name=\"question-circle-solid.svg\" src=\"\">\u003C/a>"
+   },
+   "actionInterface_checkBoxesOnClemz": {
+      "message": "Spunta le caselle degli articoli direttamente su clemz.app"
    },
    "actionInterface_checkMyLists": {
       "message": "4. Verifica le mie liste"
@@ -170,8 +176,20 @@
    "actionInterface_exchangeViewsFavsTitle": {
       "message": "Scambiare viste & preferiti"
    },
+   "actionInterface_executionModeApi": {
+      "message": "Standard"
+   },
+   "actionInterface_executionModeApiTooltip": {
+      "message": "Ripubblicazione totalmente automatizzata.\u003Cbr>\u003Cb>Velocità massima, rischio alto.\u003C/b>"
+   },
    "actionInterface_executionModeBadge": {
       "message": "Nav. umana"
+   },
+   "actionInterface_executionModeBetaBadge": {
+      "message": "Beta test"
+   },
+   "actionInterface_executionModeHeading": {
+      "message": "Modalità"
    },
    "actionInterface_executionModeInfo": {
       "message": "⚠️ Non toccare il browser durante l'uso — gli annunci potrebbero essere incompleti"
@@ -179,8 +197,17 @@
    "actionInterface_executionModeLabel": {
       "message": "Navigazione umana"
    },
+   "actionInterface_executionModeManualValidation": {
+      "message": "Validazione manuale"
+   },
+   "actionInterface_executionModeManualValidationBadge": {
+      "message": "Valid. manuale"
+   },
+   "actionInterface_executionModeManualValidationTooltip": {
+      "message": "Clemz compila il modulo di 1 annuncio alla volta. Puoi modificare, poi salvare o pubblicare.\u003Cbr>\u003Cb>Velocità molto lenta, rischio minimo.\u003C/b>"
+   },
    "actionInterface_executionModeTooltip": {
-      "message": "Clemz apre vere pagine Vinted, come farebbe un umano. Riduce il rischio di rilevamento ma è più lento."
+      "message": "Clemz apre pagine Vinted vere, come farebbe un umano.\u003Cbr>\u003Cb>Velocità lenta, rischio ridotto.\u003C/b>"
    },
    "actionInterface_executionTransportFrame": {
       "message": "stessa scheda"
@@ -367,6 +394,12 @@
    },
    "actionInterface_modifyPriceSet": {
       "message": "fissa prezzo 💲"
+   },
+   "actionInterface_modifyTabActionDelete": {
+      "message": "Elimina"
+   },
+   "actionInterface_modifyTabActionModify": {
+      "message": "Modifica"
    },
    "actionInterface_modifyToDoList": {
       "message": "Le modifiche si fanno sulla lista \"📥 da trattare\""
@@ -565,6 +598,9 @@
    },
    "actionInterface_profileInstructions": {
       "message": "(Nel menu Vinted ↗️,\u003Cbr> clicca \"\u003Cb>Il mio profilo\u003C/b>\")"
+   },
+   "actionInterface_protectionDocLink": {
+      "message": "Leggi doc"
    },
    "actionInterface_protectionLabel": {
       "message": "Protezione"
@@ -1022,6 +1058,9 @@
    },
    "autoComplete_searchingSavedItem": {
       "message": "Ricerca dell'articolo nel tuo backup…"
+   },
+   "autoComplete_seeMyLists": {
+      "message": "Vedi le mie liste"
    },
    "autoComplete_started": {
       "message": "Tieni questa scheda aperta davanti a te."
@@ -2287,6 +2326,14 @@
    "modify": {
       "message": "Modifica"
    },
+   "modifyArticles_addToListOnceDeleted": {
+      "message": "\u003Cdiv class=\"mt-3 text-center\">Una volta eliminati, questi articoli saranno aggiunti alla lista \"\u003Cb>$listTitle$\u003C/b>\" su clemz.app.\u003C/div>",
+      "placeholders": {
+         "listTitle": {
+            "content": "$1"
+         }
+      }
+   },
    "modifyArticles_bugFetchingPhotos": {
       "message": "Bug nel recuperare una foto salvata. Riprova"
    },
@@ -2457,6 +2504,22 @@
          }
       }
    },
+   "modifyArticles_saveUnsavedItemsButton": {
+      "message": "Salva ora questi $articleCount$ articoli",
+      "placeholders": {
+         "articleCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "modifyArticles_seeClemzList": {
+      "message": "\u003Cdiv class=\"mt-3 text-center\">\u003Ca href=\"$listUrl$\" target=\"_blank\">Vedi la lista su clemz.app\u003C/a>\u003C/div>",
+      "placeholders": {
+         "listUrl": {
+            "content": "$1"
+         }
+      }
+   },
    "modifyArticles_setPriceWarning": {
       "message": "\u003Cdiv class=\"mt-3\">- ⚠️ Stai fissando il prezzo di \u003Cu>tutti\u003C/u> i tuoi articoli a \u003Cb>$modifyPriceValue$ $modifyPriceType$\u003C/b>\u003C/div>",
       "placeholders": {
@@ -2472,6 +2535,14 @@
       "message": "\u003Cdiv class=\"mt-3\">- \u003Cb>$soldArticlesCount$ articoli Venduto/i\u003C/b> nella tua lista non saranno trattati (impossibile modificarli)\u003C/div>",
       "placeholders": {
          "soldArticlesCount": {
+            "content": "$1"
+         }
+      }
+   },
+   "modifyArticles_unsavedItemsBeforeDelete": {
+      "message": "$articleCount$ articoli non sono salvati su clemz.app e non possono essere aggiunti a una lista. Salvali per continuare.",
+      "placeholders": {
+         "articleCount": {
             "content": "$1"
          }
       }
@@ -2888,11 +2959,14 @@
    "progressInterface_closetButton": {
       "message": "👗 Il mio armadio"
    },
+   "progressInterface_correctFormButton": {
+      "message": "✏️ Assistente modulo"
+   },
    "progressInterface_errorTitle": {
       "message": "Errore"
    },
    "progressInterface_humanNavWarning": {
-      "message": "📵 Nav. Umana: Non toccare il dispositivo durante l'attività, rischio di articoli incompleti"
+      "message": "📵 Non toccare il dispositivo durante l'attività, rischio di articoli incompleti"
    },
    "progressInterface_minimizeButton": {
       "message": "🔽 Riduci"
@@ -2913,7 +2987,7 @@
       "message": "Vedi gli articoli interessati"
    },
    "repostArticles_alreadyLiveImportedWarning": {
-      "message": "\u003Cb>⚠️ $articleCount$ annuncio(i) da importare esistono già in questo armadio\u003C/b>. Li abbiamo sostituiti nella tua lista per evitare un duplicato: saranno ripubblicati, non importati",
+      "message": "\u003Cb>⚠️ $articleCount$ annuncio(i) da importare esistono già in questo armadio\u003C/b>. Li abbiamo sostituiti nella tua lista per evitare un duplicato: saranno ripubblicati, non importati. Se volevi fare un nuovo annuncio, \u003Ca href=\"https://www.clemz.app/documentation/sauver-mes-annonces#similar-listing\" target=\"_blank\">leggi qui come fare\u003C/a>.",
       "placeholders": {
          "articleCount": {
             "content": "$1"
@@ -3015,6 +3089,12 @@
    },
    "repostArticles_forbiddenWithoutSubscription": {
       "message": "\u003Cb>Vietato senza abbonamento\u003C/b>\u003Cbr>=> Abbonati \u003Ca href=\"https://www.clemz.app/users/pricing\" target=\"_blank\">cliccando qui\u003C/a> per usare questa funzionalità)"
+   },
+   "repostArticles_humanNavFinish": {
+      "message": "Finalizzazione della ripubblicazione"
+   },
+   "repostArticles_humanNavPrep": {
+      "message": "Preparazione della ripubblicazione"
    },
    "repostArticles_humanNavWarning": {
       "message": "⚠️ Non toccare il browser — rischio di annunci incompleti"
@@ -3126,6 +3206,9 @@
             "content": "$1"
          }
       }
+   },
+   "repostArticles_manualValidationHandover": {
+      "message": "Salva come bozza o pubblica.\u003Cbr>\u003Cb>Consiglio:\u003C/b> scorri, clicca e usa la tastiera per dimostrare che sei umano."
    },
    "repostArticles_missingItemsCount": {
       "message": "➡️ $missingItemsCount$ articoli non esistono più\u003Cbr>",
@@ -3412,16 +3495,13 @@
       "message": "🛑 Restrizione Vinted 🛑"
    },
    "restrictionWarningModal_learnMore": {
-      "message": "👉 \u003Ca href=\"https://www.clemz.app/documentation/republier-des-articles#deceive\" target=\"_blank\">\u003Cu>Questo articolo\u003C/u>\u003C/a> della documentazione dà consigli sull'argomento"
+      "message": "👉 \u003Ca href=\"https://www.clemz.app/documentation/republier-des-articles#deceive\" target=\"_blank\">\u003Cu>Questo articolo\u003C/u>\u003C/a> della documentazione dà consigli più dettagliati sull'argomento."
    },
    "restrictionWarningModal_message": {
-      "message": "Per ridurre il rischio di restrizioni, puoi:\u003Cul class=\"pl-3 mb-0\">\u003Cli>Attivare le opzioni di \u003Cb>Navigazione umana\u003C/b> e \u003Cb>Ritmo naturale\u003C/b> (lento / molto lento)\u003C/li>\u003Cli>\u003Cb>Ridurre le ripubblicazioni giornaliere\u003C/b> (in base alla dimensione del tuo armadio — 20-30 in media per esempio)\u003C/li>\u003Cli>\u003Cb>Eliminare e poi reimportare con Clemz\u003C/b> invece di ripubblicare direttamente\u003C/li>\u003C/ul>"
+      "message": "Per ridurre il rischio di restrizioni, puoi:\u003Cul class=\"pl-3 mb-0\">\u003Cli class=\"mt-2\">\u003Cb>Attivare le opzioni di Protezione\u003C/b>: Validazione manuale / Navigazione umana così come Ritmo naturale lento / molto lento\u003C/li>\u003Cli class=\"mt-2\">\u003Cb>Ridurre le ripubblicazioni giornaliere\u003C/b>: in base alla dimensione del tuo armadio, punta per iniziare a 20-30 max per esempio\u003C/li>\u003Cli class=\"mt-2\">\u003Cb>Eliminare, aspettare qualche ora/giorno e poi reimportare con Clemz\u003C/b> invece di ripubblicare direttamente\u003C/li>\u003C/ul>"
    },
    "restrictionWarningModal_openSettings": {
       "message": "Vedi queste opzioni"
-   },
-   "restrictionWarningModal_refund": {
-      "message": "👉 \u003Ca href=\"https://www.clemz.app/dashboard/restriction\" target=\"_blank\">\u003Cu>Questa pagina\u003C/u>\u003C/a> è a tua disposizione se non riesci a evitare le restrizioni nonostante tutti i nostri consigli"
    },
    "restrictionWarningModal_title": {
       "message": "⚠️Il tuo armadio è stato limitato di recente👮"
