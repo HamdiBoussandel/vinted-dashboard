@@ -11,8 +11,14 @@ doublons_log.json
 .env.local
 .env.*.local
 
+# Profils navigateur (cookies de connexion Vinted) -- jamais dans git
 backend/clemz_session_chrome/
 backend/clemz_session_edge/
+backend/clemz_session_brave/
+backend/clemz_session_chrome_d1_reel/
+backend/clemz_session_chrome_reel/
+backend/vinted_session_chrome/
+backend/vinted_session_edge/
 
 # Fichiers de persistance locale (générés à l'exécution)
 task_history.json

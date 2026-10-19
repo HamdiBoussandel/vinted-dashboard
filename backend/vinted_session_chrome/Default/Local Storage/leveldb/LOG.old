@@ -1,7 +1,8 @@
-2026/10/03-19:06:03.007 afa0 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_chrome\Default\Local Storage\leveldb/MANIFEST-000001
-2026/10/03-19:06:03.007 afa0 Recovering log #30
-2026/10/03-19:06:03.008 afa0 Level-0 table #33: started
-2026/10/03-19:06:03.011 afa0 Level-0 table #33: 61835 bytes OK
-2026/10/03-19:06:03.014 afa0 Delete type=0 #30
-2026/10/03-19:06:32.229 afa0 Level-0 table #36: started
-2026/10/03-19:06:32.276 afa0 Level-0 table #36: 132261 bytes OK
+2026/10/18-01:23:06.295 5208 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_chrome\Default\Local Storage\leveldb/MANIFEST-000001
+2026/10/18-01:23:06.296 5208 Recovering log #24
+2026/10/18-01:23:06.296 5208 Level-0 table #27: started
+2026/10/18-01:23:06.299 5208 Level-0 table #27: 235026 bytes OK
+2026/10/18-01:23:06.300 5208 Recovering log #27
+2026/10/18-01:23:06.301 5208 Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_chrome\Default\Local Storage\leveldb/000027.log 
+2026/10/18-01:23:06.303 5208 Delete type=0 #24
+2026/10/18-01:23:06.303 5208 Delete type=2 #28

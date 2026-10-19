@@ -320,6 +320,19 @@ async def open_browser(data: dict = Body(...)):
     if maintenance_service.status.get(key) in ("ouverture", "ouvert"):
         return {"status": "already_open", "profile": key}
 
+    # Profil déjà pris par le scraping ou une automatisation Clemz (même verrou
+    # que open_browser() tient ensuite tant que la fenêtre est ouverte).
+    from services.clemz_auto_message import get_profile_lock
+    account_key = maintenance_service.profiles[key]["account_key"]
+    if account_key and get_profile_lock(account_key).locked():
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                f"{maintenance_service.profiles[key]['name']} est utilisé par une tâche en cours "
+                "(scraping ou automatisation Clemz). Réessaie quand elle est terminée."
+            ),
+        )
+
     asyncio.create_task(maintenance_service.open_browser(key))
     return {"status": "opening", "profile": key}
 
@@ -498,6 +511,12 @@ async def toggle_republication_auto_route(data: dict = Body(...)):
     active = data.get("active")
     if active is None:
         raise HTTPException(status_code=400, detail="Le champ 'active' est requis.")
+    from services.automation_service import REPUBLICATION_AUTO_RETIREE
+    if active and REPUBLICATION_AUTO_RETIREE:
+        raise HTTPException(
+            status_code=409,
+            detail="La republication automatique a été retirée (19/10/2026) : utilise la republication assistée du Dashboard.",
+        )
     maintenance_service.set_republication_auto_active(active)
     return maintenance_service.get_republication_auto_status()
 

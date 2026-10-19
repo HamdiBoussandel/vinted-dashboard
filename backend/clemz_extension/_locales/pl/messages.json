@@ -177,37 +177,31 @@
       "message": "Wymiana wyśw. i ulub."
    },
    "actionInterface_executionModeApi": {
-      "message": "Standard"
+      "message": "⚡⚡⚡ Standard"
    },
    "actionInterface_executionModeApiTooltip": {
-      "message": "Całkowicie automatyczne relistowanie.\u003Cbr>\u003Cb>Maksymalna prędkość, wysokie ryzyko.\u003C/b>"
+      "message": "\u003Cb class=\"text-success\">Maksymalna prędkość\u003C/b>, \u003Cb class=\"text-danger\">Wysokie ryzyko.\u003C/b>\u003Cbr>Całkowicie automatyczne relistowanie."
    },
    "actionInterface_executionModeBadge": {
       "message": "Nav. ludzka"
    },
-   "actionInterface_executionModeBetaBadge": {
-      "message": "Beta test"
-   },
    "actionInterface_executionModeHeading": {
       "message": "Tryb"
    },
-   "actionInterface_executionModeInfo": {
-      "message": "⚠️ Nie dotykaj przeglądarki podczas działania — ogłoszenia mogą być niekompletne"
-   },
    "actionInterface_executionModeLabel": {
-      "message": "Nawigacja jak człowiek"
+      "message": "⚡⚡🛡️ Nawigacja jak człowiek"
    },
    "actionInterface_executionModeManualValidation": {
-      "message": "Ręczna walidacja"
+      "message": "⚡🛡️🛡️ Ręczna walidacja"
    },
    "actionInterface_executionModeManualValidationBadge": {
       "message": "Ręcznie"
    },
    "actionInterface_executionModeManualValidationTooltip": {
-      "message": "Clemz uzupełnia formularz 1 ogłoszenie naraz. Możesz zmienić, a potem zapisać albo opublikować.\u003Cbr>\u003Cb>Bardzo wolna prędkość, minimalne ryzyko.\u003C/b>"
+      "message": "\u003Cb class=\"text-danger\">Bardzo wolna prędkość\u003C/b>, \u003Cb class=\"text-success\">Minimalne ryzyko.\u003C/b>\u003Cbr>Clemz uzupełnia formularz 1 artykuł naraz. Możesz zmienić, a potem zapisać albo opublikować."
    },
    "actionInterface_executionModeTooltip": {
-      "message": "Clemz otwiera prawdziwe strony Vinted, tak jak zrobiłby to człowiek.\u003Cbr>\u003Cb>Wolna prędkość, mniejsze ryzyko.\u003C/b>"
+      "message": "\u003Cb class=\"text-warning\">Wolna prędkość\u003C/b>, \u003Cb class=\"text-warning\">Mniejsze ryzyko.\u003C/b>\u003Cbr>Clemz otwiera prawdziwe strony Vinted, tak jak zrobiłby to człowiek."
    },
    "actionInterface_executionTransportFrame": {
       "message": "ta sama karta"
@@ -3498,7 +3492,7 @@
       "message": "👉 \u003Ca href=\"https://www.clemz.app/documentation/republier-des-articles#deceive\" target=\"_blank\">\u003Cu>Ten artykuł\u003C/u>\u003C/a> z dokumentacji daje bardziej szczegółowe wskazówki na ten temat."
    },
    "restrictionWarningModal_message": {
-      "message": "Aby zmniejszyć ryzyko ograniczeń, możesz:\u003Cul class=\"pl-3 mb-0\">\u003Cli class=\"mt-2\">\u003Cb>Włączyć opcje Ochrony\u003C/b>: Ręczna walidacja / Nawigacja jak człowiek oraz Naturalny rytm wolny / bardzo wolny\u003C/li>\u003Cli class=\"mt-2\">\u003Cb>Zmniejszyć liczbę dziennych relistowań\u003C/b>: zależnie od wielkości Twojej szafy, na start celuj w maks. 20-30 na przykład\u003C/li>\u003Cli class=\"mt-2\">\u003Cb>Usunąć, poczekać kilka godzin/dni, a potem ponownie zaimportować przez Clemz\u003C/b> zamiast relistować bezpośrednio\u003C/li>\u003C/ul>"
+      "message": "Aby zmniejszyć ryzyko ograniczeń, możesz:\u003Cul class=\"pl-3 mb-0\">\u003Cli class=\"mt-2\">\u003Cb>🛡️ Przejść na Ręczną walidację.\u003C/b> Ta opcja daje najsilniejszą ochronę.\u003Cbr>Możesz też spróbować \u003Cb>Nawigacja jak człowiek + Naturalny rytm wolny / bardzo wolny\u003C/b>, jeśli nie możesz walidować każdego artykułu (słabsza ochrona).\u003C/li>\u003Cli class=\"mt-2\">\u003Cb>⬇️ Zmniejszyć liczbę dziennych relistowań\u003C/b>: zależnie od wielkości Twojej szafy, na start celuj w maks. 20-30 na przykład\u003C/li>\u003Cli class=\"mt-2\">\u003Cb>⌛ Usunąć, poczekać kilka godzin/dni, a potem ponownie zaimportować przez Clemz\u003C/b> zamiast relistować bezpośrednio (\u003Ca href=\"https://www.clemz.app/documentation/republier-des-articles#visibility\" target=\"_blank\">\u003Cu>+ info tutaj\u003C/u>\u003C/a>)\u003C/li>\u003C/ul>"
    },
    "restrictionWarningModal_openSettings": {
       "message": "Zobacz te opcje"
@@ -3507,7 +3501,7 @@
       "message": "⚠️Twoja szafa została niedawno ograniczona👮"
    },
    "restrictionWarningTab_message": {
-      "message": "⚠️ \u003Cb class=\"text-danger\">Ryzyko ograniczenia:\u003C/b> włącz Nawigacja jak człowiek i Naturalny rytm. \u003Ca href=\"https://www.clemz.app/documentation/republier-des-articles#deceive\" target=\"_blank\">\u003Cu>+ info tutaj\u003C/u>\u003C/a>"
+      "message": "⚠️ \u003Cb class=\"text-danger\">Ryzyko ograniczenia:\u003C/b> przejdź na Ręczną walidację. \u003Ca href=\"https://www.clemz.app/documentation/republier-des-articles#deceive\" target=\"_blank\">\u003Cu>+ info tutaj\u003C/u>\u003C/a>"
    },
    "save": {
       "message": "Zapisz"

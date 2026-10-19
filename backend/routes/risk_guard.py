@@ -51,7 +51,9 @@ def get_statut():
         cle: {
             "convalescence": get_active_convalescence(nom),
             "plan_du_jour": get_plan_du_jour(nom),
-            "quota_baisse_prix_restant": get_quota_manuel_restant(nom, "baisse_prix"),
+            # null depuis le 18/10/2026 : baisse de prix hors risk guard (aucun
+            # quota) -- le badge correspondant se masque côté frontend.
+            "quota_baisse_prix_restant": None,
             "quota_republication_restant": get_quota_manuel_restant(nom, "republication"),
         }
         for cle, nom in _DRESSINGS.items()

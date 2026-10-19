@@ -25,6 +25,15 @@ scraper = VintedScraper()
 # Un job de republication par dressing, à l'horaire de son plan du jour.
 JOB_ID_REPUBLICATION = {"Dressing 1": "republication_dressing1", "Dressing 2": "republication_dressing2"}
 
+# RETIRÉE le 19/10/2026 (décision de l'utilisateur) : la republication
+# automatique planifiée (republication de masse "Go Clemz !" à l'horaire du
+# plan du jour, et son rattrapage au démarrage) ne part plus du tout -- les
+# republications passent désormais par la republication ASSISTÉE
+# (clemz_auto_completion.py, publication validée à la main). Code conservé,
+# réactivable en repassant cette constante à False. Le plan du jour continue
+# d'être tiré : il plafonne aussi les republications manuelles.
+REPUBLICATION_AUTO_RETIREE = True
+
 
 def _planifier_republish_oneshot(dressing, plan):
     """
@@ -40,6 +49,12 @@ def _planifier_republish_oneshot(dressing, plan):
     from services.plan_source import est_satellite
     if est_satellite():
         return  # le satellite ne programme jamais de republication (la VM fait foi)
+    if REPUBLICATION_AUTO_RETIREE:
+        from services.automation_scheduler import noter_etape_routine, get_statut_etape
+        print(f"⏭️  [PLAN DU JOUR] {dressing} — republication automatique retirée : aucun job planifié.")
+        if plan.get("actif") and get_statut_etape(dressing, "republication") is None:
+            noter_etape_routine(dressing, "republication", "desactive", "Republication automatique retirée (republication assistée à la place)")
+        return
     if not plan["actif"] or not plan["horaire"]:
         print(f"⏭️  [PLAN DU JOUR] {dressing} — repos aujourd'hui (niveau : {plan['niveau']}).")
         return
@@ -192,6 +207,9 @@ def _republication_auto_desactivee(dressing):
     rattrapage au démarrage passent tous deux par _planifier_republish_oneshot
     -> _republication_chainee), et PAS dans _execute_republish() lui-même.
     """
+    if REPUBLICATION_AUTO_RETIREE:
+        print(f"⏭️  [REPUB] {dressing} — republication automatique retirée — on passe.")
+        return True
     from services.maintenance_service import maintenance_service
     if not maintenance_service.republication_auto_active:
         print(f"⏭️  [REPUB] {dressing} — republication automatique désactivée (Maintenance) — on passe.")
@@ -658,7 +676,7 @@ async def run_partage_vues_favoris_task(dressing: str = None):
     else:
         print(f"✅ [PARTAGE] Terminé à {end_time.strftime('%H:%M:%S')}.")
 
-async def run_baisse_prix_auto(article_ids_restriction=None, dressings=None):
+async def run_baisse_prix_auto(article_ids_restriction=None, dressings=None, ignorer_repos_niveau2=False):
     """
     Identifie les articles en Mauvaise Performance, les répartit en lots
     -10%/-20% selon le sous-cas déjà calculé par get_processed_inventory,
@@ -683,6 +701,12 @@ async def run_baisse_prix_auto(article_ids_restriction=None, dressings=None):
     dressings : si fourni, restreint aux articles de ces dressings -- utilisé
     par la chaîne de routine (12/10/2026) pour ne pas baisser les prix d'un
     dressing dont le scraping du jour a échoué. None = les deux.
+
+    ignorer_repos_niveau2 : case "Forcer malgré repos (Niveau 2)" du dashboard,
+    transmise par /automation/run-now (17/10/2026 -- jusqu'ici perdue sur ce
+    chemin : le bouton "Forcer baisse de prix" restait bloqué par la coupure
+    Niveau 2 même case cochée). Jamais activé par le cron. Ne touche ni à la
+    convalescence Niveau 1 ni au quota brut, cf. get_allowed_quantity.
 
     Retourne le bilan par dressing traité, {dressing: (statut, raison)} avec
     statut "succes" (au moins un article baissé), "rien_a_faire" ou "echec".
@@ -774,8 +798,18 @@ async def run_baisse_prix_auto(article_ids_restriction=None, dressings=None):
     demandes_d1 = [a for a in tous_les_demandes if a["dressing"] == "Dressing 1"]
     demandes_d2 = [a for a in tous_les_demandes if a["dressing"] == "Dressing 2"]
 
-    allowed_d1, truncated_d1, reason_d1 = get_allowed_quantity("Dressing 1", "baisse_prix", len(demandes_d1))
-    allowed_d2, truncated_d2, reason_d2 = get_allowed_quantity("Dressing 2", "baisse_prix", len(demandes_d2))
+    if ignorer_repos_niveau2:
+        from services.risk_guard import get_jour_pause_volume
+        for d in ("Dressing 1", "Dressing 2"):
+            if get_jour_pause_volume(d):
+                print(f"⚠️ [OVERRIDE] Repos Niveau 2 outrepassé manuellement pour {d} (baisse de prix forcée).")
+
+    allowed_d1, truncated_d1, reason_d1 = get_allowed_quantity(
+        "Dressing 1", "baisse_prix", len(demandes_d1), ignorer_repos_niveau2=ignorer_repos_niveau2
+    )
+    allowed_d2, truncated_d2, reason_d2 = get_allowed_quantity(
+        "Dressing 2", "baisse_prix", len(demandes_d2), ignorer_repos_niveau2=ignorer_repos_niveau2
+    )
 
     ids_autorises = {a["id"] for a in demandes_d1[:allowed_d1]} | {a["id"] for a in demandes_d2[:allowed_d2]}
     exclus_quota = [a for a in tous_les_demandes if a["id"] not in ids_autorises]

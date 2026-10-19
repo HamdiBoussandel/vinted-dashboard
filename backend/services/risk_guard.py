@@ -28,12 +28,18 @@ compte). Trois mécanismes combinés :
    rythme humain (qui ne publie/baisse pas tous les jours de la semaine)
    plutôt qu'un lissage mécanique continu.
 
+18/10/2026 : la baisse de prix est sortie du risk guard (ACTIONS_HORS_GUARD) --
+plus aucun quota, convalescence, ramp-up ni coupure pour elle, et elle ne
+compte plus dans le volume du point 3. Les trois mécanismes ci-dessus ne
+s'appliquent plus qu'à la republication.
+
 Seuils volontairement conservateurs au démarrage -- à remonter progressivement
 une fois plusieurs semaines "propres" observées via la télémétrie
 (automation_actions_log).
 """
 import math
 import random
+import re
 from datetime import datetime, timedelta
 from services.supabase_service import SupabaseService
 
@@ -55,26 +61,22 @@ DAILY_THRESHOLDS = {
         # qui tire désormais un plafond entre PLAFOND_REPUBLICATION_MIN (12) et
         # PLAFOND_REPUBLICATION_MAX (15) chaque jour. Gardées comme borne haute
         # de référence et comme fallback pour un dressing hors D1/D2.
-        # Borne haute alignée sur PLAFOND_REPUBLICATION_MAX (21) le 13/10/2026.
-        "Dressing 1": 21,
-        "Dressing 2": 21,
+        # Borne haute alignée sur PLAFOND_REPUBLICATION_MAX (20 depuis le 19/10/2026).
+        "Dressing 1": 20,
+        "Dressing 2": 20,
         "_default": 3,
     },
-    "baisse_prix": {
-        # Décision du 01/09/2026 : baisse_prix et republication sont deux
-        # actions distinctes, chacune son propre quota, pour CHAQUE dressing
-        # INDÉPENDAMMENT (get_volume_last_hours filtre par dressing -- aucun
-        # pool commun entre D1 et D2 ; baisse_prix n'a juste pas de valeur PAR
-        # COMPTE distincte dans ce dict, les deux tombent sur "_default").
-        #
-        # Divisé par 2 le 19/09/2026 (15 -> 7) pour réserver plus de marge à la
-        # republication dans le budget PARTAGÉ du Niveau 2 (coupure sur volume
-        # glissant, 18 articles/3j). Remonté à 10 le 02/10/2026 sur décision
-        # explicite de l'utilisateur, après plusieurs jours d'observation sans
-        # restriction directement attribuable à la baisse de prix.
-        "_default": 10,
-    },
+    # "baisse_prix" RETIRÉ le 18/10/2026 (décision explicite de l'utilisateur) :
+    # la baisse de prix n'est plus du tout soumise au risk guard -- ni quota
+    # quotidien (10/jour jusqu'ici), ni convalescence, ni ramp-up, ni coupure
+    # Niveau 2 -- et ne compte plus dans le volume glissant du Niveau 2. Cf.
+    # ACTIONS_HORS_GUARD ci-dessous.
 }
+
+# Types d'action jamais limités par le risk guard (18/10/2026). Toujours
+# loggés dans automation_actions_log (télémétrie), mais ni plafonnés par
+# get_allowed_quantity, ni comptés dans get_volume_glissant_combine.
+ACTIONS_HORS_GUARD = ("baisse_prix",)
 
 # Plafond BRUT quotidien de republication, tiré au hasard chaque jour (stable
 # pour la journée, indépendant par dressing) -- décidé le 02/10/2026 pour
@@ -84,8 +86,13 @@ DAILY_THRESHOLDS = {
 # Relevé le 13/10/2026 de 12-15 à 19-21 (décision explicite de l'utilisateur,
 # cf. SEUIL_VOLUME_GLISSANT) : la cible du jour, tirée entre plafond - 3 et
 # plafond, tombe entre 16 et 21, ~18,5 en moyenne.
-PLAFOND_REPUBLICATION_MIN = 19
-PLAFOND_REPUBLICATION_MAX = 21
+#
+# FIXÉ à 20 le 19/10/2026 (décision explicite de l'utilisateur, TEST d'une
+# nouvelle méthode -- la republication assistée par auto-complétion Clemz --
+# pour voir si elle évite les restrictions Vinted à ce volume). À redescendre
+# si une restriction survient.
+PLAFOND_REPUBLICATION_MIN = 20
+PLAFOND_REPUBLICATION_MAX = 20
 
 
 def _plafond_republication_du_jour(dressing: str) -> int:
@@ -126,6 +133,10 @@ DUREE_PALIER_MAX_JOURS = 10            # 3e récidive ou plus (rangs non listés
 # RAMP_QUOTA_DEPART à 100% du seuil normal sur RAMP_DUREE_JOURS jours.
 RAMP_DUREE_JOURS = 7
 RAMP_QUOTA_DEPART = 5
+# DÉSACTIVÉ le 19/10/2026 pour le test à 20 republications/jour (sinon le
+# ramp-up consécutif à la levée de convalescence du 17/10 limitait encore à
+# ~9/jour jusqu'au 24/10). Repasser à True pour le rétablir.
+RAMP_POST_CONVALESCENCE_ACTIF = False
 
 # Niveau 3 (coupure sur volume glissant) -- calibré le 10/09/2026 sur 4 restrictions
 # réelles : dans les cas les plus "immédiats" (D1 27-28/08, D2 22-23/08), le cumul
@@ -160,8 +171,12 @@ RAMP_QUOTA_DEPART = 5
 # actifs, ~18,5 republications par jour actif, ~23/jour pour les 2 dressings.
 # ATTENTION : très au-dessus des 18-21 sur 3 jours des 4 restrictions réelles
 # ayant servi à la calibration du 10/09/2026.
+#
+# Remonté une 4e fois le 19/10/2026, de 46 à 60 -- décision explicite de
+# l'utilisateur pour le test à 20 republications/jour (3 jours x 20) : à 46,
+# le 3e jour consécutif n'aurait plus permis que 6 republications.
 JOURS_FENETRE_VOLUME = 3
-SEUIL_VOLUME_GLISSANT = 46
+SEUIL_VOLUME_GLISSANT = 60
 
 _supabase = SupabaseService()
 
@@ -229,20 +244,19 @@ def get_volume_depuis_minuit(dressing: str, action_type: str, jours_avant: int =
 def get_volume_glissant_combine(dressing: str, jours: int = JOURS_FENETRE_VOLUME) -> int:
     """Cumul RÉEL envoyé sur les `jours` derniers jours CALENDAIRES (aujourd'hui
     compris, depuis minuit il y a jours-1 jours -- cf. SEUIL_VOLUME_GLISSANT,
-    13/10/2026), republication ET baisse de prix ADDITIONNÉES : c'est le volume
-    total qui compte pour ce dressing, peu importe le mélange entre les deux."""
-    return (
-        get_volume_depuis_minuit(dressing, "republication", jours_avant=jours - 1)
-        + get_volume_depuis_minuit(dressing, "baisse_prix", jours_avant=jours - 1)
-    )
+    13/10/2026). Republication SEULE depuis le 18/10/2026 : la baisse de prix
+    (additionnée jusqu'ici) est sortie du risk guard, cf. ACTIONS_HORS_GUARD.
+    Nom conservé pour ne pas casser les appelants."""
+    return get_volume_depuis_minuit(dressing, "republication", jours_avant=jours - 1)
 
 
 def get_jour_pause_volume(dressing: str) -> bool:
     """
     Niveau 2 de la hiérarchie anti-détection (coupure sur volume glissant) --
     remplace l'ancien get_consecutive_active_days/get_jour_repos_force. Décision
-    binaire : True si le cumul combiné (republication + baisse de prix) des
-    JOURS_FENETRE_VOLUME derniers jours atteint déjà SEUIL_VOLUME_GLISSANT.
+    binaire : True si le cumul des republications (baisse de prix exclue depuis
+    le 18/10/2026) des JOURS_FENETRE_VOLUME derniers jours atteint déjà
+    SEUIL_VOLUME_GLISSANT.
     """
     return get_volume_glissant_combine(dressing) >= SEUIL_VOLUME_GLISSANT
 
@@ -275,6 +289,45 @@ def _parse_detected_at(valeur: str) -> datetime:
     return datetime.fromisoformat(valeur.replace("Z", "+00:00")).replace(tzinfo=None)
 
 
+# Levée MANUELLE d'une convalescence (17/10/2026, décision explicite de
+# l'utilisateur) -- marquée en AJOUTANT ce marqueur à la note de la suspension
+# la plus récente plutôt qu'en supprimant la ligne : l'historique des
+# suspensions reste entier (il compte toujours pour le rang des récidives
+# futures) et la levée est partagée entre machines via Supabase, sans
+# changement de schéma. Horodatage en UTC naïf, comme detected_at.
+_MARQUEUR_LEVEE = re.compile(r"\[LEVÉE MANUELLE (\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}) UTC\]")
+
+
+def _date_levee(note) -> datetime | None:
+    m = _MARQUEUR_LEVEE.search(note or "")
+    return datetime.fromisoformat(m.group(1)) if m else None
+
+
+def lever_convalescence(dressing: str):
+    """
+    Met fin MAINTENANT au palier de convalescence en cours de ce dressing.
+    Le ramp-up post-convalescence (RAMP_DUREE_JOURS) s'applique ensuite
+    normalement, à partir de l'instant de la levée.
+    Retourne la convalescence qui était active (dict), ou None s'il n'y en
+    avait pas (rien n'est alors écrit).
+    """
+    active = get_active_convalescence(dressing)
+    if active is None:
+        return None
+    derniere = (
+        _supabase.db.table("account_suspensions")
+        .select("id, note")
+        .eq("dressing", dressing)
+        .order("detected_at", desc=True)
+        .limit(1)
+        .execute()
+    ).data[0]
+    marqueur = f"[LEVÉE MANUELLE {datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')} UTC]"
+    nouvelle_note = f"{derniere.get('note') or ''} {marqueur}".strip()
+    _supabase.db.table("account_suspensions").update({"note": nouvelle_note}).eq("id", derniere["id"]).execute()
+    return active
+
+
 def _dernier_palier(dressing: str):
     """
     Calcule le palier de convalescence le plus récent pour ce dressing (rang de
@@ -285,7 +338,7 @@ def _dernier_palier(dressing: str):
     """
     res = (
         _supabase.db.table("account_suspensions")
-        .select("detected_at")
+        .select("detected_at, note")
         .eq("dressing", dressing)
         .order("detected_at", desc=True)
         .execute()
@@ -300,11 +353,18 @@ def _dernier_palier(dressing: str):
     rang = len(recentes)
     duree_palier_jours = PALIERS_CONVALESCENCE_JOURS.get(rang, DUREE_PALIER_MAX_JOURS)
 
+    fin_palier = derniere_dt + timedelta(days=duree_palier_jours)
+    # Levée manuelle (cf. lever_convalescence) : le palier s'arrête à l'instant
+    # de la levée s'il devait durer plus longtemps.
+    date_levee = _date_levee(toutes[0].get("note"))
+    if date_levee is not None and date_levee < fin_palier:
+        fin_palier = max(date_levee, derniere_dt)
+
     return {
         "derniere_dt": derniere_dt,
         "rang": rang,
         "duree_palier_jours": duree_palier_jours,
-        "fin_palier": derniere_dt + timedelta(days=duree_palier_jours),
+        "fin_palier": fin_palier,
         "recentes": recentes,
     }
 
@@ -371,14 +431,16 @@ def get_active_convalescence(dressing: str):
     rang = palier["rang"]
     recentes = palier["recentes"]
     duree_palier_jours = palier["duree_palier_jours"]
-    duree_ecoulee = datetime.utcnow() - derniere_dt
-    duree_palier = timedelta(days=duree_palier_jours)
-    if duree_ecoulee >= duree_palier:
-        return None  # Palier écoulé (jour ET heure), plus aucune restriction active
+    now = datetime.utcnow()
+    duree_ecoulee = now - derniere_dt
+    # fin_palier plutôt que derniere_dt + durée : tient compte d'une levée
+    # manuelle (cf. lever_convalescence).
+    if now >= palier["fin_palier"]:
+        return None  # Palier écoulé (jour ET heure) ou levé, plus aucune restriction active
 
     # Arrondi au jour supérieur : tant qu'il reste ne serait-ce qu'une minute
     # de palier, on l'affiche comme "1 jour restant", jamais "0".
-    jours_restants = math.ceil((duree_palier - duree_ecoulee).total_seconds() / 86400)
+    jours_restants = math.ceil((palier["fin_palier"] - now).total_seconds() / 86400)
 
     ecart_jours_precedente = None
     if rang >= 2:
@@ -429,7 +491,13 @@ def get_allowed_quantity(dressing: str, action_type: str, requested_quantity: in
     quoi qu'il arrive -- seul le repos statistique Niveau 2 peut être
     outrepassé, jamais un vrai signal de restriction Vinted. Le quota brut
     (DAILY_THRESHOLDS) continue lui aussi de s'appliquer normalement.
+
+    Actions de ACTIONS_HORS_GUARD (baisse de prix, 18/10/2026) : jamais
+    limitées, quel que soit l'état du compte (convalescence comprise).
     """
+    if action_type in ACTIONS_HORS_GUARD:
+        return requested_quantity, False, None
+
     thresholds_for_type = DAILY_THRESHOLDS.get(action_type)
     if thresholds_for_type is None:
         return requested_quantity, False, None
@@ -454,7 +522,7 @@ def get_allowed_quantity(dressing: str, action_type: str, requested_quantity: in
     # active (sinon déjà à 0 ci-dessus) et qu'aucun repos Niveau 2 n'est en
     # cours (le repos statistique reste prioritaire, cf. bloc suivant).
     ramp_en_cours = False
-    if convalescence is None:
+    if convalescence is None and RAMP_POST_CONVALESCENCE_ACTIF:
         ramp_fn = get_ramp_post_convalescence(dressing)
         if ramp_fn is not None:
             quota_ramp = ramp_fn(threshold)
@@ -487,8 +555,8 @@ def get_allowed_quantity(dressing: str, action_type: str, requested_quantity: in
         if forced_rest:
             volume_cumule = get_volume_glissant_combine(dressing)
             reason = (
-                f"Coupure totale pour {dressing} : {volume_cumule} article(s) cumulés "
-                f"(republication + baisse de prix) sur les {JOURS_FENETRE_VOLUME} derniers jours "
+                f"Coupure totale pour {dressing} : {volume_cumule} republication(s) cumulée(s) "
+                f"sur les {JOURS_FENETRE_VOLUME} derniers jours "
                 f"(seuil {SEUIL_VOLUME_GLISSANT}) -- pause imposée pour casser le pic de volume."
             )
         else:

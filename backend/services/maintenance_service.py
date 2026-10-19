@@ -14,6 +14,12 @@ logger = logging.getLogger(__name__)
 # Dossier où Chrome stocke ses extensions installées (Clemz s'y met à jour
 # automatiquement tout seul -- c'est la source de vérité pour la dernière version).
 CLEMZ_CHROME_EXTENSION_ID = "kjpggncklgopkhbfpohiaomjpljkbifg"
+
+# Durée max d'une ouverture manuelle depuis le panneau (verrou de profil tenu
+# pendant ce temps -- cf. open_browser). 60 min plutôt que 15 : un profil
+# recréé de zéro demande connexion Vinted + réinstallation de Clemz via
+# chrome://extensions + réglages Clemz, ce qui peut dépasser 15 min.
+MAX_OUVERTURE_MANUELLE_SECONDES = 60 * 60
 CLEMZ_CHROME_EXTENSIONS_PATH = (
     r"C:\Users\hamdi\AppData\Local\Google\Chrome\User Data\Default\Extensions"
     "\\" + CLEMZ_CHROME_EXTENSION_ID
@@ -41,7 +47,8 @@ class MaintenanceService:
                 # reset_extension_state), mais n'est plus injecté via
                 # --load-extension : voir la branche profile.get("channel")
                 # dans open_browser().
-                "name": "Automation D1 (Chrome + Clemz)",
+                "name": "Dressing 1 — Chrome + Clemz",
+                "account_key": "chrome_clemz",  # cf. session_manager.ACCOUNTS / get_profile_lock
                 "session": os.path.join(_base, "clemz_session_chrome_d1_reel"),
                 "executable": None,
                 "extension": os.path.join(_base, "clemz_extension"),
@@ -56,22 +63,29 @@ class MaintenanceService:
                 # reset_extension_state comme simple indicateur "ce profil utilise
                 # Clemz"), mais n'est plus injecté via --load-extension : voir la
                 # branche profile.get("channel") dans open_browser().
-                "name": "Automation D2 (Chrome + Clemz)",
+                "name": "Dressing 2 — Chrome + Clemz",
+                "account_key": "edge_clemz",  # clé historique, profil Chrome
                 "session": os.path.join(_base, "clemz_session_chrome_reel"),
                 "executable": None,
                 "extension": os.path.join(_base, "clemz_extension"),
                 "url": "https://www.vinted.fr/member/3136979514",
                 "channel": "chrome",
             },
+            # Navigateurs SANS Clemz = profils du SCRAPING depuis le 17/10/2026
+            # (cf. session_manager.ACCOUNTS "chrome_scraping"/"edge_scraping") :
+            # se reconnecter ici répare la session du scraping. Verrou partagé
+            # avec run_full_sync(), pas de préemption (aucun watchdog dessus).
             "vinted_chrome": {
-                "name": "Scraping D1 (Chrome, sans Clemz)",
+                "name": "Dressing 1 — Chrome sans Clemz",
+                "account_key": "chrome_scraping",
                 "session": os.path.join(_base, "vinted_session_chrome"),
                 "executable": r"C:\Program Files\Google\Chrome\Application\chrome.exe",
                 "extension": None,
                 "url": "https://www.vinted.fr/member/287248160",
             },
             "vinted_edge": {
-                "name": "Scraping D2 (Edge, sans Clemz)",
+                "name": "Dressing 2 — Edge sans Clemz",
+                "account_key": "edge_scraping",
                 "session": os.path.join(_base, "vinted_session_edge"),
                 "executable": r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
                 "extension": None,
@@ -153,6 +167,25 @@ class MaintenanceService:
             logger.warning(f"⚠️ [MAINTENANCE] {profile['name']} déjà ouvert ou en cours d'ouverture.")
             return
 
+        # Verrou de profil partagé avec le scraping et les automatisations Clemz
+        # (17/10/2026) : sans lui, ouvrir ce profil pendant un scraping mettait
+        # deux navigateurs sur le même dossier. Refus si une tâche l'utilise déjà
+        # (la route vérifie aussi en amont pour renvoyer un 409 explicite) ;
+        # sinon le verrou est TENU tant que la fenêtre est ouverte, et le scraping
+        # ou une automatisation lancés entre-temps attendent sa fermeture.
+        # Pas d'await entre locked() et acquire() : acquire() sur un verrou libre
+        # rend la main immédiatement, donc pas de course possible.
+        # Profils de scraping (sans Clemz) : verrou oui, préemption non -- le
+        # watchdog ne tourne que sur les profils Clemz (cf. plus bas).
+        from services.clemz_auto_message import get_profile_lock, request_preemption, release_preemption
+        account_key = profile["account_key"]
+        profile_lock = get_profile_lock(account_key) if account_key else None
+        if profile_lock is not None:
+            if profile_lock.locked():
+                logger.warning(f"⚠️ [MAINTENANCE] {profile['name']} utilisé par une tâche en cours -- ouverture refusée.")
+                return
+            await profile_lock.acquire()
+
         self.status[key] = "ouverture"
         logger.info(f"🚀 [MAINTENANCE] Ouverture : {profile['name']}")
 
@@ -185,7 +218,15 @@ class MaintenanceService:
                 f"--load-extension={profile['extension']}",
             ]
 
+        preemption_demandee = False
         try:
+            # Le watchdog "Messages automatiques" ne prend pas le verrou de profil
+            # mais garde son propre navigateur ouvert : même préemption que les
+            # automatisations planifiées, pour qu'il ferme le sien avant.
+            if account_key and profile["extension"]:
+                await request_preemption(account_key)
+                preemption_demandee = True
+
             async with async_playwright() as p:
                 context = await p.chromium.launch_persistent_context(profile["session"], **launch_options)
 
@@ -207,11 +248,24 @@ class MaintenanceService:
 
                 close_event = asyncio.Event()
                 page.on("close", lambda _: close_event.set())
-                await close_event.wait()
+                # Garde-fou : le verrou étant tenu tant que la fenêtre est
+                # ouverte, une fenêtre oubliée bloquerait scraping et routine
+                # (y compris l'extinction nocturne, qui attend les verrous).
+                try:
+                    await asyncio.wait_for(close_event.wait(), timeout=MAX_OUVERTURE_MANUELLE_SECONDES)
+                except asyncio.TimeoutError:
+                    logger.warning(
+                        f"⏱️ [MAINTENANCE] {profile['name']} ouvert depuis plus de "
+                        f"{MAX_OUVERTURE_MANUELLE_SECONDES // 60} min -- fermeture automatique pour libérer le profil."
+                    )
 
         except Exception as e:
             logger.error(f"❌ [MAINTENANCE] Erreur ouverture {profile['name']} : {e}")
         finally:
+            if preemption_demandee:
+                await release_preemption(account_key)
+            if profile_lock is not None:
+                profile_lock.release()
             self.status[key] = "ferme"
             logger.info(f"🔒 [MAINTENANCE] {profile['name']} fermé.")
 

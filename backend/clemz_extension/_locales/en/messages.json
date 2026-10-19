@@ -177,37 +177,31 @@
       "message": "Exchange views & favourites"
    },
    "actionInterface_executionModeApi": {
-      "message": "Standard"
+      "message": "⚡⚡⚡ Standard"
    },
    "actionInterface_executionModeApiTooltip": {
-      "message": "Fully automated relist.\u003Cbr>\u003Cb>Maximum speed, high risk.\u003C/b>"
+      "message": "\u003Cb class=\"text-success\">Maximum speed\u003C/b>, \u003Cb class=\"text-danger\">High risk.\u003C/b>\u003Cbr>Fully automated relist."
    },
    "actionInterface_executionModeBadge": {
       "message": "Human browsing"
    },
-   "actionInterface_executionModeBetaBadge": {
-      "message": "Beta test"
-   },
    "actionInterface_executionModeHeading": {
       "message": "Mode"
    },
-   "actionInterface_executionModeInfo": {
-      "message": "⚠️ Do not touch the browser while running — listings may be incomplete"
-   },
    "actionInterface_executionModeLabel": {
-      "message": "Human-like browsing"
+      "message": "⚡⚡🛡️ Human-like browsing"
    },
    "actionInterface_executionModeManualValidation": {
-      "message": "Manual validation"
+      "message": "⚡🛡️🛡️ Manual validation"
    },
    "actionInterface_executionModeManualValidationBadge": {
       "message": "By hand"
    },
    "actionInterface_executionModeManualValidationTooltip": {
-      "message": "Clemz fills the form one listing at a time. You can edit, then save or publish.\u003Cbr>\u003Cb>Very slow speed, minimum risk.\u003C/b>"
+      "message": "\u003Cb class=\"text-danger\">Very slow speed\u003C/b>, \u003Cb class=\"text-success\">Minimum risk.\u003C/b>\u003Cbr>Clemz fills the form one item at a time. You can edit, then save or publish."
    },
    "actionInterface_executionModeTooltip": {
-      "message": "Clemz opens real Vinted pages, like a human would.\u003Cbr>\u003Cb>Slow speed, lower risk.\u003C/b>"
+      "message": "\u003Cb class=\"text-warning\">Slow speed\u003C/b>, \u003Cb class=\"text-warning\">Lower risk.\u003C/b>\u003Cbr>Clemz opens real Vinted pages, like a human would."
    },
    "actionInterface_executionTransportFrame": {
       "message": "same tab"
@@ -3498,7 +3492,7 @@
       "message": "👉 \u003Ca href=\"https://www.clemz.app/documentation/republier-des-articles#deceive\" target=\"_blank\">\u003Cu>This article\u003C/u>\u003C/a> from the documentation gives more detailed advice on the topic."
    },
    "restrictionWarningModal_message": {
-      "message": "To lower restriction risk, you can:\u003Cul class=\"pl-3 mb-0\">\u003Cli class=\"mt-2\">\u003Cb>Turn on the Protection options\u003C/b>: Manual validation / Human-like browsing as well as Natural pacing slow / slower\u003C/li>\u003Cli class=\"mt-2\">\u003Cb>Reduce daily relists\u003C/b>: based on your closet size, aim for 20-30 max to start, for example\u003C/li>\u003Cli class=\"mt-2\">\u003Cb>Delete, wait a few hours/days, then re-import via Clemz\u003C/b> instead of relisting directly\u003C/li>\u003C/ul>"
+      "message": "To lower restriction risk, you can:\u003Cul class=\"pl-3 mb-0\">\u003Cli class=\"mt-2\">\u003Cb>🛡️ Switch to Manual validation.\u003C/b> This option gives the strongest protection.\u003Cbr>You can also try \u003Cb>Human-like browsing + Natural pacing slow / slower\u003C/b> if you cannot validate each item (weaker protection).\u003C/li>\u003Cli class=\"mt-2\">\u003Cb>⬇️ Reduce daily relists\u003C/b>: based on your closet size, aim for 20-30 max to start, for example\u003C/li>\u003Cli class=\"mt-2\">\u003Cb>⌛ Delete, wait a few hours/days, then re-import via Clemz\u003C/b> instead of relisting directly (\u003Ca href=\"https://www.clemz.app/documentation/republier-des-articles#visibility\" target=\"_blank\">\u003Cu>+ info here\u003C/u>\u003C/a>)\u003C/li>\u003C/ul>"
    },
    "restrictionWarningModal_openSettings": {
       "message": "See these options"
@@ -3507,7 +3501,7 @@
       "message": "⚠️Your closet was restricted recently👮"
    },
    "restrictionWarningTab_message": {
-      "message": "⚠️ \u003Cb class=\"text-danger\">Restriction risk:\u003C/b> turn on Human-like browsing and Natural pacing. \u003Ca href=\"https://www.clemz.app/documentation/republier-des-articles#deceive\" target=\"_blank\">\u003Cu>+ info here\u003C/u>\u003C/a>"
+      "message": "⚠️ \u003Cb class=\"text-danger\">Restriction risk:\u003C/b> switch to Manual validation. \u003Ca href=\"https://www.clemz.app/documentation/republier-des-articles#deceive\" target=\"_blank\">\u003Cu>+ info here\u003C/u>\u003C/a>"
    },
    "save": {
       "message": "Save"

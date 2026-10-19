@@ -6,7 +6,9 @@ export default function RepublishConfirmModal({
     onRemove,
     onConfirm,
     onCancel,
-    isSubmitting
+    isSubmitting,
+    // Réutilisée par la republication assistée (18/10/2026) avec son propre libellé
+    titre = 'Confirmer la republication',
 }) {
     return (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-6">
@@ -15,7 +17,7 @@ export default function RepublishConfirmModal({
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
                     <h2 className="text-lg font-black text-slate-800">
-                        Confirmer la republication ({items.length})
+                        {titre} ({items.length})
                     </h2>
                     <button onClick={onCancel} className="text-slate-400 hover:text-slate-600">
                         <X size={22} />

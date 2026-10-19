@@ -49,15 +49,15 @@
         <hr class="my-2">
         <div class="d-flex align-items-start">
           <span class="font-weight-bolder text-sm mr-2 flex-shrink-0" style="line-height: 28px;" data-i18n="actionInterface_executionModeHeading"></span>
-          <div class="flex-grow-1" style="min-width: 0;">
-            <select id="executionModeSelect" class="custom-select custom-select-sm text-sm" style="width: 220px; max-width: 100%;">
-              <option value="api" data-i18n="actionInterface_executionModeApi"></option>
-              <option value="humanNav" data-i18n="actionInterface_executionModeLabel"></option>
-              <option value="manualValidation" data-i18n="actionInterface_executionModeManualValidation"></option>
-            </select>
-            <div class="mt-1"><span id="executionModeBetaBadge" class="badge badge-warning text-dark d-none">🧪 <span data-i18n="actionInterface_executionModeBetaBadge"></span></span></div>
+          <div class="d-flex flex-column">
+            <div class="" style="min-width: 0;">
+              <select id="executionModeSelect" class="custom-select custom-select-sm text-sm" style="">
+                <option value="api" data-i18n="actionInterface_executionModeApi"></option>
+                <option value="humanNav" data-i18n="actionInterface_executionModeLabel"></option>
+                <option value="manualValidation" data-i18n="actionInterface_executionModeManualValidation"></option>
+              </select>
+            </div>
             <div id="executionModeExplain" class="text-sm mt-1 lh-110"></div>
-            <div id="executionModeHumanInfo" class="text-sm text-danger mt-1 lh-110 d-none" data-i18n="actionInterface_executionModeInfo"></div>
           </div>
         </div>
       </div>

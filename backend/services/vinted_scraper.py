@@ -106,13 +106,23 @@ class VintedScraper:
         ClemzAutomation.run() et clemz_partage, pour exclure tout deadlock) :
         si une automatisation Clemz tourne, le scraping attend sa fin, et
         inversement une automatisation lancée pendant le scraping attend.
+
+        17/10/2026 : le scraping utilise désormais ses PROPRES profils
+        (vinted_session_chrome/edge, cf. session_manager.ACCOUNTS
+        "chrome_scraping"/"edge_scraping"). Les verrous Clemz sont conservés
+        quand même -- la règle "jamais d'activité simultanée sur un même compte
+        Vinted" reste valable même sur deux profils différents -- et on prend en
+        plus les verrous des profils de scraping (exclusion avec une ouverture
+        manuelle depuis le panneau Maintenance). Toujours Clemz d'abord, puis
+        scraping : ordre fixe, aucun autre code ne prend les deux familles.
         """
         from services.clemz_auto_message import get_profile_lock
 
         verrous = [get_profile_lock(cle) for cle in sorted(["chrome_clemz", "edge_clemz"])]
+        verrous += [get_profile_lock(cle) for cle in sorted(["chrome_scraping", "edge_scraping"])]
         if any(v.locked() for v in verrous):
-            logger.info("⏳ Scraping en attente : une automatisation Clemz utilise un profil — démarrage dès qu'elle se termine.")
-            app_state["status_TEST"] = "En attente (automatisation Clemz en cours)"
+            logger.info("⏳ Scraping en attente : une automatisation Clemz ou une fenêtre du panneau utilise un profil — démarrage dès que c'est libre.")
+            app_state["status_TEST"] = "En attente (automatisation Clemz ou fenêtre Maintenance ouverte)"
         for verrou in verrous:
             await verrou.acquire()
         try:
@@ -137,14 +147,14 @@ class VintedScraper:
         task_id = start_task_run("scraping", dressings_items)
 
         # --- On teste les DEUX sessions avant de décider d'abandonner ---
-        session_ok_d1 = await ensure_session("chrome_clemz")
+        session_ok_d1 = await ensure_session("chrome_scraping")
         app_state["session_status"]["dressing1"] = session_ok_d1
 
-        session_ok_d2 = await ensure_session("edge_clemz")
+        session_ok_d2 = await ensure_session("edge_scraping")
         app_state["session_status"]["dressing2"] = session_ok_d2
 
         # Pause délibérée avant de rouvrir un navigateur sur ces mêmes profils --
-        # ensure_session() vient de FERMER son propre contexte sur clemz_session_chrome_d1_reel/
+        # ensure_session() vient de FERMER son propre contexte sur vinted_session_chrome/
         # edge quelques lignes plus haut ; scrap_vinted() va en rouvrir un tout de
         # suite après. Cet enchaînement rapproché (fermeture puis réouverture quasi
         # immédiate du même profil) semble déclencher la page /session-refresh de
@@ -174,19 +184,17 @@ class VintedScraper:
 
         app_state["status_TEST"] = "Scrapping en cours"
 
-        # --- DRESSING 1 (migré 08/09/2026 : vrai Chrome + Clemz préchargée
-        # manuellement dans le profil clemz_session_chrome_d1_reel -- même
-        # traitement que Dressing 2, coïncide avec le changement de compte
-        # Vinted. Voir session_manager.ACCOUNTS["chrome_clemz"].) ---
+        # --- DRESSING 1 (17/10/2026 : profil dédié au scraping, Chrome sans
+        # Clemz -- voir session_manager.ACCOUNTS["chrome_scraping"].) ---
         # Indépendant de Dressing 2 : scrapé uniquement si SA propre session
         # est valide (cf. correctif ci-dessus).
         if session_ok_d1:
             articles_d1 = await self.scrap_vinted(
                 browser_type="chromium",
-                session_path="clemz_session_chrome_d1_reel",
+                session_path="vinted_session_chrome",
                 member_id="287248160",
                 dressing_name="Dressing 1",
-                channel="chrome",
+                executable_path=r"C:\Program Files\Google\Chrome\Application\chrome.exe",
             )
             anomalie_d1 = self._verifier_anomalie_session_perdue(task_id, "dressing1", "Dressing 1", articles_d1)
         else:
@@ -194,19 +202,17 @@ class VintedScraper:
             anomalie_d1 = True
             logger.warning("⏭️ Dressing 1 : scraping ignoré (session invalide) -- Dressing 2 traité indépendamment.")
 
-        # --- DRESSING 2 (migré 05/09/2026 : vrai Chrome + Clemz préchargée
-        # manuellement dans le profil clemz_session_chrome_reel -- corrige
-        # l'empreinte TLS/JA3-JA4 du Chromium embarqué. Voir
-        # session_manager.ACCOUNTS["edge_clemz"] pour le détail.) ---
+        # --- DRESSING 2 (17/10/2026 : profil dédié au scraping, Edge sans
+        # Clemz -- voir session_manager.ACCOUNTS["edge_scraping"].) ---
         # Indépendant de Dressing 1 : scrapé uniquement si SA propre session
         # est valide.
         if session_ok_d2:
             articles_d2 = await self.scrap_vinted(
                 browser_type="chromium",
-                session_path="clemz_session_chrome_reel",
+                session_path="vinted_session_edge",
                 member_id="3136979514",
                 dressing_name="Dressing 2",
-                channel="chrome",
+                executable_path=r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
             )
             anomalie_d2 = self._verifier_anomalie_session_perdue(task_id, "dressing2", "Dressing 2", articles_d2)
         else:
@@ -266,7 +272,7 @@ class VintedScraper:
         logger.info("🏁 Processus complet terminé.")
         finish_task_run(task_id)
 
-    async def scrap_vinted(self, browser_type="chromium", session_path="vinted_session", member_id="", dressing_name="", channel=None):
+    async def scrap_vinted(self, browser_type="chromium", session_path="vinted_session", member_id="", dressing_name="", channel=None, executable_path=None):
         """Fonction de scrap universelle adaptable à Chrome ou Firefox."""
         async with async_playwright() as p:
             browser_engine = p.chromium if browser_type == "chromium" else p.firefox
@@ -284,7 +290,7 @@ class VintedScraper:
             mode_visible = maintenance_service.get_clemz_visible_mode().get("visible", False)
 
             launch_kwargs = {
-                "executable_path": None,
+                "executable_path": executable_path,
                 "headless": not mode_visible,
                 "viewport": {"width": 1280, "height": 900},
                 "args": [

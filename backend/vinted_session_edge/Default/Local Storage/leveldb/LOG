@@ -1,3 +1,8 @@
-2026/10/03-19:09:20.384 6f7c Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\Local Storage\leveldb/MANIFEST-000001
-2026/10/03-19:09:20.385 6f7c Recovering log #48
-2026/10/03-19:09:20.386 6f7c Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\Local Storage\leveldb/000048.log 
+2026/10/18-01:23:51.827 a7e0 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\Local Storage\leveldb/MANIFEST-000001
+2026/10/18-01:23:51.828 a7e0 Recovering log #27
+2026/10/18-01:23:51.828 a7e0 Level-0 table #31: started
+2026/10/18-01:23:51.832 a7e0 Level-0 table #31: 233133 bytes OK
+2026/10/18-01:23:51.835 a7e0 Delete type=0 #27
+2026/10/18-01:24:22.712 afb0 Level-0 table #34: started
+2026/10/18-01:24:22.719 afb0 Level-0 table #34: 233872 bytes OK
+2026/10/18-01:24:22.721 afb0 Delete type=0 #32

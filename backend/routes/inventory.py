@@ -112,7 +112,9 @@ async def reconnect_session_route(dressing: str, background_tasks: BackgroundTas
     session est expirée, attend la reconnexion manuelle (jusqu'à ~3 min).
     Appelée par le bouton "Reconnecter" affiché quand une session est déco.
     """
-    account_map = {"d1": "chrome_clemz", "d2": "edge_clemz"}
+    # Profils du SCRAPING (17/10/2026) : session_status, que ce bouton répare,
+    # est alimenté par run_full_sync() qui vérifie ces profils-là.
+    account_map = {"d1": "chrome_scraping", "d2": "edge_scraping"}
     state_key_map = {"d1": "dressing1", "d2": "dressing2"}
 
     account_key = account_map.get(dressing)
@@ -454,7 +456,10 @@ async def run_automation_now(background_tasks: BackgroundTasks, payload: dict = 
         # "pourcentage fourni" (panier de baisse manuelle, global ou par
         # article) continue plus bas, vers run_now_task/ClemzAutomation.
         ids_restriction = [a["id"] for a in articles_bruts if isinstance(a, dict) and a.get("id")]
-        background_tasks.add_task(run_baisse_prix_auto, ids_restriction)
+        # forcer_niveau2 transmis aussi sur ce chemin (17/10/2026) -- il n'était
+        # appliqué qu'au panier manuel/pépites (run_now_task ci-dessous), pas à
+        # ce bouton-ci, qui restait donc bloqué par la coupure Niveau 2.
+        background_tasks.add_task(run_baisse_prix_auto, ids_restriction, ignorer_repos_niveau2=forcer_niveau2)
         return {"status": "started", "count": len(ids_restriction)}
 
     # Regroupe par pourcentage EFFECTIF (celui de l'article, sinon le fallback
@@ -696,6 +701,85 @@ async def run_automation_now(background_tasks: BackgroundTasks, payload: dict = 
             "pourcentages": sorted({pct for pct, _, _ in lots_a_traiter if pct is not None}),
         },
     }
+
+
+@router.post("/automation/auto-completion")
+async def lancer_auto_completion(payload: dict = Body(...)):
+    """
+    Republication ASSISTÉE via l'auto-complétion Clemz (18/10/2026, cf.
+    services/clemz_auto_completion.py) : le script remplit chaque annonce dans
+    le formulaire Vinted, l'utilisateur la publie lui-même, et le script passe
+    tout seul à la suivante. Un seul dressing à la fois (fenêtre visible).
+
+    Payload : {"dressing": "Dressing 1"|"Dressing 2", "produits": [{"id", "nom", "dressing"}, ...]}
+    """
+    import asyncio
+    from services.clemz_auto_completion import AutoCompletionSession, SESSIONS
+    from services.clemz_auto_message import get_profile_lock
+    from services.automation_scheduler import start_task_run
+
+    dressing = payload.get("dressing")
+    if dressing not in ("Dressing 1", "Dressing 2"):
+        raise HTTPException(status_code=400, detail="dressing doit être 'Dressing 1' ou 'Dressing 2'.")
+    produits = [p for p in payload.get("produits", []) if isinstance(p, dict) and p.get("nom") and p.get("dressing") == dressing]
+    if not produits:
+        raise HTTPException(status_code=400, detail=f"Aucun article de {dressing} à republier.")
+
+    session = SESSIONS.get(dressing)
+    if session and session.etat["statut"] not in ("termine", "echec"):
+        raise HTTPException(status_code=409, detail=f"Une republication assistée est déjà en cours sur {dressing}.")
+    cle = "chrome_clemz" if dressing == "Dressing 1" else "edge_clemz"
+    if get_profile_lock(cle).locked():
+        raise HTTPException(status_code=409, detail=f"Le profil Clemz de {dressing} est utilisé par une autre tâche (ou ouvert depuis Maintenance).")
+
+    # "remplissage" : "smart_dressing" | "clemz_app" = remplissage SEUL de la
+    # liste à traiter (19/10/2026), sans suppression ni publication -- donc
+    # sans tâche de republication dans l'historique.
+    remplissage = payload.get("remplissage")
+    if remplissage not in (None, "smart_dressing", "clemz_app"):
+        raise HTTPException(status_code=400, detail="remplissage doit être 'smart_dressing' ou 'clemz_app'.")
+    task_id = None if remplissage else start_task_run("republication", produits, sous_type="republication_manuelle")
+    pas_a_pas = bool(payload.get("pas_a_pas"))
+    # Étape 0 (sauvegarde + suppression sur Vinted) : active par défaut
+    suppression_prealable = payload.get("suppression_prealable", True) is not False
+    logger.info(f"🚀 [AUTO-COMPLÉTION {dressing}] {'Remplissage ' + remplissage if remplissage else 'Série'} lancé(e) : "
+                f"{len(produits)} article(s), suppression d'abord={suppression_prealable and not remplissage}, pas à pas={pas_a_pas}.")
+    session = AutoCompletionSession(dressing, [p["nom"] for p in produits], task_id=task_id,
+                                    pas_a_pas=pas_a_pas, suppression_prealable=suppression_prealable,
+                                    remplissage=remplissage)
+    SESSIONS[dressing] = session
+    asyncio.create_task(session.run())
+    return {"status": "started", "dressing": dressing, "count": len(produits), "task_id": task_id,
+            "suppression_prealable": suppression_prealable, "pas_a_pas": pas_a_pas, "remplissage": remplissage}
+
+
+@router.get("/automation/auto-completion/statut")
+async def statut_auto_completion():
+    """État des sessions de republication assistée, par dressing (dashboard)."""
+    from services.clemz_auto_completion import SESSIONS
+    return {dressing: session.etat for dressing, session in SESSIONS.items()}
+
+
+@router.post("/automation/auto-completion/continuer")
+async def continuer_auto_completion(payload: dict = Body(...)):
+    """Mode pas à pas : exécute l'action annoncée par la session en pause."""
+    from services.clemz_auto_completion import SESSIONS
+    session = SESSIONS.get(payload.get("dressing"))
+    if not session or session.etat["statut"] != "pause":
+        raise HTTPException(status_code=409, detail="Aucune session en pause sur ce dressing.")
+    session.continuer()
+    return {"status": "continue", "dressing": session.dressing}
+
+
+@router.post("/automation/auto-completion/arreter")
+async def arreter_auto_completion(payload: dict = Body(...)):
+    """Arrête la session après l'article en cours (ou pendant l'attente de publication)."""
+    from services.clemz_automation import demander_arret
+    dressing = payload.get("dressing")
+    if dressing not in ("Dressing 1", "Dressing 2"):
+        raise HTTPException(status_code=400, detail="dressing doit être 'Dressing 1' ou 'Dressing 2'.")
+    demander_arret(dressing)
+    return {"status": "arret_demande", "dressing": dressing}
 
 
 MIN_ARTICLES_PAR_GROUPE_LIQUIDATION = 3  # abaissé de 5 à 3 le 05/10/2026 (stock dormant trop dispersé par prix pour atteindre 5) -- sous ce seuil, on attend d'avoir plus d'articles au même prix fixe plutôt que d'ouvrir un cycle Playwright pour 1-2 articles

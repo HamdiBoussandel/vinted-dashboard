@@ -12,11 +12,12 @@ RECONNECT_POLL_INTERVAL = 3
 
 _BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# NOUVEAU (11/08/2026) : suppression de "chrome_scraper"/"edge_scraper" qui
-# pointaient vers des dossiers de session (vinted_session_chrome/edge) jamais
-# réellement utilisés par scrap_vinted() — source de confusion et de faux
-# diagnostics. Un seul jeu de sessions par navigateur désormais (clemz_session_*),
-# partagé entre scraping et automatisation Clemz (jamais exécutés en même temps).
+# Historique : le 11/08/2026, "chrome_scraper"/"edge_scraper" avaient été
+# supprimés (ils pointaient vers vinted_session_chrome/edge alors que
+# scrap_vinted() utilisait les profils Clemz) et un seul jeu de sessions était
+# partagé entre scraping et Clemz. Le 17/10/2026, le scraping est REPASSÉ sur
+# des profils dédiés sans Clemz -- cette fois réellement utilisés par
+# scrap_vinted() (voir "chrome_scraping"/"edge_scraping" en bas du dict).
 ACCOUNTS = {
     # MIGRÉ (08/09/2026) : vrai Chrome (channel="chrome") + Clemz préchargée
     # manuellement dans le profil via chrome://extensions (Charger l'extension
@@ -50,6 +51,27 @@ ACCOUNTS = {
     # Dressing 3 (brouillons, Brave, member_id 287248160) a fusionné dans
     # Dressing 1 le 08/09/2026 -- même compte Vinted, même profil désormais
     # (voir vinted_draft_creation_worker.py). Rôle "brave_brouillons" supprimé.
+
+    # RÉTABLIS (17/10/2026) : profils DÉDIÉS au scraping, sans Clemz -- le
+    # scraping (vinted_scraper.run_full_sync) n'ouvre plus les profils Clemz
+    # ci-dessus, qui restent réservés aux automatisations. Séparer les deux
+    # usages évite que le scraping fasse tomber la session dont dépendent les
+    # automatisations (perte de session D1 en plein scraping, 16/10/2026).
+    # Mêmes binaires que le panneau Maintenance ("vinted_chrome"/"vinted_edge").
+    "chrome_scraping": {
+        "name": "Dressing 1 - Scraping (Chrome)",
+        "member_id": "287248160",
+        "session": os.path.join(_BASE, "vinted_session_chrome"),
+        "executable": r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+        "extension": None,
+    },
+    "edge_scraping": {
+        "name": "Dressing 2 - Scraping (Edge)",
+        "member_id": "3136979514",
+        "session": os.path.join(_BASE, "vinted_session_edge"),
+        "executable": r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
+        "extension": None,
+    },
 }
 
 def _send_notification(title, message):
@@ -127,15 +149,63 @@ async def _page_unique(context):
     return page
 
 
+async def _etat_connexion_api(page, member_id):
+    """
+    Signal POSITIF de connexion (17/10/2026) : interroge l'API Vinted
+    /api/v2/users/current depuis la page (mêmes cookies que le navigateur).
+
+    Remplace la seule absence du bouton "Se connecter", qui donnait des faux
+    positifs : ce bouton est aussi absent tant que le header n'est pas rendu,
+    sur une page blanche/challenge, ou pendant une navigation -- constaté le
+    16/10/2026 (D1 "Session active" puis scrapé en vue anonyme, 0 vue partout ;
+    "Reconnexion détectée" en 6 s sans qu'aucun jeton n'ait été réécrit).
+
+    Retourne True (connecté sur le BON compte), False (non connecté, ou connecté
+    sur un autre compte), ou None (indéterminé : page hors vinted.fr, API
+    injoignable ou réponse inattendue).
+    """
+    if not page.url.startswith("https://www.vinted.fr"):
+        return None
+    try:
+        res = await page.evaluate("""async () => {
+            try {
+                const r = await fetch('/api/v2/users/current', {
+                    credentials: 'include',
+                    headers: { 'Accept': 'application/json' },
+                });
+                let id = null;
+                try { const j = await r.json(); id = j && j.user ? j.user.id : null; } catch (e) {}
+                return { status: r.status, id: id };
+            } catch (e) {
+                return { status: 0, id: null };
+            }
+        }""")
+    except Exception as e:
+        logger.debug(f"⏳ Vérification API ignorée (page en transition) : {e}")
+        return None
+
+    status, user_id = res.get("status"), res.get("id")
+    if status == 200 and user_id is not None:
+        if str(user_id) == str(member_id):
+            return True
+        logger.warning(f"⚠️ Connecté sur un AUTRE compte Vinted (id {user_id}, attendu {member_id}).")
+        return False
+    if status in (401, 403):
+        return False
+    logger.warning(f"⚠️ Vérification API connexion indéterminée (HTTP {status}).")
+    return None
+
+
 async def _is_session_valid(page, member_id):
     """
     Navigue vers le profil Vinted et vérifie si la session est réellement active.
 
     IMPORTANT : la page /member/{id} est PUBLIQUE — elle ne redirige jamais vers
-    /login, connecté ou non. Vérifier uniquement l'URL était donc un faux positif
-    permanent. On vérifie à la place la présence du bouton "Se connecter" dans le
-    header (data-testid="header--login-button") : s'il est présent, on est en
-    navigation anonyme, donc PAS connecté.
+    /login, connecté ou non. Le signal principal est désormais l'API
+    /api/v2/users/current (cf. _etat_connexion_api). Le bouton "Se connecter"
+    (data-testid="header--login-button") ne sert plus que de repli si l'API
+    ne répond pas de façon exploitable -- et seulement une fois le header
+    réellement rendu, pour ne plus conclure "connecté" sur une page vide.
 
     Retourne True si réellement connecté, False sinon.
     """
@@ -149,13 +219,27 @@ async def _is_session_valid(page, member_id):
             logger.info(f"🔒 Session expirée — redirigé vers : {current_url}")
             return False
 
-        # --- Vérification du vrai signal de connexion ---
+        etat = await _etat_connexion_api(page, member_id)
+        if etat is True:
+            logger.info(f"✅ Session active (API) — URL : {current_url}")
+            return True
+        if etat is False:
+            logger.info(f"🔒 Session invalide (API /users/current) — URL : {current_url}")
+            return False
+
+        # --- Repli : bouton "Se connecter", seulement si le header est rendu ---
+        try:
+            await page.wait_for_selector("header", timeout=5000)
+        except Exception:
+            logger.warning(f"🔒 Header Vinted introuvable (page vide/challenge ?) — session considérée invalide. URL : {current_url}")
+            return False
+
         login_button = await page.query_selector('[data-testid="header--login-button"]')
         if login_button:
             logger.info(f"🔒 Session invalide — bouton 'Se connecter' détecté dans le header (navigation anonyme).")
             return False
 
-        logger.info(f"✅ Session active — URL : {current_url}")
+        logger.info(f"✅ Session active (repli header, API indéterminée) — URL : {current_url}")
         return True
 
     except Exception as e:
@@ -166,9 +250,14 @@ async def _is_session_valid(page, member_id):
 async def _wait_for_reconnect(page, member_id, account_name):
     """
     Attend que l'utilisateur se reconnecte manuellement.
-    Poll toutes les RECONNECT_POLL_INTERVAL secondes en vérifiant l'ABSENCE du
-    bouton "Se connecter" dans le header (même signal fiable que _is_session_valid) —
-    on ne peut plus se fier à l'URL puisqu'on part de l'accueil, pas de /login.
+    Poll toutes les RECONNECT_POLL_INTERVAL secondes via l'API
+    /api/v2/users/current (cf. _etat_connexion_api) : seule une réponse
+    POSITIVE sur le bon compte vaut reconnexion. L'ancienne règle "bouton
+    'Se connecter' absent" validait à tort pendant le flux Google ou sur une
+    page en cours de chargement (16/10/2026 : "Reconnexion détectée" en 6 s
+    sans aucune connexion réelle).
+    Repli sur l'ancien signal uniquement si l'API reste indéterminée, la page
+    est sur www.vinted.fr et le header est rendu.
     Timeout après RECONNECT_TIMEOUT_SECONDS secondes.
     Retourne True si reconnexion détectée, False si timeout.
     """
@@ -180,10 +269,16 @@ async def _wait_for_reconnect(page, member_id, account_name):
         elapsed += RECONNECT_POLL_INTERVAL
 
         try:
-            login_button = await page.query_selector('[data-testid="header--login-button"]')
-            if login_button is None:
-                logger.info(f"✅ Reconnexion détectée pour {account_name} !")
+            etat = await _etat_connexion_api(page, member_id)
+            if etat is True:
+                logger.info(f"✅ Reconnexion détectée (API) pour {account_name} !")
                 return True
+            if etat is None and page.url.startswith("https://www.vinted.fr"):
+                header = await page.query_selector("header")
+                login_button = await page.query_selector('[data-testid="header--login-button"]')
+                if header is not None and login_button is None:
+                    logger.info(f"✅ Reconnexion détectée (repli header) pour {account_name} !")
+                    return True
         except Exception as e:
             # La page peut être en pleine navigation pendant le flux Google —
             # on ignore l'erreur ponctuelle et on retente au prochain poll.
@@ -287,15 +382,26 @@ async def ensure_session(account_key):
                 f"--load-extension={account['extension']}",
             ]
 
+    # Même mode (headless ou fenêtre) que le scraping qui suit (17/10/2026) :
+    # ouvrir le même profil en Chrome headless puis, 10 s plus tard, en fenêtre
+    # visible présente à Vinted deux empreintes différentes sur la même
+    # session -- piste retenue pour la perte de session D1 du 16/10/2026
+    # (jetons renouvelés puis invalidés en plein scraping). Lu à chaque appel,
+    # comme scrap_vinted(), pour suivre le toggle "Navigateur visible".
+    from services.maintenance_service import maintenance_service
+    verif_headless = not maintenance_service.get_clemz_visible_mode().get("visible", False)
+
     async with async_playwright() as p:
         context = None
         try:
-            # --- Étape 1 : vérification INVISIBLE ---
-            logger.info(f"🔍 Vérification session (invisible) : {account['name']}...")
+            # --- Étape 1 : vérification (hors écran si mode visible) ---
+            logger.info(
+                f"🔍 Vérification session ({'invisible' if verif_headless else 'fenêtre hors écran'}) : {account['name']}..."
+            )
 
             context = await p.chromium.launch_persistent_context(
                 account["session"],
-                **_options_lancement(account, args_headless, headless=True),
+                **_options_lancement(account, args_headless, headless=verif_headless),
             )
             page = await _page_unique(context)
 

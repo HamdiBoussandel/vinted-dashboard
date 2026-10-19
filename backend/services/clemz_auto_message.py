@@ -106,6 +106,10 @@ PREEMPTION_WAIT_TIMEOUT_SECONDS = 90    # garde-fou anti-blocage infini d'une au
 # même profil dans ce cas. Ce verrou comble ce trou, en complément de la
 # préemption (les deux mécanismes sont nécessaires, aucun ne remplace l'autre).
 _profile_locks = {acc["account_key"]: asyncio.Lock() for acc in ACCOUNTS}
+# Profils DÉDIÉS au scraping (17/10/2026, cf. session_manager.ACCOUNTS) : pas
+# de watchdog dessus donc pas de préemption, juste l'exclusion entre le
+# scraping et une ouverture manuelle depuis le panneau Maintenance.
+_profile_locks.update({"chrome_scraping": asyncio.Lock(), "edge_scraping": asyncio.Lock()})
 
 
 def get_profile_lock(account_key):

@@ -75,7 +75,12 @@ VOLUME_MIN_JOUR_ACTIF = 5
 # gardant un peu de variation jour à jour (pas un chiffre identique à chaque
 # fois, cf. le raisonnement anti-détection du 15/09/2026 sur un volume
 # systématiquement au max).
-ECART_PLANCHER_CIBLE_CALENDRIER = 3
+#
+# Mis à 0 le 19/10/2026 (test à 20 republications/jour, décision explicite de
+# l'utilisateur) : un jour actif vise désormais EXACTEMENT le plafond (20), au
+# lieu d'un tirage entre 17 et 20. Les jours de repos du calendrier sont
+# conservés. Repasser à 3 pour retrouver la variation.
+ECART_PLANCHER_CIBLE_CALENDRIER = 0
 
 
 def _minimum_cible_calendrier(plafond: int) -> int:

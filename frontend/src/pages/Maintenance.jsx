@@ -17,7 +17,9 @@ const STATUS_STYLE = {
 
 const ProfileCard = ({ profile, onOpen, opening, onReset, resetting }) => {
   const isClemz = profile.key.startsWith('clemz');
-  const Icon = profile.key.includes('edge') ? Globe : Chrome;
+  // Seul "vinted_edge" est un vrai profil Edge -- "clemz_edge" n'est qu'une
+  // clé historique (Dressing 2), qui tourne sous Chrome.
+  const Icon = profile.key === 'vinted_edge' ? Globe : Chrome;
   const busy = profile.status !== 'ferme';
 
   return (
@@ -34,7 +36,9 @@ const ProfileCard = ({ profile, onOpen, opening, onReset, resetting }) => {
             </span>
           </div>
           <p className="text-[11px] text-slate-400 font-semibold uppercase tracking-wide">
-            {isClemz ? 'Session + extension Clemz' : 'Session sans Clemz'}
+            {isClemz
+              ? 'Utilisé par les automatisations Clemz'
+              : 'Utilisé par le scraping'}
           </p>
         </div>
       </div>
@@ -215,6 +219,11 @@ const ScrapingAutoCard = ({ active, onToggle, loading }) => (
 // Ajouté le 10/10/2026 -- seule automatisation qui n'avait pas d'interrupteur :
 // sans lui, le PC de dev republiait dès que son propre plan du jour (tiré
 // localement) rendait un dressing actif, en plus de la VM.
+// Republication automatique RETIRÉE le 19/10/2026 (remplacée par la
+// republication assistée du Dashboard) : carte masquée, réactivation refusée
+// côté backend (automation_service.REPUBLICATION_AUTO_RETIREE). Code conservé.
+const REPUBLICATION_AUTO_RETIREE = true;
+
 const RepublicationAutoCard = ({ active, onToggle, loading }) => (
   <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex items-center justify-between gap-4 mt-5">
     <div className="flex items-center gap-3 min-w-0">
@@ -635,11 +644,13 @@ export default function Maintenance() {
         loading={scrapingAutoLoading}
       />
 
-      <RepublicationAutoCard
-        active={republicationAutoActive}
-        onToggle={handleToggleRepublicationAuto}
-        loading={republicationAutoLoading}
-      />
+      {!REPUBLICATION_AUTO_RETIREE && (
+        <RepublicationAutoCard
+          active={republicationAutoActive}
+          onToggle={handleToggleRepublicationAuto}
+          loading={republicationAutoLoading}
+        />
+      )}
 
       <PartageVuesFavorisAutoCard
         active={partageAutoActive}

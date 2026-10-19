@@ -275,6 +275,114 @@ export default function Dashboard() {
     // (cf. échange du 10/09/2026).
     const [manualBaissePourcentages, setManualBaissePourcentages] = useState({});
     const [isLaunchingManualBaisse, setIsLaunchingManualBaisse] = useState(false);
+    // Republication ASSISTÉE (auto-complétion Clemz, 18/10/2026) : le backend
+    // remplit chaque annonce dans le formulaire Vinted, tu la publies toi-même,
+    // il enchaîne sur la suivante. Un dressing à la fois (fenêtre visible).
+    const [autoCompletion, setAutoCompletion] = useState({});
+    const autoCompletionActive = Object.values(autoCompletion).some(
+        s => s && !['termine', 'echec'].includes(s.statut)
+    );
+
+    useEffect(() => {
+        let annule = false;
+        const lire = async () => {
+            try {
+                const res = await fetch('http://localhost:8000/api/automation/auto-completion/statut');
+                if (res.ok && !annule) setAutoCompletion(await res.json());
+            } catch { /* backend injoignable : on garde le dernier état */ }
+        };
+        lire();
+        const id = setInterval(lire, autoCompletionActive ? 3000 : 15000);
+        return () => { annule = true; clearInterval(id); };
+    }, [autoCompletionActive]);
+
+    // Fenêtre de sélection PROPRE à la republication assistée : un retrait
+    // n'y est pas compensé par l'article éligible suivant (contrairement aux
+    // exclusions de la liste "à republier", plafonnée au quota restant -- un
+    // article retiré y était aussitôt remplacé, cf. échange du 18/10/2026).
+    const [autoCompletionModal, setAutoCompletionModal] = useState(null); // {dressing, items}
+    // Mode pas à pas : la session s'arrête avant chaque action et attend "Continuer"
+    const [pasAPas, setPasAPas] = useState(false);
+    // Étape 0 : sauvegarde + suppression des annonces sur Vinted avant la republication
+    const [suppressionPrealable, setSuppressionPrealable] = useState(true);
+
+    const handleContinuerAutoCompletion = async (dressing) => {
+        try {
+            const res = await fetch('http://localhost:8000/api/automation/auto-completion/continuer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ dressing }),
+            });
+            if (!res.ok) throw new Error((await res.json()).detail || 'Erreur');
+            setAutoCompletion(prev => ({ ...prev, [dressing]: { ...prev[dressing], statut: 'en_cours' } }));
+        } catch (err) {
+            toast.error(`Échec : ${err.message}`);
+        }
+    };
+    const [isLaunchingAutoCompletion, setIsLaunchingAutoCompletion] = useState(false);
+
+    // remplissage : null = série complète ; "smart_dressing" | "clemz_app" =
+    // remplissage SEUL de la liste à traiter de Clemz par cette source (19/10/2026).
+    const LIBELLES_REMPLISSAGE = { smart_dressing: 'Smart Dressing', clemz_app: 'clemz.app' };
+
+    const handleOuvrirAutoCompletion = (dressing, remplissage = null) => {
+        const items = articlesToRepublish.filter(a => a.dressing === dressing);
+        if (items.length === 0) {
+            toast.error(`Aucun article de ${dressing} à republier.`);
+            return;
+        }
+        setAutoCompletionModal({ dressing, items, remplissage });
+    };
+
+    const handleConfirmerAutoCompletion = async () => {
+        if (!autoCompletionModal) return;
+        setIsLaunchingAutoCompletion(true);
+        await handleLancerAutoCompletion(autoCompletionModal.dressing, autoCompletionModal.items, autoCompletionModal.remplissage);
+        setIsLaunchingAutoCompletion(false);
+        setAutoCompletionModal(null);
+    };
+
+    const handleLancerAutoCompletion = async (dressing, items, remplissage = null) => {
+        if (items.length === 0) {
+            toast.error(`Aucun article de ${dressing} à republier.`);
+            return;
+        }
+        try {
+            const response = await fetch('http://localhost:8000/api/automation/auto-completion', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    dressing,
+                    produits: items.map(p => ({ id: p.id, nom: p.nom, dressing: p.dressing })),
+                    ...(pasAPas ? { pas_a_pas: true } : {}),
+                    suppression_prealable: suppressionPrealable,
+                    ...(remplissage ? { remplissage } : {}),
+                }),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.detail || 'Erreur lors du lancement');
+            toast.success(remplissage
+                ? `Remplissage de la liste à traiter (${LIBELLES_REMPLISSAGE[remplissage]}) lancé pour ${data.count} article(s) de ${dressing}.`
+                : `Republication assistée lancée pour ${data.count} article(s) de ${dressing}. Publie chaque annonce dans la fenêtre Vinted.`);
+            setAutoCompletion(prev => ({ ...prev, [dressing]: { statut: 'demarrage', dressing, index: 0, total: data.count } }));
+        } catch (err) {
+            toast.error(`Échec : ${err.message}`);
+        }
+    };
+
+    const handleArreterAutoCompletion = async (dressing) => {
+        try {
+            await fetch('http://localhost:8000/api/automation/auto-completion/arreter', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ dressing }),
+            });
+            toast.success(`Arrêt demandé pour ${dressing}.`);
+        } catch {
+            toast.error("Impossible de contacter le serveur.");
+        }
+    };
+
     const handleForceRunNow = async (taskType, itemsOverride = null) => {
         const items = itemsOverride || (taskType === 'republication' ? articlesToRepublish : articlesToBaisse);
         if (items.length === 0) {
@@ -785,6 +893,91 @@ export default function Dashboard() {
                     >
                         {isForcingRepublish ? '...' : `♻️ Forcer republication (${articlesToRepublish.length})`}
                     </button>
+                    {['Dressing 1', 'Dressing 2'].map(dressing => {
+                        const nb = articlesToRepublish.filter(a => a.dressing === dressing).length;
+                        const s = autoCompletion[dressing];
+                        const enCours = s && !['termine', 'echec'].includes(s.statut);
+                        return enCours ? (
+                            <div key={dressing} className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold border ${s.statut === 'attente_validation' || s.statut === 'pause'
+                                ? 'bg-amber-50 border-amber-300 text-amber-800'
+                                : 'bg-indigo-50 border-indigo-200 text-indigo-700'}`}>
+                                <span>
+                                    📝 {dressing.replace('Dressing ', 'D')} {s.index || 0}/{s.total || 0}
+                                    {s.statut === 'attente_validation' ? ' — à toi de publier' : ` — ${s.message || 'en cours'}`}
+                                </span>
+                                {s.statut === 'pause' && (
+                                    <button
+                                        onClick={() => handleContinuerAutoCompletion(dressing)}
+                                        className="px-2 py-0.5 rounded bg-amber-500 text-white text-[10px] font-black uppercase"
+                                    >
+                                        Continuer
+                                    </button>
+                                )}
+                                <button
+                                    onClick={() => handleArreterAutoCompletion(dressing)}
+                                    className="px-2 py-0.5 rounded bg-white border border-current text-[10px] font-black uppercase"
+                                >
+                                    Arrêter
+                                </button>
+                            </div>
+                        ) : (
+                            <div key={dressing} className="flex items-center gap-1">
+                                <button
+                                    onClick={() => handleOuvrirAutoCompletion(dressing)}
+                                    disabled={nb === 0}
+                                    title={s?.message ? `Dernière session : ${s.message}` : "Clemz remplit chaque annonce dans le formulaire Vinted, tu la publies, le script passe à la suivante."}
+                                    className="px-4 py-2 bg-indigo-500 text-white rounded-lg text-xs font-black uppercase disabled:opacity-40"
+                                >
+                                    📝 Republication assistée {dressing.replace('Dressing ', 'D')} ({nb})
+                                </button>
+                                {/* Remplissage SEUL de la liste à traiter de Clemz, par une source (19/10/2026) */}
+                                <button
+                                    onClick={() => handleOuvrirAutoCompletion(dressing, 'smart_dressing')}
+                                    disabled={nb === 0}
+                                    title="Remplit seulement la liste « à traiter » de Clemz par le Smart Dressing (comme la republication classique). Rien n'est supprimé ni publié."
+                                    className="px-2 py-2 bg-white border border-indigo-300 text-indigo-600 rounded-lg text-[10px] font-black uppercase disabled:opacity-40"
+                                >
+                                    🔍 Smart Dressing
+                                </button>
+                                <button
+                                    onClick={() => handleOuvrirAutoCompletion(dressing, 'clemz_app')}
+                                    disabled={nb === 0}
+                                    title="Remplit seulement la liste « à traiter » de Clemz depuis les sauvegardes clemz.app (utilisée par l'auto-complétion). Rien n'est supprimé ni publié."
+                                    className="px-2 py-2 bg-white border border-indigo-300 text-indigo-600 rounded-lg text-[10px] font-black uppercase disabled:opacity-40"
+                                >
+                                    ☁️ clemz.app
+                                </button>
+                            </div>
+                        );
+                    })}
+                    <label
+                        title="Pause avant chaque action de la republication assistée : le Dashboard annonce l'action suivante, tu cliques sur « Continuer » pour l'exécuter."
+                        className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-[10px] font-black uppercase cursor-pointer border transition-all ${pasAPas
+                            ? 'bg-amber-100 text-amber-700 border-amber-300'
+                            : 'bg-white text-slate-400 border-slate-200 hover:border-amber-300'}`}
+                    >
+                        <input
+                            type="checkbox"
+                            checked={pasAPas}
+                            onChange={e => setPasAPas(e.target.checked)}
+                            className="accent-amber-500"
+                        />
+                        Pas à pas
+                    </label>
+                    <label
+                        title="Étape 0 de la republication assistée : sauvegarde sur clemz.app puis SUPPRESSION définitive des annonces sur Vinted (Smart Dressing), avant de les republier. Ignorée en « Préparation seule »."
+                        className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-[10px] font-black uppercase cursor-pointer border transition-all ${suppressionPrealable
+                            ? 'bg-rose-100 text-rose-700 border-rose-300'
+                            : 'bg-white text-slate-400 border-slate-200 hover:border-rose-300'}`}
+                    >
+                        <input
+                            type="checkbox"
+                            checked={suppressionPrealable}
+                            onChange={e => setSuppressionPrealable(e.target.checked)}
+                            className="accent-rose-500"
+                        />
+                        Supprimer d'abord
+                    </label>
                     {/* Étendu le 26/09/2026 (cf. échange) : ne vérifiait QUE le niveau du
                         plan de republication -- une fois celui-ci réactivé en "continuite",
                         la case disparaissait complètement, empêchant tout override pour la
@@ -992,6 +1185,21 @@ export default function Dashboard() {
                     onConfirm={handleConfirmRepublishModal}
                     onCancel={() => setShowRepublishModal(false)}
                     isSubmitting={isForcingRepublish}
+                />
+            )}
+
+            {autoCompletionModal && (
+                <RepublishConfirmModal
+                    titre={autoCompletionModal.remplissage
+                        ? `Remplir la liste à traiter (${LIBELLES_REMPLISSAGE[autoCompletionModal.remplissage]}) — ${autoCompletionModal.dressing}`
+                        : `📝 Republication assistée — ${autoCompletionModal.dressing}`}
+                    items={autoCompletionModal.items}
+                    onRemove={(id) => setAutoCompletionModal(prev => ({
+                        ...prev, items: prev.items.filter(a => a.id !== id),
+                    }))}
+                    onConfirm={handleConfirmerAutoCompletion}
+                    onCancel={() => setAutoCompletionModal(null)}
+                    isSubmitting={isLaunchingAutoCompletion}
                 />
             )}
 

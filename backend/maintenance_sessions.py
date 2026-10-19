@@ -18,23 +18,13 @@ class SessionManager:
             _base = os.path.dirname(_base)
 
         self.sessions = {
-            "vinted_chrome": {
-                "name": "Scraping D1 (Chrome - sans Clemz)",
-                "path": os.path.join(_base, "vinted_session_chrome"),
-                "exe": r"C:\Program Files\Google\Chrome\Application\chrome.exe",
-                "ext": None,
-            },
-            "vinted_edge": {
-                "name": "Scraping D2 (Edge - sans Clemz)",
-                "path": os.path.join(_base, "vinted_session_edge"),
-                "exe": r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
-                "ext": None,
-            },
+            # "vinted_chrome"/"vinted_edge" retirés le 17/10/2026 -- profils que
+            # le scraping n'utilise plus (cf. services/maintenance_service.py).
             "clemz_chrome": {
                 # MIGRÉ (08/09/2026) : vrai Chrome + Clemz préchargée manuellement
                 # dans le profil, même traitement que Dressing 2 -- voir
                 # services/maintenance_service.py et services/session_manager.py.
-                "name": "Automation D1 (Chrome + Clemz)",
+                "name": "Dressing 1 (Chrome + Clemz) — scraping et automatisations",
                 "path": os.path.join(_base, "clemz_session_chrome_d1_reel"),
                 "exe": None,
                 "ext": None,
@@ -44,7 +34,7 @@ class SessionManager:
                 # MIGRÉ (05/09/2026) : vrai Chrome + Clemz préchargée manuellement
                 # dans le profil -- voir services/maintenance_service.py et
                 # services/session_manager.py pour le détail.
-                "name": "Automation D2 (Chrome + Clemz)",
+                "name": "Dressing 2 (Chrome + Clemz) — scraping et automatisations",
                 "path": os.path.join(_base, "clemz_session_chrome_reel"),
                 "exe": None,
                 "ext": None,
@@ -163,20 +153,16 @@ async def main():
         print("   MENU MAINTENANCE SESSIONS")
         print("="*40)
         print("0. 🔥 Supprimer TOUTES les sessions")
-        print("1. Ouvrir Scraping D1     (Chrome, sans Clemz)")
-        print("2. Ouvrir Scraping D2     (Edge,   sans Clemz)")
-        print("3. Ouvrir Automation D1   (Chrome, avec Clemz)")
-        print("4. Ouvrir Automation D2   (Edge,   avec Clemz)")
+        print("1. Ouvrir Dressing 1      (Chrome + Clemz, scraping et automatisations)")
+        print("2. Ouvrir Dressing 2      (Chrome + Clemz, scraping et automatisations)")
         print("5. 🔄 Mettre à jour l'extension Clemz (depuis Chrome)")
         print("6. Quitter")
 
         choix = input("\nOption choisie : ")
 
         mapping = {
-            "1": "vinted_chrome",
-            "2": "vinted_edge",
-            "3": "clemz_chrome",
-            "4": "clemz_edge",
+            "1": "clemz_chrome",
+            "2": "clemz_edge",
         }
 
         if choix == "0":
