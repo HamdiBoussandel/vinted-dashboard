@@ -1,15 +1,29 @@
-2026/10/18-01:23:08.824 4038 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_chrome\Default\IndexedDB\https_www.vinted.fr_0.indexeddb.leveldb/MANIFEST-000001
-2026/10/18-01:23:08.824 4038 Recovering log #65
-2026/10/18-01:23:08.826 4038 Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_chrome\Default\IndexedDB\https_www.vinted.fr_0.indexeddb.leveldb/000065.log 
-2026/10/18-01:23:08.826 4038 Delete type=2 #63
-2026/10/18-01:23:08.899 4038 Level-0 table #71: started
-2026/10/18-01:23:08.906 4038 Level-0 table #71: 744506 bytes OK
-2026/10/18-01:23:08.907 4038 Delete type=0 #65
-2026/10/18-01:23:08.908 4038 Manual compaction at level-0 from '\x00\x1a\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x1b\x00\x00\x00' @ 0 : 0; will stop at '\x00\x1a\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 3917 : 1
-2026/10/18-01:23:08.908 4038 Compacting 1@0 + 2@1 files
-2026/10/18-01:23:08.942 4038 Generated table #72@0: 555 keys, 4284616 bytes
-2026/10/18-01:23:08.948 4038 Generated table #73@0: 92 keys, 691495 bytes
-2026/10/18-01:23:08.948 4038 Compacted 1@0 + 2@1 files => 4976111 bytes
-2026/10/18-01:23:08.950 4038 compacted to: files[ 0 2 1 0 0 0 0 ]
-2026/10/18-01:23:08.950 4038 Delete type=2 #71
-2026/10/18-01:23:08.950 4038 Manual compaction at level-0 from '\x00\x1a\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 3917 : 1 .. '\x00\x1b\x00\x00\x00' @ 0 : 0; will stop at (end)
+2026/10/21-20:14:24.017 a1c4 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_chrome\Default\IndexedDB\https_www.vinted.fr_0.indexeddb.leveldb/MANIFEST-000083
+2026/10/21-20:14:24.017 a1c4 Recovering log #102
+2026/10/21-20:14:24.018 a1c4 Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_chrome\Default\IndexedDB\https_www.vinted.fr_0.indexeddb.leveldb/000102.log 
+2026/10/21-20:14:24.018 a1c4 Delete type=2 #100
+2026/10/21-20:14:24.018 a1c4 Delete type=2 #101
+2026/10/21-20:14:24.068 a26c Level-0 table #108: started
+2026/10/21-20:14:24.071 a26c Level-0 table #108: 5358 bytes OK
+2026/10/21-20:14:24.072 a26c Delete type=0 #102
+2026/10/21-20:14:24.072 a1c4 Manual compaction at level-0 from '\x00#\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00$\x00\x00\x00' @ 0 : 0; will stop at '\x00#\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 5321 : 1
+2026/10/21-20:14:24.072 a1c4 Compacting 1@0 + 2@1 files
+2026/10/21-20:14:24.104 a1c4 Generated table #109@0: 572 keys, 4163209 bytes
+2026/10/21-20:14:24.130 a1c4 Generated table #110@0: 127 keys, 3236795 bytes
+2026/10/21-20:14:24.130 a1c4 Compacted 1@0 + 2@1 files => 7400004 bytes
+2026/10/21-20:14:24.130 a1c4 compacted to: files[ 0 2 1 0 0 0 0 ]
+2026/10/21-20:14:24.131 a1c4 Delete type=2 #108
+2026/10/21-20:14:24.131 a1c4 Manual compaction at level-0 from '\x00#\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 5321 : 1 .. '\x00$\x00\x00\x00' @ 0 : 0; will stop at (end)
+2026/10/21-20:14:24.371 a26c Level-0 table #112: started
+2026/10/21-20:14:24.374 a26c Level-0 table #112: 2385 bytes OK
+2026/10/21-20:14:24.375 a26c Delete type=2 #104
+2026/10/21-20:14:24.375 a26c Delete type=2 #105
+2026/10/21-20:14:24.375 a26c Delete type=0 #107
+2026/10/21-20:14:24.376 44bc Manual compaction at level-0 from '\x00$\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00%\x00\x00\x00' @ 0 : 0; will stop at '\x00$\x01\x02\x01\x01\x00k' @ 5453 : 1
+2026/10/21-20:14:24.376 44bc Compacting 1@0 + 2@1 files
+2026/10/21-20:14:24.434 44bc Generated table #113@0: 580 keys, 4163209 bytes
+2026/10/21-20:14:24.492 44bc Generated table #114@0: 127 keys, 3236795 bytes
+2026/10/21-20:14:24.493 44bc Compacted 1@0 + 2@1 files => 7400004 bytes
+2026/10/21-20:14:24.498 44bc compacted to: files[ 0 2 1 0 0 0 0 ]
+2026/10/21-20:14:24.499 44bc Delete type=2 #112
+2026/10/21-20:14:24.500 44bc Manual compaction at level-0 from '\x00$\x01\x02\x01\x01\x00k' @ 5453 : 1 .. '\x00%\x00\x00\x00' @ 0 : 0; will stop at (end)

@@ -1224,9 +1224,20 @@ class ClemzAutomation:
                          f"(listsTabLink={'listsTabLink' in by_id}, toolBody={'toolBody' in by_id})")
             return None
         await click_element(cdp, by_id["showListsButton1"]["node_id"])
-        await asyncio.sleep(0.8)
-        by_id = await snapshot_by_id(cdp)
-        return by_id.get("mainListLink", {}).get("node_id")
+        # Attente de la modale jusqu'à ~10 s (au lieu de 0,8 s fixe) : le
+        # 21/10/2026 à 18h30-18h33, 3 lots de baisse sur 4 ont échoué en
+        # "Modale 'Voir mes listes' introuvable" 3 s après l'ouverture du
+        # navigateur -- Clemz charge la modale (html/toolModals) plus lentement
+        # juste après le démarrage. Un second clic si rien au bout de 5 s.
+        for tentative in range(20):
+            await asyncio.sleep(0.5)
+            by_id = await snapshot_by_id(cdp)
+            if "mainListLink" in by_id:
+                return by_id["mainListLink"]["node_id"]
+            if tentative == 9 and "showListsButton1" in by_id:
+                await click_element(cdp, by_id["showListsButton1"]["node_id"])
+        logger.error(f"   🔬 [{acc['name']}] Modale 'Voir mes listes' toujours absente 10 s après le clic.")
+        return None
 
     @staticmethod
     async def _js_sur_noeud(cdp, node_id, fonction_js):

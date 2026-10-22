@@ -462,6 +462,22 @@ async def run_automation_now(background_tasks: BackgroundTasks, payload: dict = 
         background_tasks.add_task(run_baisse_prix_auto, ids_restriction, ignorer_repos_niveau2=forcer_niveau2)
         return {"status": "started", "count": len(ids_restriction)}
 
+    # Cooldown 7 jours aussi pour le panier de baisse manuelle (21/10/2026) :
+    # l'eau micellaire, baissée à sa republication à 17h24 (12,90 -> 10,32 €),
+    # a repris -10 % par ce chemin à 18h34 -- seul run_baisse_prix_auto
+    # appliquait le cooldown price_drops.
+    exclus_cooldown = []
+    if task_type == "baisse_prix":
+        ids = [a["id"] for a in articles_bruts if isinstance(a, dict) and a.get("id")]
+        recents = supabase_svc.get_articles_baisses_recentes(ids, jours_cooldown=7)
+        exclus_cooldown = [a["nom"] for a in articles_bruts if isinstance(a, dict) and a.get("id") in recents]
+        articles_bruts = [a for a in articles_bruts if not (isinstance(a, dict) and a.get("id") in recents)]
+        if exclus_cooldown:
+            logger.info(f"⏳ [BAISSE MANUELLE] {len(exclus_cooldown)} article(s) déjà baissé(s) dans les 7 derniers "
+                        f"jours, écarté(s) : {exclus_cooldown}")
+        if not articles_bruts:
+            return {"status": "rien_a_faire", "count": 0, "exclus_cooldown": exclus_cooldown}
+
     # Regroupe par pourcentage EFFECTIF (celui de l'article, sinon le fallback
     # global) -- un seul groupe pour "republication" (pas de notion de taux) ou
     # pour l'ancien flux à taux unique, potentiellement plusieurs groupes pour
@@ -738,19 +754,57 @@ async def lancer_auto_completion(payload: dict = Body(...)):
     remplissage = payload.get("remplissage")
     if remplissage not in (None, "smart_dressing", "clemz_app"):
         raise HTTPException(status_code=400, detail="remplissage doit être 'smart_dressing' ou 'clemz_app'.")
-    task_id = None if remplissage else start_task_run("republication", produits, sous_type="republication_manuelle")
+    # "suppression_seule" : bouton "Supprimer les articles du dressing"
+    # (19/10/2026) -- Smart Dressing + sauvegarde clemz.app + suppression sur
+    # Vinted, sans republication. Tâche de type "suppression" dans l'historique.
+    suppression_seule = bool(payload.get("suppression_seule"))
+    # "validation_manuelle" : mode natif "Validation manuelle" de Clemz
+    # (20/10/2026) -- Smart Dressing, Go Clemz, clic "Ajouter" par le script.
+    validation_manuelle = bool(payload.get("validation_manuelle"))
+    if sum(map(bool, (remplissage, suppression_seule, validation_manuelle))) > 1:
+        raise HTTPException(status_code=400, detail="Un seul mode à la fois (remplissage, suppression ou validation manuelle).")
+    if remplissage:
+        task_id = None
+    elif suppression_seule:
+        task_id = start_task_run("suppression", produits, sous_type="smart_dressing")
+    elif validation_manuelle:
+        task_id = start_task_run("republication", produits, sous_type="validation_manuelle")
+    else:
+        task_id = start_task_run("republication", produits, sous_type="republication_manuelle")
     pas_a_pas = bool(payload.get("pas_a_pas"))
-    # Étape 0 (sauvegarde + suppression sur Vinted) : active par défaut
-    suppression_prealable = payload.get("suppression_prealable", True) is not False
-    logger.info(f"🚀 [AUTO-COMPLÉTION {dressing}] {'Remplissage ' + remplissage if remplissage else 'Série'} lancé(e) : "
-                f"{len(produits)} article(s), suppression d'abord={suppression_prealable and not remplissage}, pas à pas={pas_a_pas}.")
+    # Étape 0 (sauvegarde + suppression sur Vinted) dans la série : DÉSACTIVÉE
+    # par défaut depuis le 19/10/2026 -- la suppression passe par le bouton
+    # dédié "🗑️ Supprimer" (suppression_seule). Activable seulement en
+    # envoyant explicitement suppression_prealable=true.
+    suppression_prealable = payload.get("suppression_prealable") is True
+    # Baisse de prix à la republication (20/10/2026, validation manuelle) :
+    # nouveau prix relu CÔTÉ SERVEUR dans l'inventaire (prix_republication,
+    # renseigné seulement quand l'analyse recommande "republier avec baisse")
+    # -- jamais pris du navigateur. Les autres articles gardent leur prix.
+    prix_par_nom = {}
+    if validation_manuelle:
+        noms = {p["nom"].strip().lower() for p in produits}
+        for a in await supabase_svc.get_processed_inventory():
+            if (a.get("nom") or "").strip().lower() in noms and a.get("prix_republication"):
+                prix_par_nom[a["nom"]] = a["prix_republication"]
+        if prix_par_nom:
+            logger.info(f"📉 [AUTO-COMPLÉTION {dressing}] Baisse à la republication prévue pour "
+                        f"{len(prix_par_nom)} article(s) : {prix_par_nom}")
+    libelle = ("Remplissage " + remplissage if remplissage
+               else "Suppression seule" if suppression_seule
+               else "Validation manuelle" if validation_manuelle else "Série")
+    logger.info(f"🚀 [AUTO-COMPLÉTION {dressing}] {libelle} lancé(e) : {len(produits)} article(s), "
+                f"suppression d'abord={suppression_prealable and not remplissage}, pas à pas={pas_a_pas}.")
     session = AutoCompletionSession(dressing, [p["nom"] for p in produits], task_id=task_id,
                                     pas_a_pas=pas_a_pas, suppression_prealable=suppression_prealable,
-                                    remplissage=remplissage)
+                                    remplissage=remplissage, suppression_seule=suppression_seule,
+                                    validation_manuelle=validation_manuelle, prix_par_nom=prix_par_nom)
     SESSIONS[dressing] = session
     asyncio.create_task(session.run())
     return {"status": "started", "dressing": dressing, "count": len(produits), "task_id": task_id,
-            "suppression_prealable": suppression_prealable, "pas_a_pas": pas_a_pas, "remplissage": remplissage}
+            "suppression_prealable": suppression_prealable, "pas_a_pas": pas_a_pas, "remplissage": remplissage,
+            "suppression_seule": suppression_seule, "validation_manuelle": validation_manuelle,
+            "baisses": prix_par_nom}
 
 
 @router.get("/automation/auto-completion/statut")

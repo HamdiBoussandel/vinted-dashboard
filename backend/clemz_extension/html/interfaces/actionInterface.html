@@ -321,13 +321,13 @@
         <span data-i18n="restrictionWarningTab_message"></span>
       </div>
 
-      <div class="font-weight-bolder mt-2" data-i18n="actionInterface_modifyPhotos"></div>
-      <div class="d-flex align-items-center justify-content-center">
-        <select id="modifyPhotosChoice" class="rounded custom-select">
-          <option value="noModification" data-i18n="actionInterface_noModificationChoice"></option>
-          <option value="customizedModification" data-i18n="actionInterface_customizedModificationChoice"></option>
-          <option value="activeModification" data-i18n="actionInterface_activeModificationChoice"></option>
-        </select>
+      <div class="d-flex align-items-center flex-wrap mt-2">
+        <button type="button" id="openModifyOnRepost" class="badge btn-outline-primary cursor-pointer border text-md can-be-disabled mr-2 p-1" style="min-width: 28px;">
+          ⚙
+        </button>
+        <span class="font-weight-bolder text-sm mr-2" data-i18n="actionInterface_modifyOnRepostLabel"></span>
+        <span id="modifyOnRepostPhotosBadge" class="badge text-xs mr-1" style="background-color: #e9ecef;"></span>
+        <span id="modifyOnRepostPriceBadge" class="badge text-xs d-none" style="background-color: #e9ecef;"></span>
       </div>
       <div id="no_photo_modification_risk_high" class="context-div-to-hide text-center text-sm text-dark d-none">
         <span data-i18n="actionInterface_no_photo_modification_risk_high"></span>
@@ -341,31 +341,9 @@
         <span data-i18n="actionInterface_no_photo_modification_risk_low"></span>
         <a href="https://www.clemz.app/documentation/modifier-les-photos#still-necessary" target="_blank" class="text-decoration-underline" data-i18n="actionInterface_no_photo_modification_risk_link"></a>
       </div>
-      <div id="customizedModificationParams" class="context-div-to-hide d-none text-center mt-1">
-        <a role="button" id="showModifyPhotosParams" class="btn btn-xs btn-outline-primary text-white" data-i18n="actionInterface_customizedModificationParams"></a>
-      </div>
-      <div id="noActiveModification" class="context-div-to-hide d-none mt-1">
-        <div class="text-sm-md text-dark d-flex flex-column justify-content-center align-items-center border border-danger border-sm rounded position-relative">
-          <div class="font-weight-bolder text-left w-100" data-i18n="actionInterface_noActiveModification"></div>
-          <span id="" class="refreshButton cursor-pointer text-sm badge badge-info ml-3" style="position: absolute; top: 0; right: 0;">
-            <img class="font-icon vinz-image text-white" data-image-name="sync-alt-solid.svg" style="max-height: 10px;" src="">
-          </span>
-          <div class="d-flex align-items-center">
-            <div data-i18n="actionInterface_modificationUsage"></div>
-          </div>
-          <div class="d-flex justify-content-around w-100 mb-1">
-            <a class="font-weight-bold" href="https://www.clemz.app/documentation/modifier-les-photos#current-modification" target="_blank" data-i18n="actionInterface_whyModify"></a>
-            <a class="font-weight-bold" href="https://www.clemz.app/dashboard/photo_modifications" target="_blank" data-i18n="actionInterface_createModification"></a>
-          </div>
-        </div>
-      </div>
-      <div id="hasActiveModification" class="context-div-to-hide d-none text-center mt-1">
-        <a role="button" id="showModifyPhotosParams" class="btn btn-xs btn-outline-primary text-white" href="https://www.clemz.app/dashboard/photo_modifications" target="_blank" data-i18n="actionInterface_seeActiveModification"></a>
-      </div>
-
 
       <div class="font-weight-bolder mt-3 d-flex align-items-center" >
-        4. <div class="input-group">
+        3. <div class="input-group">
           <select id="repostSelectAction" class="custom-select text-sm-md">
             <option value="1" data-i18n="actionInterface_repostAction"></option>
             <option value="2" data-i18n="actionInterface_saveItemAction"></option>
@@ -747,6 +725,7 @@
     <p class="h4 d-flex justify-content-center align-items-center font-weight-bolder mt-0 text-primary" data-i18n="autoComplete_tabTitle"></p>
     <p id="autoCompleteIntroNew" class="text-sm text-center text-dark mt-1" data-i18n="autoComplete_introNew"></p>
     <p id="autoCompleteIntroEdit" class="d-none text-sm text-center text-dark mt-1"></p>
+    <p id="autoCompleteIntroCorrection" class="d-none text-sm text-center text-dark mt-1" data-i18n="autoComplete_introCorrection"></p>
     <p id="autoCompleteOtherPage" class="text-left font-weight-bolder mt-5" data-i18n="autoComplete_otherPageMessage"></p>
     <div id="autoCompleteNewPage" class="d-none">
       <div class="font-weight-bolder" data-i18n="autoComplete_stepChoose"></div>

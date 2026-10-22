@@ -1,29 +1,3 @@
-2026/10/18-21:56:52.626 acb4 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\clemz_session_chrome_d1_reel\Default\Local Storage\leveldb/MANIFEST-000001
-2026/10/18-21:56:52.627 acb4 Recovering log #377
-2026/10/18-21:56:52.627 acb4 Level-0 table #379: started
-2026/10/18-21:56:52.630 acb4 Level-0 table #379: 223820 bytes OK
-2026/10/18-21:56:52.633 acb4 Delete type=0 #377
-2026/10/18-21:57:52.651 5c1c Level-0 table #382: started
-2026/10/18-21:57:52.657 5c1c Level-0 table #382: 225997 bytes OK
-2026/10/18-21:57:52.659 5c1c Delete type=0 #380
-2026/10/18-21:59:28.029 5c1c Level-0 table #384: started
-2026/10/18-21:59:28.033 5c1c Level-0 table #384: 225767 bytes OK
-2026/10/18-21:59:28.034 5c1c Delete type=0 #381
-2026/10/18-21:59:28.034 5c1c Compacting 4@0 + 1@1 files
-2026/10/18-21:59:28.038 5c1c Generated table #385@0: 49 keys, 231152 bytes
-2026/10/18-21:59:28.038 5c1c Compacted 4@0 + 1@1 files => 231152 bytes
-2026/10/18-21:59:28.039 5c1c compacted to: files[ 0 1 1 0 0 0 0 ]
-2026/10/18-21:59:28.039 5c1c Delete type=2 #374
-2026/10/18-21:59:28.039 5c1c Delete type=2 #376
-2026/10/18-21:59:28.039 5c1c Delete type=2 #379
-2026/10/18-21:59:28.039 5c1c Delete type=2 #382
-2026/10/18-21:59:28.039 5c1c Delete type=2 #384
-2026/10/18-22:00:45.845 5c1c Level-0 table #387: started
-2026/10/18-22:00:45.848 5c1c Level-0 table #387: 227015 bytes OK
-2026/10/18-22:00:45.850 5c1c Delete type=0 #383
-2026/10/18-22:02:02.091 5c1c Level-0 table #389: started
-2026/10/18-22:02:02.097 5c1c Level-0 table #389: 222471 bytes OK
-2026/10/18-22:02:02.099 5c1c Delete type=0 #386
-2026/10/18-22:03:18.949 5c1c Level-0 table #391: started
-2026/10/18-22:03:18.953 5c1c Level-0 table #391: 224221 bytes OK
-2026/10/18-22:03:18.954 5c1c Delete type=0 #388
+2026/10/21-20:16:06.923 ae68 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\clemz_session_chrome_d1_reel\Default\Local Storage\leveldb/MANIFEST-000001
+2026/10/21-20:16:06.924 ae68 Recovering log #606
+2026/10/21-20:16:06.925 ae68 Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\clemz_session_chrome_d1_reel\Default\Local Storage\leveldb/000606.log 

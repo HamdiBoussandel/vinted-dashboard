@@ -180,7 +180,7 @@
       "message": "⚡⚡⚡ Standard"
    },
    "actionInterface_executionModeApiTooltip": {
-      "message": "\u003Cb class=\"text-success\">Maximum speed\u003C/b>, \u003Cb class=\"text-danger\">High risk.\u003C/b>\u003Cbr>Fully automated relist."
+      "message": "\u003Cb class=\"text-success\">Maximum speed\u003C/b>, \u003Cb class=\"text-danger\">High risk.\u003C/b>\u003Cbr>\u003Cspan class=\"text-dark\">(no risk for PROs)\u003C/span>\u003Cbr>➡️ Fully automated relist."
    },
    "actionInterface_executionModeBadge": {
       "message": "Human browsing"
@@ -198,10 +198,10 @@
       "message": "By hand"
    },
    "actionInterface_executionModeManualValidationTooltip": {
-      "message": "\u003Cb class=\"text-danger\">Very slow speed\u003C/b>, \u003Cb class=\"text-success\">Minimum risk.\u003C/b>\u003Cbr>Clemz fills the form one item at a time. You can edit, then save or publish."
+      "message": "\u003Cb class=\"text-danger\">Very slow speed\u003C/b>, \u003Cb class=\"text-success\">Minimum risk.\u003C/b>\u003Cbr>➡️ Clemz fills the form one item at a time. You can edit, then save or publish."
    },
    "actionInterface_executionModeTooltip": {
-      "message": "\u003Cb class=\"text-warning\">Slow speed\u003C/b>, \u003Cb class=\"text-warning\">Lower risk.\u003C/b>\u003Cbr>Clemz opens real Vinted pages, like a human would."
+      "message": "\u003Cb class=\"text-warning\">Slow speed\u003C/b>, \u003Cb class=\"text-warning\">Lower risk.\u003C/b>\u003Cbr>\u003Cspan class=\"text-dark\">(no risk for PROs)\u003C/span>\u003Cbr>➡️ Clemz opens real Vinted pages, like a human would."
    },
    "actionInterface_executionTransportFrame": {
       "message": "same tab"
@@ -240,7 +240,7 @@
       "message": "Friend's closet"
    },
    "actionInterface_getViewsLikes": {
-      "message": "5. Get 👁️ and ❤️ \u003Cspan class=\"btn btn-xs btn-outline-primary ml-3\" data-open-tab=\"exchangeTabLink\" data-open-tab-container=\"currentInterface\" role=\"button\">see tab ➡️\u003C/span>"
+      "message": "4. Get 👁️ and ❤️ \u003Cspan class=\"btn btn-xs btn-outline-primary ml-3\" data-open-tab=\"exchangeTabLink\" data-open-tab-container=\"currentInterface\" role=\"button\">see tab ➡️\u003C/span>"
    },
    "actionInterface_giveFavs": {
       "message": "Give favourites"
@@ -361,6 +361,27 @@
    },
    "actionInterface_modifyClipboard": {
       "message": "⚙️ edit/del"
+   },
+   "actionInterface_modifyOnRepostLabel": {
+      "message": "Edit"
+   },
+   "actionInterface_modifyOnRepostModalTitle": {
+      "message": "Edit while relisting"
+   },
+   "actionInterface_modifyOnRepostPhotosLabel": {
+      "message": "Photos"
+   },
+   "actionInterface_modifyOnRepostPricePrefix": {
+      "message": "Price:"
+   },
+   "actionInterface_modifyOnRepostSummaryPhotosActive": {
+      "message": "Photos: 🖼️ current"
+   },
+   "actionInterface_modifyOnRepostSummaryPhotosCustom": {
+      "message": "Photos: 🖌️ on the fly"
+   },
+   "actionInterface_modifyOnRepostSummaryPhotosNo": {
+      "message": "Photos: 🚫 off"
    },
    "actionInterface_modifyPhotos": {
       "message": "3. How to edit your photos \u003Ca class=\"text-sm tooltip tooltip-left\" href=\"https://www.clemz.app/documentation/modifier-les-photos\" target=\"_blank\" data-tooltip=\"Click here to learn how photo editing works\">\u003Cimg class=\"font-icon align-middle pb-1 vinz-image ml-1\" data-image-name=\"question-circle-solid.svg\" src=\"\">\u003C/a>"
@@ -1011,6 +1032,9 @@
    },
    "autoComplete_fillFormButton": {
       "message": "📝 Fill the form"
+   },
+   "autoComplete_introCorrection": {
+      "message": "Clemz just filled this form for you. If you need it, Clemz can fill it again 👇"
    },
    "autoComplete_introEdit": {
       "message": "This item was found in your backup (\u003Ca href=\"$url$\" target=\"_blank\">\u003Cu>see here\u003C/u>\u003C/a>). Import its content from clemz.app?",
@@ -3248,9 +3272,6 @@
          }
       }
    },
-   "repostArticles_noModificationPreview": {
-      "message": "\u003Cb>🚫 No photo modification:\u003C/b> Clemz will relist your saved photos as is"
-   },
    "repostArticles_noPhotoError": {
       "message": "No photo => can't relist"
    },
@@ -3317,6 +3338,22 @@
    },
    "repostArticles_preparingPhotos": {
       "message": "preparing photos"
+   },
+   "repostArticles_priceChange": {
+      "message": "\u003Cb>Price change:\u003C/b> $priceChange$",
+      "placeholders": {
+         "priceChange": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_priceChangeWarning": {
+      "message": "⚠️ \u003Cb>Price change \u003Cspan class=\"text-danger\">important\u003C/span>:\u003C/b> $priceChange$",
+      "placeholders": {
+         "priceChange": {
+            "content": "$1"
+         }
+      }
    },
    "repostArticles_promotedArticlesNotProcessed": {
       "message": "\u003Cb>$promotedArticlesCount$ on hold or bumped\u003C/b> in your list not processed ($processWording$ not possible)",
@@ -3394,6 +3431,12 @@
    },
    "repostArticles_workerLost": {
       "message": "Your browser stopped the tab Clemz was working in."
+   },
+   "repostDayWarning_light": {
+      "message": "⚠️ \u003Cb>$1 relists today\u003C/b> ($2 already done + $3 in this list). Above $4, restriction risk goes up."
+   },
+   "repostDayWarning_loud": {
+      "message": "🛑 \u003Cb>$1 relists today\u003C/b> ($2 already done + $3 in this list). Above $4, Vinted often restricts closets that are not PRO."
    },
    "repostTutorial_howToRepost": {
       "message": "How to relist with \u003Cimg id=\"tutorialLogo\" src=\"\" style=\"height: 25px; width: auto;\">?"

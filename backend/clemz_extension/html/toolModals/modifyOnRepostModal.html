@@ -1,0 +1,77 @@
+<div class="toolModal-content">
+  <div class="tabBox w-100">
+    <div data-i18n="actionInterface_modifyOnRepostModalTitle" class="frozenTabLinks flex-basis-auto text-lg font-weight-bolder"></div>
+    <span class="close-modal bg-primary-dark px-2">&times;</span>
+  </div>
+  <div class="toolModal-tabContent px-0" style="display: block;">
+    <div class="p-2 mx-2" id="modifyOnRepostForm">
+      <div class="font-weight-bolder text-sm" data-i18n="actionInterface_modifyOnRepostPhotosLabel"></div>
+      <div class="d-flex align-items-center justify-content-center mt-1">
+        <select id="modifyPhotosChoice" class="rounded custom-select">
+          <option value="noModification" data-i18n="actionInterface_noModificationChoice"></option>
+          <option value="customizedModification" data-i18n="actionInterface_customizedModificationChoice"></option>
+          <option value="activeModification" data-i18n="actionInterface_activeModificationChoice"></option>
+        </select>
+      </div>
+      <div id="customizedModificationParams" class="context-div-to-hide d-none text-center mt-1">
+        <a role="button" id="showModifyPhotosParams" class="btn btn-xs btn-outline-primary text-white" data-i18n="actionInterface_customizedModificationParams"></a>
+      </div>
+      <div id="noActiveModification" class="context-div-to-hide d-none mt-1">
+        <div class="text-sm-md text-dark d-flex flex-column justify-content-center align-items-center border border-danger border-sm rounded position-relative">
+          <div class="font-weight-bolder text-left w-100" data-i18n="actionInterface_noActiveModification"></div>
+          <span class="modifyOnRepostRefresh cursor-pointer text-sm badge badge-info ml-3" style="position: absolute; top: 0; right: 0;">
+            <img class="font-icon vinz-image text-white" data-image-name="sync-alt-solid.svg" style="max-height: 10px;" src="">
+          </span>
+          <div class="d-flex align-items-center">
+            <div data-i18n="actionInterface_modificationUsage"></div>
+          </div>
+          <div class="d-flex justify-content-around w-100 mb-1">
+            <a class="font-weight-bold" href="https://www.clemz.app/documentation/modifier-les-photos#current-modification" target="_blank" data-i18n="actionInterface_whyModify"></a>
+            <a class="font-weight-bold" href="https://www.clemz.app/dashboard/photo_modifications" target="_blank" data-i18n="actionInterface_createModification"></a>
+          </div>
+        </div>
+      </div>
+      <div id="hasActiveModification" class="context-div-to-hide d-none text-center mt-1">
+        <a role="button" class="btn btn-xs btn-outline-primary text-white" href="https://www.clemz.app/dashboard/photo_modifications" target="_blank" data-i18n="actionInterface_seeActiveModification"></a>
+      </div>
+
+      <hr class="my-2">
+
+      <div class="d-flex align-items-center mt-0">
+        <div id="repostModifyPriceControl" class="custom-control custom-switch ml-n4">
+          <input type="checkbox" class="custom-control-input" id="repostModifyPrice">
+          <label class="custom-control-label align-middle text-sm d-flex" for="repostModifyPrice">
+            <b class="mr-2" data-i18n="actionInterface_modifyPrice">Prix :</b>
+            <div class="d-flex flex-column">
+              <div>
+                <select id="repostModifyPriceDirection" class="fake-disabled rounded" style="max-width: 105px;">
+                  <option value="decrease" selected data-i18n="actionInterface_modifyPriceDecrease"></option>
+                  <option value="increase" data-i18n="actionInterface_modifyPriceIncrease"></option>
+                  <option value="set" data-i18n="actionInterface_modifyPriceSet"></option>
+                </select>
+                <input type="number" id="repostModifyPriceValue" class="text-center fake-disabled rounded" style="width: 35px; height: 20px;" value="0" min="0">
+                <select id="repostModifyPriceType" class="fake-disabled rounded">
+                  <option value="%" selected>%</option>
+                  <option value="€">€</option>
+                </select>
+              </div>
+              <div>
+                <span data-i18n="actionInterface_modifyPriceAnd"></span>
+                <select id="repostModifyPriceRound" class="fake-disabled rounded">
+                  <option value="noRound" selected data-i18n="actionInterface_modifyPriceNoRounding"></option>
+                  <option value="noDecimalRound" data-i18n="actionInterface_modifyPriceNoDecimalRound"></option>
+                  <option value="oneDecimalRound" data-i18n="actionInterface_modifyPriceOneDecimalRound"></option>
+                </select>
+              </div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <hr class="my-2">
+      <div class="text-center mt-3 mb-1">
+        <button type="button" id="modifyOnRepostSave" class="btn btn-sm btn-primary px-4" data-i18n="save"></button>
+      </div>
+    </div>
+  </div>
+</div>

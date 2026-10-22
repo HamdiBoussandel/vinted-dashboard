@@ -50,3 +50,5 @@ backend/logs/
 # OS
 .DS_Store
 Thumbs.db
+# Registre local des articles supprimés en attente de republication
+backend/articles_supprimes_en_attente.json

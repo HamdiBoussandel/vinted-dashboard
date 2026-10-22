@@ -27,6 +27,7 @@ quota risk_guard revérifié avant CHAQUE article, bouton "Arrêter".
 """
 import asyncio
 import logging
+import random
 import re
 import unicodedata
 from urllib.parse import quote
@@ -38,6 +39,7 @@ from services.clemz_automation import (
     PROGRESSION,
     ARRETS_DEMANDES,
     arret_demande,
+    lire_progression,
     _args_et_kwargs_navigateur,
     _close_clemz_promo_tabs,
 )
@@ -50,6 +52,8 @@ from services.clemz_cdp import (
     query_selector_in,
     get_center_coords,
     real_mouse_click,
+    set_select_value,
+    set_input_value,
 )
 from services.session_manager import ensure_session, _send_notification
 
@@ -76,6 +80,27 @@ WARDROBES_CLEMZ = {"Dressing 1": "27962", "Dressing 2": "34215"}  # @kimi_shiro,
 # (constaté le 18/10/2026 : entrée #8225671 avec wardrobe_id=287248160).
 MEMBRES_VINTED = {"Dressing 1": "287248160", "Dressing 2": "3136979514"}
 ATTENTE_IMPORT_SECONDES = 30  # ajout d'un article à la liste "à traiter" via "Ajouter à l'extension"
+# Liste clemz.app où Clemz range les articles supprimés (option "Ajouter à une
+# liste clemz.app après suppression") -- choisie PAR SON NOM dans la fenêtre
+# "Ajouter à une liste sur clemz.app" (demandé le 19/10/2026).
+LISTE_CLEMZ_SUPPRESSION = "Liste_test"
+
+# Mode "Validation manuelle" de Clemz (20/10/2026) -- réglages imposés dans la
+# fenêtre "Protection" du panneau Republier pendant la série, puis RESTAURÉS
+# (Clemz les mémorise : sans restauration, la republication de masse
+# resterait en validation manuelle). {id du <select>: valeur}, dans l'ordre.
+REGLAGES_VALIDATION_MANUELLE = {
+    "pacingModeSelect": "humanLike",        # Rythme naturel
+    "pacingHumanPresetSelect": "slower",    # Très lent (~4 min/article)
+    "executionModeSelect": "manualValidation",
+}
+PAUSE_AVANT_AJOUTER_SECONDES = (1, 3)       # pause aléatoire avant le clic sur "Ajouter"
+ATTENTE_SANS_PROGRES_VALIDATION_SECONDES = 20 * 60  # Clemz "très lent" ~4 min/article + remplissage
+# Option "Prix" de la fenêtre "Modifier à la republication" de Clemz (mise à
+# jour de l'extension du 20/10/2026) -- clés mémorisées par Clemz, réglées
+# article par article puis l'option DÉSACTIVÉE en fin de série.
+CLES_PRIX_REPUBLICATION = ("repostModifyPrice", "repostModifyPriceDirection", "repostModifyPriceValue",
+                           "repostModifyPriceType", "repostModifyPriceRound")
 
 # Session en cours par dressing -- lue par la route de statut (dashboard)
 SESSIONS = {}
@@ -87,6 +112,15 @@ class _PageFermeeAuDemarrage(Exception):
 
 class _SerieInterrompue(Exception):
     """Étape 0 (suppression) impossible ou incertaine : la série s'arrête là."""
+
+
+class _ErreurClemz(Exception):
+    """Clemz affiche "XXX ERREUR XXX" (ex. "Action non autorisée", 21/10/2026)."""
+
+
+# Marqueur d'erreur affiché par Clemz dans sa progression (#articleTitle /
+# #progressContent), suivi du motif dans #processStage.
+MARQUEUR_ERREUR_CLEMZ = "xxx erreur xxx"
 
 
 def _normaliser(texte):
@@ -101,14 +135,17 @@ def _correspond(titre_clemz, nom):
 
 
 class AutoCompletionSession:
-    def __init__(self, dressing, produits, task_id=None, pas_a_pas=False, suppression_prealable=True,
-                 remplissage=None):
+    def __init__(self, dressing, produits, task_id=None, pas_a_pas=False, suppression_prealable=False,
+                 remplissage=None, suppression_seule=False, validation_manuelle=False, prix_par_nom=None):
         """produits : liste de noms d'articles (ordre de passage).
         pas_a_pas : pause AVANT chaque action, reprise par le bouton
         "Continuer" du dashboard (cf. _pas) -- mise au point du scénario.
         remplissage : "smart_dressing" ou "clemz_app" = REMPLISSAGE SEUL de la
         liste "à traiter" par cette source (19/10/2026), puis arrêt -- ni
         suppression, ni publication. None = série complète.
+        suppression_seule : bouton "Supprimer les articles du dressing"
+        (19/10/2026) -- étape 0 seule (Smart Dressing, sauvegarde clemz.app,
+        suppression sur Vinted), sans republication ensuite.
         (Le mode "préparation seule" a été retiré le 18/10/2026 : resté coché
         par erreur, il sautait l'étape 0 sans que ça se voie.)"""
         self.dressing = dressing
@@ -118,6 +155,16 @@ class AutoCompletionSession:
         if remplissage not in (None, "smart_dressing", "clemz_app"):
             raise ValueError(f"Source de remplissage inconnue : {remplissage}")
         self.remplissage = remplissage
+        self.suppression_seule = suppression_seule
+        # Mode "Validation manuelle" natif de Clemz (20/10/2026), cf.
+        # _serie_validation_manuelle : Clemz enchaîne la liste, le script
+        # clique "Ajouter" à chaque passation.
+        self.validation_manuelle = validation_manuelle
+        # Baisse de prix À LA REPUBLICATION en validation manuelle (20/10/2026) :
+        # {nom: nouveau prix} (prix_republication de l'inventaire). Réglée
+        # article par article dans l'option "Prix" de Clemz (modifier à la
+        # republication), puisque Clemz traite un article par "Go Clemz !".
+        self.prix_par_nom = {n: round(float(p), 2) for n, p in (prix_par_nom or {}).items() if p}
         # Étape 0 (18/10/2026) : sauvegarde puis SUPPRESSION des annonces sur
         # Vinted via Clemz, avant leur republication par auto-complétion,
         # dans la MÊME série (profil verrouillé de bout en bout : aucun
@@ -198,6 +245,14 @@ class AutoCompletionSession:
                 except Exception:
                     return None
         return None
+
+    async def _nb_liste_a_traiter(self, context):
+        """Nombre d'articles de CE dressing dans la liste "à traiter"
+        (mainList), ou None si le stockage de l'extension est illisible."""
+        stockage = await self._stockage_clemz(context, ["mainList"])
+        if stockage is None:
+            return None
+        return sum(1 for e in (stockage.get("mainList") or []) if str(e.get("wardrobe_id")) == self.membre_vinted)
 
     async def _ids_liste_a_traiter(self, context):
         """Identifiants clemz.app présents dans la liste "à traiter" (mainList)
@@ -377,6 +432,47 @@ class AutoCompletionSession:
                 self._ignorer(r["nom"], f"Introuvable par le Smart Dressing ({r.get('reason')}) — ni supprimé ni republié")
         return ajoutes
 
+    async def _choisir_liste_clemz(self, cdp):
+        """Fenêtre "Ajouter à une liste sur clemz.app" affichée après le clic
+        sur "Supprimer les annonce(s)" : choisit LISTE_CLEMZ_SUPPRESSION dans
+        #clemzList-select puis "Confirmer". Si la liste n'existe pas :
+        "Annuler" et arrêt (rien supprimé). Sans fenêtre au bout de 15 s, on
+        continue (Clemz ne la montre peut-être pas à chaque fois)."""
+        for _ in range(30):
+            await asyncio.sleep(0.5)
+            by_id = await snapshot_by_id(cdp)
+            if "clemzList-select" not in by_id or not await self._visible(cdp, by_id, "clemzList-select"):
+                continue
+            # Les listes se chargent depuis clemz.app (spinner #clemzList-picker-loading)
+            chargement = by_id.get("clemzList-picker-loading")
+            if chargement and await is_element_visible(cdp, chargement["node_id"]):
+                continue
+            select = by_id["clemzList-select"]["node_id"]
+            res = await cdp.send("DOM.querySelectorAll", {"nodeId": select, "selector": "option"})
+            options = []
+            for n in res.get("nodeIds", []):
+                props = await get_live_props(cdp, n, props=("value", "innerText"))
+                options.append((props.get("value"), (props.get("innerText") or "").strip()))
+            valeur = next((v for v, t in options if t == LISTE_CLEMZ_SUPPRESSION), None)
+            logger.info(f"📂 [AUTO-COMPLÉTION {self.dressing}] Listes clemz.app proposées : {[t for _, t in options]}")
+            if valeur is None:
+                if "clemzList-picker-cancel" in by_id:
+                    await click_element(cdp, by_id["clemzList-picker-cancel"]["node_id"])
+                raise _SerieInterrompue(f"Liste clemz.app « {LISTE_CLEMZ_SUPPRESSION} » introuvable — annulé, rien supprimé")
+            await set_select_value(cdp, select, valeur)
+            await asyncio.sleep(0.3)
+            choisi = (await get_live_props(cdp, select, props=("value",))).get("value")
+            if choisi != valeur:
+                raise _SerieInterrompue(f"Liste « {LISTE_CLEMZ_SUPPRESSION} » non sélectionnable — rien supprimé")
+            await self._pas(f"Étape 0 — confirmer la liste clemz.app « {LISTE_CLEMZ_SUPPRESSION} »")
+            by_id = await snapshot_by_id(cdp)
+            if "clemzList-picker-confirm" not in by_id:
+                raise _SerieInterrompue("Bouton « Confirmer » de la fenêtre de liste introuvable — rien supprimé")
+            await click_element(cdp, by_id["clemzList-picker-confirm"]["node_id"])
+            logger.info(f"📂 [AUTO-COMPLÉTION {self.dressing}] Liste clemz.app « {LISTE_CLEMZ_SUPPRESSION} » choisie.")
+            return
+        logger.warning(f"⚠️ [AUTO-COMPLÉTION {self.dressing}] Fenêtre de choix de liste clemz.app non affichée — on continue.")
+
     async def _confirmer_suppression(self, cdp, page, attendu):
         """Fenêtre Clemz "La suppression d'articles est DÉFINITIVE — => N seront
         supprimés" : confirmée seulement si N == attendu, sinon "Annuler"."""
@@ -423,10 +519,24 @@ class AutoCompletionSession:
         if sauvegarde["status"] != "success":
             raise _SerieInterrompue(f"Sauvegarde échouée : {sauvegarde.get('reason')} — rien supprimé")
 
-        a_supprimer = await self._construire_liste_smart_dressing(cdp, page, "suppression")
-        a_supprimer = [n for n in a_supprimer if n in a_sauver]
+        # La liste construite pour la sauvegarde est RÉUTILISÉE telle quelle
+        # pour la suppression (19/10/2026, constaté au 1er test : Clemz ne la
+        # vide pas après "Sauver annonces" -- la vider puis la refaire était
+        # une étape en trop). Contrôle du contenu avant de supprimer.
+        nb_liste = await self._nb_liste_a_traiter(page.context)
+        if nb_liste == len(a_sauver):
+            a_supprimer = list(a_sauver)
+        elif nb_liste == 0:
+            logger.warning(f"⚠️ [AUTO-COMPLÉTION {self.dressing}] Liste vidée par Clemz après la sauvegarde — reconstruction.")
+            a_supprimer = await self._construire_liste_smart_dressing(cdp, page, "suppression")
+            a_supprimer = [n for n in a_supprimer if n in a_sauver]
+        else:
+            raise _SerieInterrompue(f"Liste à traiter incohérente après la sauvegarde ({nb_liste} article(s) au lieu de "
+                                    f"{len(a_sauver)}) — rien supprimé")
         if not a_supprimer:
             raise _SerieInterrompue("Liste vide après sauvegarde — rien supprimé")
+        self._maj(article=None)
+        await self._attendre_panneau(cdp, page)
 
         self._maj(message=f"Étape 0 — suppression de {len(a_supprimer)} annonce(s)")
         await self._pas("Étape 0 — ouvrir l'onglet « Modifier » et choisir « Supprimer »")
@@ -452,6 +562,7 @@ class AutoCompletionSession:
 
         await self._pas(f"Étape 0 — cliquer sur « 💣 Supprimer les annonce(s) » ({len(a_supprimer)})")
         await click_element(cdp, by_id["deleteButton"]["node_id"])
+        await self._choisir_liste_clemz(cdp)
         await self._confirmer_suppression(cdp, page, len(a_supprimer))
 
         termines = []
@@ -470,6 +581,9 @@ class AutoCompletionSession:
         if poll["status"] != "success" or (non_supprimes and int(non_supprimes.group(1)) > 0):
             # État incertain : certaines annonces peuvent déjà être supprimées.
             self.supprimes = termines
+            if termines:  # possiblement déjà supprimés : protégés du marquage "vendu"
+                from services.articles_supprimes import proteger
+                proteger(self.dressing, termines)
             raison = poll.get("reason") or f"{non_supprimes.group(1)} annonce(s) non supprimée(s) par Clemz"
             raise _SerieInterrompue(f"Suppression incomplète : {raison} — vérifie le dressing Vinted")
         if "progressDressingButton" in by_id:
@@ -477,8 +591,502 @@ class AutoCompletionSession:
             await asyncio.sleep(0.5)
 
         self.supprimes = list(a_supprimer)
+        # Protégés du marquage "vendu" par le scraping jusqu'à leur
+        # republication (cf. services/articles_supprimes.py).
+        from services.articles_supprimes import proteger
+        proteger(self.dressing, a_supprimer)
         logger.info(f"💣 [AUTO-COMPLÉTION {self.dressing}] {len(a_supprimer)} annonce(s) supprimée(s) de Vinted : {a_supprimer}")
+
+        # Clemz vide lui-même la liste à traiter à la fin de la suppression
+        # (constaté le 19/10/2026) : simple contrôle, sans action ni pause.
+        reste = await self._nb_liste_a_traiter(page.context)
+        if reste:
+            logger.warning(f"⚠️ [AUTO-COMPLÉTION {self.dressing}] {reste} article(s) encore dans la liste à traiter "
+                           f"après la suppression (Clemz ne l'a pas vidée).")
         return a_supprimer
+
+    # ------------------------------------------------------------------ #
+    # MODE "VALIDATION MANUELLE" DE CLEMZ (20/10/2026)
+    # ------------------------------------------------------------------ #
+    async def _ouvrir_reglages_protection(self, cdp):
+        by_id = await snapshot_by_id(cdp)
+        if "openProtectionSettings" not in by_id:
+            raise _SerieInterrompue("Bouton ⚙ « Protection » du panneau Republier introuvable")
+        await click_element(cdp, by_id["openProtectionSettings"]["node_id"])
+        for _ in range(20):
+            await asyncio.sleep(0.5)
+            by_id = await snapshot_by_id(cdp)
+            if "executionModeSelect" in by_id and "protectionSettingsSave" in by_id:
+                return by_id
+        raise _SerieInterrompue("Fenêtre « Protection » de Clemz non ouverte")
+
+    async def _appliquer_reglages_protection(self, cdp, reglages, libelle):
+        """Ouvre la fenêtre Protection, applique {select_id: valeur}, vérifie,
+        enregistre. Retourne les valeurs AVANT modification."""
+        by_id = await self._ouvrir_reglages_protection(cdp)
+        avant = {}
+        for select_id, valeur in reglages.items():
+            by_id = await snapshot_by_id(cdp)  # les sections s'affichent selon les choix précédents
+            if select_id not in by_id:
+                raise _SerieInterrompue(f"Réglage « {select_id} » introuvable dans la fenêtre Protection")
+            node = by_id[select_id]["node_id"]
+            avant[select_id] = (await get_live_props(cdp, node, props=("value",))).get("value")
+            await set_select_value(cdp, node, valeur)
+            await asyncio.sleep(0.3)
+            lu = (await get_live_props(cdp, node, props=("value",))).get("value")
+            if lu != valeur:
+                raise _SerieInterrompue(f"Réglage « {select_id} » resté sur {lu!r} au lieu de {valeur!r}")
+        logger.info(f"🛡️ [AUTO-COMPLÉTION {self.dressing}] Protection Clemz ({libelle}) : {avant} -> {reglages}")
+        await self._pas(f"Validation manuelle — enregistrer les réglages Protection ({libelle})")
+        by_id = await snapshot_by_id(cdp)
+        await click_element(cdp, by_id["protectionSettingsSave"]["node_id"])
+        await asyncio.sleep(1)
+        return avant
+
+    async def _bouton_ajouter_iframe(self, page):
+        """Bouton "Ajouter" du formulaire Vinted rempli par Clemz DANS UNE
+        IFRAME de la page (validation manuelle). Retourne (frame, élément) ou
+        (None, None)."""
+        for frame in page.frames:
+            if frame == page.main_frame:
+                continue
+            try:
+                bouton = await frame.query_selector('[data-testid="upload-form-save-button"]')
+            except Exception:
+                continue
+            if bouton:
+                return frame, bouton
+        return None, None
+
+    def _nom_de_la_serie(self, titre, restants):
+        """Rapproche le titre affiché par Clemz (#articleTitle) d'un article
+        de la série."""
+        correspondants = [n for n in restants if _correspond(titre, n)]
+        return correspondants[0] if len(correspondants) == 1 else None
+
+    async def _enregistrer_publie(self, nom):
+        await self.bot._article_termine(self.acc, nom, "republication")
+        from services.articles_supprimes import retirer
+        retirer(nom)
+        self.etat["republies"].append(nom)
+        logger.info(f"✅ [AUTO-COMPLÉTION {self.dressing}] « {nom} » republié (validation manuelle) et enregistré.")
+
+    # --- Baisse de prix à la republication (20/10/2026) --------------------
+    # Clemz traitant UN article par "Go Clemz !" en validation manuelle, son
+    # option "Prix" (modifier à la republication) est réglée avant chaque Go
+    # Clemz pour l'article qui va passer : prix FIXÉ (mode "set", en €) s'il
+    # a un prix_republication, option désactivée sinon -- une liste peut
+    # mélanger articles à baisser et articles à republier tels quels.
+
+    async def _prochain_article_clemz(self, context, restants):
+        """Article que Clemz traitera au prochain "Go Clemz !" : première
+        entrée de CE dressing dans la liste à traiter (mainList). Retourne
+        (nom dans la série ou None, titre lu)."""
+        stockage = await self._stockage_clemz(context, ["mainList"])
+        if stockage is None:
+            return None, None
+        entrees = [e for e in (stockage.get("mainList") or []) if str(e.get("wardrobe_id")) == self.membre_vinted]
+        if not entrees:
+            return None, None
+        titre = entrees[0].get("title") or entrees[0].get("titre") or ""
+        if not titre:
+            logger.warning(f"⚠️ [AUTO-COMPLÉTION {self.dressing}] Entrée de liste Clemz sans titre, clés : {sorted(entrees[0])}")
+        logger.info(f"📋 [AUTO-COMPLÉTION {self.dressing}] Ordre de la liste Clemz : "
+                    f"{[e.get('title') for e in entrees]}")
+        return self._nom_de_la_serie(titre, restants), titre
+
+    async def _regler_prix_republication(self, cdp, context, prix):
+        """Option "Prix" de la fenêtre "Modifier à la republication" : prix
+        fixé à `prix` € sans arrondi, ou désactivée (prix=None). Rien n'est
+        touché si Clemz est déjà réglé ainsi ; sinon vérifié dans son
+        stockage après enregistrement."""
+        actif = prix is not None
+        libelle = f"prix fixé à {prix:g} €" if actif else "prix inchangé"
+
+        def conforme(lu):
+            return bool(lu.get("repostModifyPrice")) == actif and (not actif or (
+                lu.get("repostModifyPriceDirection") == "set" and lu.get("repostModifyPriceType") == "€"
+                and abs(float(lu.get("repostModifyPriceValue") or 0) - prix) < 0.005))
+
+        lu = await self._stockage_clemz(context, list(CLES_PRIX_REPUBLICATION))
+        if lu is not None and conforme(lu):
+            logger.info(f"💶 [AUTO-COMPLÉTION {self.dressing}] Option « Prix » de Clemz déjà réglée ({libelle}).")
+            return
+
+        by_id = await snapshot_by_id(cdp)
+        if "openModifyOnRepost" not in by_id:
+            raise _SerieInterrompue("Bouton « Modifier à la republication » introuvable dans le panneau Republier")
+        await self._pas(f"Validation manuelle — ouvrir « Modifier à la republication » ({libelle})")
+        await click_element(cdp, by_id["openModifyOnRepost"]["node_id"])
+        for _ in range(20):
+            await asyncio.sleep(0.5)
+            by_id = await snapshot_by_id(cdp)
+            if "repostModifyPrice" in by_id and "modifyOnRepostSave" in by_id:
+                break
+        else:
+            raise _SerieInterrompue("Fenêtre « Modifier à la republication » de Clemz non ouverte")
+
+        case = by_id["repostModifyPrice"]["node_id"]
+        if bool((await get_live_props(cdp, case, props=("checked",))).get("checked")) != actif:
+            await click_element(cdp, case)
+        if actif:
+            await set_select_value(cdp, by_id["repostModifyPriceDirection"]["node_id"], "set")
+            await set_input_value(cdp, by_id["repostModifyPriceValue"]["node_id"], f"{prix:g}")
+            await set_select_value(cdp, by_id["repostModifyPriceType"]["node_id"], "€")
+            await set_select_value(cdp, by_id["repostModifyPriceRound"]["node_id"], "noRound")
+        await asyncio.sleep(0.3)
+        await self._pas(f"Validation manuelle — enregistrer l'option « Prix » ({libelle})")
+        by_id = await snapshot_by_id(cdp)
+        await click_element(cdp, by_id["modifyOnRepostSave"]["node_id"])
+        await asyncio.sleep(1)
+
+        lu = await self._stockage_clemz(context, list(CLES_PRIX_REPUBLICATION))
+        if lu is not None and not conforme(lu):
+            # Valeur refusée par Clemz (avertissement) : fenêtre restée ouverte
+            raise _SerieInterrompue(f"Option « Prix » de Clemz non enregistrée ({libelle}) — lu : {lu}")
+        logger.info(f"💶 [AUTO-COMPLÉTION {self.dressing}] Option « Prix » de Clemz réglée : {libelle}.")
+
+    async def _desactiver_prix_republication(self, context):
+        """Fin de série : option "Prix" TOUJOURS désactivée dans le stockage de
+        Clemz. (Jusqu'au 21/10/2026 elle était "restaurée" à son état de
+        départ : une série coupée à 16h50 avait laissé "fixer à 14,08 €"
+        actif, que les séries suivantes ont pris pour l'état d'origine et
+        remis en place -- un prix fixe resté actif s'appliquerait à TOUTE
+        republication de masse suivante.)"""
+        for sw in context.service_workers:
+            if sw.url.startswith("chrome-extension://") and "clemz_background" in sw.url:
+                await sw.evaluate("() => chrome.storage.local.set({repostModifyPrice: false})")
+                logger.info(f"💶 [AUTO-COMPLÉTION {self.dressing}] Option « Prix » de Clemz désactivée (fin de série).")
+                return
+        raise RuntimeError("service worker Clemz introuvable")
+
+    @staticmethod
+    async def _prix_formulaire(frame):
+        """Prix affiché dans le formulaire Vinted (iframe Clemz), ou None."""
+        try:
+            champ = await frame.query_selector('input[data-testid="price-input--input"]')
+            valeur = await champ.input_value() if champ else ""
+        except Exception:
+            return None
+        m = re.search(r"\d+(?:[.,]\d{1,2})?", (valeur or "").replace(" ", "").replace(" ", ""))
+        return float(m.group(0).replace(",", ".")) if m else None
+
+    def _enregistrer_baisse(self, nom, prix_apres):
+        """Après publication confirmée : nouveau prix dans articles.prix_vente
+        (pas de nouvelle baisse proposée avant le prochain scraping) + trace
+        price_drops, comme les baisses de l'ancien script."""
+        from database import supabase as db_client
+        article = self.bot._article_unique(db_client, nom)
+        prix_avant = float(article.get("prix_vente") or 0) if article else None
+        if article:
+            db_client.table("articles").update({"prix_vente": prix_apres}).eq("id", article["id"]).execute()
+        try:
+            db_client.table("price_drops").insert({
+                "article_id": article["id"] if article else None,
+                "nom": nom,
+                "dressing": self.acc["name"],
+                "prix_avant": prix_avant,
+                "pourcentage_applique": round((1 - prix_apres / prix_avant) * 100, 1) if prix_avant else None,
+                "prix_apres_estime": prix_apres,
+            }).execute()
+        except Exception as e:
+            logger.warning(f"⚠️ Impossible d'enregistrer price_drops pour '{nom}' : {e}")
+        logger.info(f"📉 [AUTO-COMPLÉTION {self.dressing}] « {nom} » : {prix_avant} € -> {prix_apres} € "
+                    f"(baisse à la republication) enregistré.")
+
+    async def _serie_validation_manuelle(self, cdp, page):
+        """Liste remplie par le Smart Dressing -> réglages Protection
+        (Rythme naturel très lent + Validation manuelle) -> Republier -> Go
+        Clemz -> Confirmer/Continuer -> pour chaque article : formulaire
+        rempli par Clemz dans une iframe, pause 1-3 s, clic sur "Ajouter" ->
+        Clemz enchaîne lui-même l'article suivant. Réglages d'origine
+        restaurés à la fin."""
+        self._maj(statut="preparation", message="Validation manuelle — liste par le Smart Dressing")
+        prets = await self._construire_liste_smart_dressing(cdp, page, "validation manuelle")
+        if not prets:
+            raise _SerieInterrompue("Aucun article trouvé par le Smart Dressing")
+        restants = list(prets)
+        self._maj(total=len(prets))
+
+        # Le Smart Dressing peut recharger la page Vinted : panneau à réinjecter
+        # / rouvrir avant de continuer (essai du 20/10/2026 : "Voir mes listes"
+        # introuvable juste après le remplissage, série arrêtée).
+        await self._attendre_panneau(cdp, page)
+
+        # Clemz republie TOUTE la liste à traiter : elle doit contenir
+        # exactement les articles de la série, rien de plus.
+        nb_liste = await self._nb_liste_a_traiter(page.context)
+        if nb_liste is not None and nb_liste != len(prets):
+            raise _SerieInterrompue(f"Liste à traiter incohérente ({nb_liste} article(s) au lieu de {len(prets)}) "
+                                    f"— rien republié")
+
+        await self._pas("Validation manuelle — onglet « Republier » du panneau Clemz")
+        nav = await self.bot._navigate_to_repost_tab(cdp, page, self.acc)
+        if nav["status"] != "success":
+            logger.warning(f"⚠️ [AUTO-COMPLÉTION {self.dressing}] Onglet Republier non atteint ({nav['reason']}) "
+                           f"— rechargement de la page et nouvelle tentative.")
+            await page.goto(self.acc["url"], wait_until="domcontentloaded")
+            if not await self._attendre_panneau(cdp, page):
+                raise _SerieInterrompue("Panneau Clemz introuvable après rechargement")
+            nav = await self.bot._navigate_to_repost_tab(cdp, page, self.acc)
+            if nav["status"] != "success":
+                raise _SerieInterrompue(nav["reason"])
+
+        # Option "Prix" à la republication : réglée avant CHAQUE article, même
+        # sans baisse prévue (une baisse laissée active dans Clemz
+        # s'appliquerait sinon à tous), et désactivée en fin de série.
+        prix_depart = await self._stockage_clemz(page.context, list(CLES_PRIX_REPUBLICATION))
+        if prix_depart is None:
+            raise _SerieInterrompue("Stockage de Clemz illisible — option « Prix » à la republication non maîtrisable")
+        if prix_depart.get("repostModifyPrice"):
+            logger.warning(f"⚠️ [AUTO-COMPLÉTION {self.dressing}] Option « Prix » de Clemz trouvée ACTIVE au départ "
+                           f"({prix_depart}) — reste d'une série interrompue ? Elle sera réglée article par article "
+                           f"puis désactivée en fin de série.")
+        reglages_origine = await self._appliquer_reglages_protection(cdp, REGLAGES_VALIDATION_MANUELLE, "validation manuelle")
+        try:
+            # En validation manuelle, Clemz traite UN article par "Go Clemz !"
+            # puis recharge la page (constaté le 20/10/2026) : on relance donc
+            # "Go Clemz !" pour chaque article, jusqu'à liste vide.
+            premier = True
+            while restants:
+                if arret_demande(self.dressing):
+                    raise _SerieInterrompue("Arrêtée à ta demande")
+                if not premier:
+                    await self._attendre_panneau(cdp, page)
+                    nav = await self.bot._navigate_to_repost_tab(cdp, page, self.acc)
+                    if nav["status"] != "success":
+                        raise _SerieInterrompue(nav["reason"])
+                    # Clemz retire l'article de la liste à la passation : il
+                    # doit rester exactement les articles non encore publiés.
+                    nb_liste = await self._nb_liste_a_traiter(page.context)
+                    if nb_liste is not None and nb_liste != len(restants):
+                        raise _SerieInterrompue(f"Liste à traiter incohérente ({nb_liste} article(s) au lieu de "
+                                                f"{len(restants)}) — série arrêtée")
+                premier = False
+
+                # Prix à la republication réglé pour l'article qui va passer
+                nom_prevu, titre_prevu = await self._prochain_article_clemz(page.context, restants)
+                if nom_prevu is None:
+                    raise _SerieInterrompue(f"Prochain article de la liste Clemz non reconnu (« {titre_prevu} ») — "
+                                            f"prix à la republication impossible à régler, série arrêtée")
+                prix_regle = self.prix_par_nom.get(nom_prevu)
+                await self._regler_prix_republication(cdp, page.context, prix_regle)
+
+                by_id = await snapshot_by_id(cdp)
+                if "repostSelectAction" in by_id:
+                    await set_select_value(cdp, by_id["repostSelectAction"]["node_id"], "1")  # Republier
+                if "repostButton" not in by_id:
+                    raise _SerieInterrompue("Bouton « Go Clemz ! » introuvable")
+                self._maj(index=len(self.etat["republies"]) + 1)
+                await self._pas(f"Validation manuelle — « Go Clemz ! » ({len(restants)} article(s) restant(s))")
+                await click_element(cdp, by_id["repostButton"]["node_id"])
+                self._maj(statut="en_cours", message="Validation manuelle — Clemz démarre")
+
+                try:
+                    titre = await self._un_article_validation_manuelle(cdp, page, restants, prix_regle)
+                except _ErreurClemz as e:
+                    await self._signaler_erreur_clemz(nom_prevu, str(e))
+                    raise _SerieInterrompue(f"Erreur Clemz sur « {nom_prevu} » : {e} — série arrêtée")
+                nom = self._nom_de_la_serie(titre, restants)
+                if not nom:
+                    raise _SerieInterrompue(f"« {titre} » publié par Clemz mais absent de la série — à vérifier, série arrêtée")
+                restants.remove(nom)
+                await self._enregistrer_publie(nom)
+                if prix_regle is not None:
+                    await asyncio.to_thread(self._enregistrer_baisse, nom, prix_regle)
+                self._maj(article=None, message="Finalisation par Clemz")
+                await self._attendre_finalisation_validation_manuelle(page.context)
+        finally:
+            # Réglages Clemz d'origine remis, quoi qu'il arrive (arrêt, erreur...)
+            try:
+                if not page.is_closed():
+                    await self._attendre_panneau(cdp, page)
+                    nav = await self.bot._navigate_to_repost_tab(cdp, page, self.acc)
+                    if nav["status"] == "success":
+                        await self._appliquer_reglages_protection(
+                            cdp, {k: reglages_origine[k] for k in REGLAGES_VALIDATION_MANUELLE if reglages_origine.get(k)},
+                            "restauration")
+            except Exception as e:
+                logger.error(f"⚠️ [AUTO-COMPLÉTION {self.dressing}] Réglages Protection NON restaurés ({e}) — "
+                             f"remets le mode « Standard » à la main dans Clemz : {reglages_origine}")
+            try:
+                await self._desactiver_prix_republication(page.context)
+            except Exception as e:
+                logger.error(f"⚠️ [AUTO-COMPLÉTION {self.dressing}] Option « Prix » à la republication NON désactivée "
+                             f"({e}) — DÉSACTIVE-LA À LA MAIN dans Clemz (⚙ « Modifier en republiant »), sinon "
+                             f"le prix fixé s'appliquera à la prochaine republication de masse.")
+                await asyncio.to_thread(_send_notification, "⚠️ VintedPro — Clemz à vérifier",
+                                        f"{self.dressing} : option « Prix » de Clemz peut-être encore active.")
+
+    async def _attente_validation_manuelle(self, context):
+        """pendingManualValidationDeclare de Clemz : posé à la passation
+        (clicked=""), passé à clicked="active" au clic sur "Ajouter", effacé
+        une fois la nouvelle annonce retrouvée et liée à la sauvegarde.
+        Retourne le dict, {} s'il est absent, None si le stockage est illisible."""
+        stockage = await self._stockage_clemz(context, ["pendingManualValidationDeclare"])
+        if stockage is None:
+            return None
+        return stockage.get("pendingManualValidationDeclare") or {}
+
+    async def _un_article_validation_manuelle(self, cdp, page, restants, prix_regle):
+        """Après "Go Clemz !" : fenêtres de confirmation, remplissage par Clemz,
+        passation ("Enregistre en brouillon ou publie"), pause 1-3 s, clic sur
+        "Ajouter" dans l'iframe, puis CONFIRMATION de la publication par le
+        stockage de Clemz (clicked="active"). Retourne le titre publié.
+        prix_regle : prix fixé dans l'option "Prix" de Clemz (None = inchangé)
+        -- "Ajouter" n'est cliqué que si l'article ouvert est bien celui prévu
+        pour ce réglage et, en cas de baisse, si le formulaire affiche ce prix."""
+        inactif = 0
+        dernier_etat = None
+        titre_clique = None
+        while inactif < ATTENTE_SANS_PROGRES_VALIDATION_SECONDES:
+            if page.is_closed():
+                raise _SerieInterrompue("Fenêtre fermée")
+            if arret_demande(self.dressing) and not titre_clique:
+                by_id = await snapshot_by_id(cdp)
+                if "progressStopButton" in by_id:
+                    x, y = await get_center_coords(cdp, by_id["progressStopButton"]["node_id"])
+                    await real_mouse_click(page, x, y)
+                raise _SerieInterrompue("Arrêtée à ta demande")
+
+            # Publication confirmée par Clemz (clic "Ajouter" bien pris en compte)
+            if titre_clique:
+                attente = await self._attente_validation_manuelle(page.context)
+                if attente is None or attente.get("clicked") == "active" or attente == {}:
+                    logger.info(f"🟢 [AUTO-COMPLÉTION {self.dressing}] Publication confirmée par Clemz : « {titre_clique} » "
+                                f"({'stockage illisible' if attente is None else attente.get('clicked') or 'finalisée'}).")
+                    return titre_clique
+
+            try:
+                by_id = await snapshot_by_id(cdp)
+            except Exception:
+                await asyncio.sleep(2)  # page en cours de rechargement
+                inactif += 2
+                continue
+
+            # Fenêtres de confirmation Clemz ("Confirmer", "Continuer", infos...)
+            if not titre_clique and "continueAlertButton" in by_id and await self._visible(cdp, by_id, "continueAlertButton"):
+                contenu = by_id.get("alert-content")
+                texte = ((await get_live_props(cdp, contenu["node_id"], props=("innerText",))).get("innerText", "")
+                         if contenu else "").strip()
+                logger.info(f"🪟 [AUTO-COMPLÉTION {self.dressing}] Fenêtre Clemz : {texte.replace(chr(10), ' · ')[:300]}")
+                await self._pas(f"Validation manuelle — confirmer la fenêtre Clemz : « {texte[:120]} »")
+                by_id = await snapshot_by_id(cdp)
+                if "continueAlertButton" in by_id:
+                    x, y = await get_center_coords(cdp, by_id["continueAlertButton"]["node_id"])
+                    await real_mouse_click(page, x, y)
+                inactif = 0
+                await asyncio.sleep(1)
+                continue
+
+            etape = progression = titre = ""
+            for cle in ("processStage", "progressContent", "articleTitle"):
+                if cle in by_id:
+                    valeur = (await get_live_props(cdp, by_id[cle]["node_id"], props=("innerText",))).get("innerText", "").strip()
+                    if cle == "processStage":
+                        etape = valeur
+                    elif cle == "progressContent":
+                        progression = valeur
+                    else:
+                        titre = valeur
+            etat = (etape, progression)
+            if etat != dernier_etat:
+                dernier_etat, inactif = etat, 0
+                if progression:
+                    logger.info(f"⏳ [AUTO-COMPLÉTION {self.dressing}] Clemz : {progression.replace(chr(10), ' · ')[:200]}")
+                self._maj(message=f"Validation manuelle — {etape[:120] or 'en cours'}", article=titre or None)
+
+            # Erreur Clemz ("XXX ERREUR XXX · Action non autorisée", 21/10/2026) :
+            # Clemz ne va pas plus loin -- inutile d'attendre la fermeture.
+            if not titre_clique and MARQUEUR_ERREUR_CLEMZ in f"{titre} {progression}".lower():
+                motif = etape if etape and MARQUEUR_ERREUR_CLEMZ not in etape.lower() else progression
+                raise _ErreurClemz(motif.replace("\n", " · ").strip()[:200] or "erreur sans détail")
+
+            # Passation : formulaire rempli dans l'iframe -> clic sur "Ajouter"
+            if not titre_clique and "enregistre en brouillon ou publie" in etape.lower() and titre:
+                frame, bouton = await self._bouton_ajouter_iframe(page)
+                if bouton:
+                    await self._verifier_prix_avant_ajouter(frame, titre, restants, prix_regle)
+                    pause = random.uniform(*PAUSE_AVANT_AJOUTER_SECONDES)
+                    await asyncio.sleep(pause)
+                    await self._pas(f"Validation manuelle — cliquer sur « Ajouter » pour « {titre[:60]} »")
+                    await bouton.click()
+                    titre_clique = titre
+                    inactif = 0
+                    logger.info(f"🖱️ [AUTO-COMPLÉTION {self.dressing}] « Ajouter » cliqué pour « {titre} » (après {pause:.1f} s).")
+                    self._maj(message="Validation manuelle — publication en cours")
+
+            await asyncio.sleep(2)
+            inactif += 2
+        raise _SerieInterrompue(f"Aucun progrès de Clemz depuis {ATTENTE_SANS_PROGRES_VALIDATION_SECONDES // 60} min "
+                                f"(dernier état : {dernier_etat})")
+
+    async def _signaler_erreur_clemz(self, nom, motif):
+        """"XXX ERREUR XXX" de Clemz sur `nom` : l'ancienne annonce a pu être
+        supprimée sans que la nouvelle soit créée (3 articles disparus de D1
+        le 21/10/2026). Article marqué erreur_clemz en base -- jamais marqué
+        "vendu" par le scraping tant qu'il est absent, drapeau effacé tout
+        seul quand il réapparaît -- + historique + notification Windows."""
+        raison = (f"Erreur Clemz « {motif} » pendant la republication (validation manuelle) — "
+                  f"vérifier sur Vinted que l'annonce existe encore, sinon republier depuis clemz.app.")
+        logger.error(f"🛑 [AUTO-COMPLÉTION {self.dressing}] « {nom} » : {raison}")
+
+        def _marquer():
+            from database import supabase as db_client
+            from datetime import datetime as dt
+            db_client.table("articles").update({
+                "erreur_clemz": True,
+                "erreur_clemz_reason": raison,
+                "erreur_clemz_date": dt.now().isoformat(),
+            }).ilike("nom", nom).execute()
+        try:
+            await asyncio.to_thread(_marquer)
+        except Exception as e:
+            logger.error(f"❌ [AUTO-COMPLÉTION {self.dressing}] Échec du marquage erreur Clemz pour « {nom} » : {e}")
+        self.etat["ignores"].append({"nom": nom, "raison": raison})
+        if self.task_id:
+            from services.automation_scheduler import update_task_result_par_nom
+            await asyncio.to_thread(update_task_result_par_nom, self.task_id, nom, "failed", raison)
+        await asyncio.to_thread(_send_notification, "🛑 VintedPro — Erreur Clemz",
+                                f"{self.dressing} : « {nom[:60]} » — {motif[:80]}. Série arrêtée, vérifie l'annonce.")
+
+    async def _verifier_prix_avant_ajouter(self, frame, titre, restants, prix_regle):
+        """Garde-fou avant "Ajouter" : jamais de publication avec la baisse
+        d'un autre article, ni avec un prix différent de celui prévu. En cas
+        d'écart, la série s'arrête SANS cliquer (formulaire laissé ouvert)."""
+        nom = self._nom_de_la_serie(titre, restants)
+        attendu = self.prix_par_nom.get(nom) if nom else None
+        probleme = None
+        if nom is None:
+            probleme = f"« {titre} » ouvert par Clemz, absent de la série"
+        elif attendu != prix_regle:
+            probleme = (f"« {nom} » ouvert par Clemz, mais l'option Prix était réglée pour un autre article "
+                        f"({'prix inchangé' if prix_regle is None else f'{prix_regle:g} €'} au lieu de "
+                        f"{'prix inchangé' if attendu is None else f'{attendu:g} €'})")
+        elif prix_regle is not None:
+            prix_form = await self._prix_formulaire(frame)
+            if prix_form is None or abs(prix_form - prix_regle) > 0.005:
+                probleme = f"« {nom} » : le formulaire affiche {prix_form} € au lieu de {prix_regle:g} €"
+            else:
+                logger.info(f"💶 [AUTO-COMPLÉTION {self.dressing}] « {nom} » : prix du formulaire conforme ({prix_form:g} €).")
+        if probleme:
+            await asyncio.to_thread(_send_notification, "⚠️ VintedPro — Prix à vérifier",
+                                    f"{self.dressing} : « Ajouter » non cliqué. {probleme[:150]}")
+            raise _SerieInterrompue(f"{probleme} — « Ajouter » NON cliqué, formulaire laissé ouvert, série arrêtée")
+
+    async def _attendre_finalisation_validation_manuelle(self, context):
+        """Clemz retrouve la nouvelle annonce et la lie à la sauvegarde, puis
+        efface pendingManualValidationDeclare -- attendu avant de relancer."""
+        for _ in range(ATTENTE_FINALISATION_CLEMZ_SECONDES // 2):
+            attente = await self._attente_validation_manuelle(context)
+            if attente is None:
+                await asyncio.sleep(10)
+                return
+            if not attente:
+                return
+            await asyncio.sleep(2)
+        logger.warning(f"⚠️ [AUTO-COMPLÉTION {self.dressing}] Clemz n'a pas finalisé la publication en "
+                       f"{ATTENTE_FINALISATION_CLEMZ_SECONDES}s — on continue.")
 
     async def _attendre_panneau(self, cdp, page):
         for _ in range(30):
@@ -644,6 +1252,14 @@ class AutoCompletionSession:
                 texte = (await get_live_props(cdp, by_id["processStage"]["node_id"], props=("innerText",))).get("innerText", "").strip()
                 if "formulaire rempli" in texte.lower():
                     return None
+                titre_cl = by_id.get("articleTitle")
+                titre_cl = ((await get_live_props(cdp, titre_cl["node_id"], props=("innerText",))).get("innerText", "")
+                            if titre_cl else "")
+                if MARQUEUR_ERREUR_CLEMZ in f"{titre_cl} {texte}".lower():
+                    # "XXX ERREUR XXX" (21/10/2026) : Clemz s'arrête là
+                    await asyncio.to_thread(_send_notification, "🛑 VintedPro — Erreur Clemz",
+                                            f"{self.dressing} : {texte[:100]}")
+                    return f"Erreur Clemz pendant le remplissage : {texte[:200]}"
                 if texte and texte != dernier:
                     dernier, sans_progres = texte, 0
                     self._maj(message=f"Remplissage par Clemz : {texte}")
@@ -792,6 +1408,8 @@ class AutoCompletionSession:
                            f"l'article attendu « {nom} » — enregistré quand même sous « {nom} », à vérifier.")
         await self._pas(f"Étape 2 — enregistrer la republication de « {nom} » dans Supabase (date + quota)")
         await self.bot._article_termine(self.acc, nom, "republication")
+        from services.articles_supprimes import retirer
+        retirer(nom)  # republié : plus besoin de le protéger du marquage "vendu"
         self.etat["republies"].append(nom)
         logger.info(f"✅ [AUTO-COMPLÉTION {self.dressing}] '{nom}' republié et enregistré ({page.url}).")
 
@@ -868,7 +1486,7 @@ class AutoCompletionSession:
             # republiée (erreur, arrêt, délai) -- elle n'existe plus que dans la
             # sauvegarde clemz.app : à republier à la main.
             perdues = [n for n in self.supprimes if n not in self.etat["republies"]]
-            if perdues:
+            if perdues and not self.suppression_seule:  # suppression seule : voulu, pas une perte
                 self.etat["supprimes_non_republies"] = perdues
                 logger.error(f"🆘 [AUTO-COMPLÉTION {self.dressing}] SUPPRIMÉ(S) de Vinted mais NON republié(s) : {perdues}")
                 try:
@@ -915,6 +1533,34 @@ class AutoCompletionSession:
                 self._ignorer(nom, "Panneau Clemz introuvable")
             return self.etat
 
+        # VALIDATION MANUELLE (20/10/2026) : Clemz traite TOUTE la liste d'un
+        # seul "Go Clemz !" -- le quota du jour est donc appliqué AVANT, en
+        # réduisant la série à ce qui reste autorisé.
+        if self.validation_manuelle:
+            from services.risk_guard import get_allowed_quantity
+            autorise, _, raison_quota = get_allowed_quantity(self.dressing, "republication", len(self.produits))
+            for reste in self.produits[autorise:]:
+                self._ignorer(reste, raison_quota or "Quota anti-détection atteint")
+            self.produits = self.produits[:autorise]
+            self.acc["produits"] = self.produits
+            if not self.produits:
+                self._maj(statut="echec", message=raison_quota or "Quota du jour atteint")
+                return self.etat
+            try:
+                await self._serie_validation_manuelle(cdp, page)
+            except _SerieInterrompue as e:
+                logger.error(f"🛑 [AUTO-COMPLÉTION {self.dressing}] Validation manuelle : {e}")
+                traites = set(self.etat["republies"]) | {i["nom"] for i in self.etat["ignores"]}
+                for nom in self.produits:
+                    if nom not in traites:
+                        self._ignorer(nom, f"Validation manuelle : {e}")
+                self._maj(statut="echec", message=f"Validation manuelle : {e}")
+                return self.etat
+            bilan = f"{len(self.etat['republies'])} republié(s), {len(self.etat['ignores'])} ignoré(s)"
+            await self._pas(f"Fin de série (validation manuelle) — {bilan}. « Continuer » pour fermer le navigateur")
+            self._maj(statut="termine", article=None, message=bilan)
+            return self.etat
+
         # REMPLISSAGE SEUL (19/10/2026) : liste "à traiter" vidée puis remplie
         # par UNE source, et rien d'autre (ni suppression, ni publication).
         if self.remplissage == "smart_dressing":
@@ -943,6 +1589,29 @@ class AutoCompletionSession:
                             f"« Continuer » pour fermer le navigateur")
             self._maj(statut="termine", article=None,
                       message=f"clemz.app : {len(prets)}/{len(self.produits)} article(s) dans la liste à traiter")
+            return self.etat
+
+        # SUPPRESSION SEULE (19/10/2026) : étape 0 puis arrêt.
+        if self.suppression_seule:
+            try:
+                supprimes = await self._etape_suppression(cdp, page)
+            except _SerieInterrompue as e:
+                logger.error(f"🛑 [AUTO-COMPLÉTION {self.dressing}] Suppression : {e}")
+                traites = {i["nom"] for i in self.etat["ignores"]} | set(self.supprimes)
+                for nom in self.produits:
+                    if nom not in traites:
+                        self._ignorer(nom, str(e))
+                self._maj(statut="echec", message=f"Suppression : {e}")
+                return self.etat
+            if self.task_id:
+                from services.automation_scheduler import update_task_result_par_nom
+                for nom in supprimes:
+                    update_task_result_par_nom(self.task_id, nom, "success",
+                                               "Supprimé de Vinted (sauvegardé sur clemz.app)")
+            await self._pas(f"Fin de la suppression — {len(supprimes)} annonce(s) supprimée(s). "
+                            f"« Continuer » pour fermer le navigateur")
+            self._maj(statut="termine", article=None,
+                      message=f"{len(supprimes)}/{len(self.produits)} annonce(s) supprimée(s) de Vinted")
             return self.etat
 
         # ÉTAPE 0 -- sauvegarde puis suppression sur Vinted. Seuls les

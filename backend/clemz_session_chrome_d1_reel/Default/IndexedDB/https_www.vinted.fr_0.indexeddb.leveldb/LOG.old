@@ -1,39 +1,117 @@
-2026/10/18-21:56:46.421 de38 Recovering log #3749
-2026/10/18-21:56:46.423 de38 Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\clemz_session_chrome_d1_reel\Default\IndexedDB\https_www.vinted.fr_0.indexeddb.leveldb/003749.log 
-2026/10/18-21:56:46.468 de38 Delete type=2 #3745
-2026/10/18-21:56:46.468 de38 Delete type=2 #3746
-2026/10/18-21:56:46.468 de38 Delete type=2 #3747
-2026/10/18-21:56:46.468 de38 Delete type=2 #3748
-2026/10/18-21:56:46.468 de38 Delete type=3 #3086
-2026/10/18-21:56:46.575 c364 Level-0 table #3757: started
-2026/10/18-21:56:46.580 c364 Level-0 table #3757: 714650 bytes OK
-2026/10/18-21:56:46.581 c364 Delete type=0 #3749
-2026/10/18-21:56:46.582 de38 Manual compaction at level-0 from ' \x9e\x02\x00\x00\x00' @ 72057594037927935 : 1 .. ' \x9f\x02\x00\x00\x00' @ 0 : 0; will stop at ' \x9e\x02\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 101630 : 1
-2026/10/18-21:56:46.582 de38 Compacting 1@0 + 4@1 files
-2026/10/18-21:56:46.614 de38 Generated table #3758@0: 2126 keys, 4229873 bytes
-2026/10/18-21:56:46.617 de38 Generated table #3759@0: 7 keys, 6616 bytes
-2026/10/18-21:56:46.625 de38 Generated table #3760@0: 14 keys, 938261 bytes
-2026/10/18-21:56:46.629 de38 Generated table #3761@0: 16 keys, 474504 bytes
-2026/10/18-21:56:46.653 de38 Generated table #3762@0: 56 keys, 3260475 bytes
-2026/10/18-21:56:46.653 de38 Compacted 1@0 + 4@1 files => 8909729 bytes
-2026/10/18-21:56:46.655 de38 compacted to: files[ 0 5 27 9 0 0 0 ]
-2026/10/18-21:56:46.655 b4a8 Manual compaction at level-0 from ' \x9e\x02\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 101630 : 1 .. ' \x9f\x02\x00\x00\x00' @ 0 : 0; will stop at (end)
-2026/10/18-21:56:46.922 de38 Level-0 table #3764: started
-2026/10/18-21:56:46.930 de38 Level-0 table #3764: 712905 bytes OK
-2026/10/18-21:56:46.933 de38 Delete type=2 #3751
-2026/10/18-21:56:46.933 de38 Delete type=2 #3752
-2026/10/18-21:56:46.933 de38 Delete type=2 #3753
-2026/10/18-21:56:46.934 de38 Delete type=2 #3754
-2026/10/18-21:56:46.934 de38 Delete type=0 #3756
-2026/10/18-21:56:46.934 de38 Delete type=2 #3757
-2026/10/18-21:56:46.937 de38 Manual compaction at level-0 from ' \x9f\x02\x00\x00\x00' @ 72057594037927935 : 1 .. ' \xa0\x02\x00\x00\x00' @ 0 : 0; will stop at ' \x9f\x02\x01\x02\x01\x01\x00k' @ 101813 : 1
-2026/10/18-21:56:46.937 de38 Compacting 1@0 + 5@1 files
-2026/10/18-21:56:47.014 de38 Generated table #3765@0: 2179 keys, 4235543 bytes
-2026/10/18-21:56:47.021 de38 Generated table #3766@0: 8 keys, 467724 bytes
-2026/10/18-21:56:47.036 de38 Generated table #3767@0: 14 keys, 938261 bytes
-2026/10/18-21:56:47.043 de38 Generated table #3768@0: 16 keys, 474504 bytes
-2026/10/18-21:56:47.080 de38 Generated table #3769@0: 56 keys, 3260475 bytes
-2026/10/18-21:56:47.080 de38 Compacted 1@0 + 5@1 files => 9376507 bytes
-2026/10/18-21:56:47.083 de38 compacted to: files[ 0 5 27 9 0 0 0 ]
-2026/10/18-21:56:47.084 de38 Delete type=2 #3764
-2026/10/18-21:56:47.084 de38 Manual compaction at level-0 from ' \x9f\x02\x01\x02\x01\x01\x00k' @ 101813 : 1 .. ' \xa0\x02\x00\x00\x00' @ 0 : 0; will stop at (end)
+2026/10/21-19:27:55.118 2bec Recovering log #9317
+2026/10/21-19:27:55.119 2bec Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\clemz_session_chrome_d1_reel\Default\IndexedDB\https_www.vinted.fr_0.indexeddb.leveldb/009317.log 
+2026/10/21-19:27:55.320 2bec Delete type=2 #9312
+2026/10/21-19:27:55.320 2bec Delete type=2 #9313
+2026/10/21-19:27:55.321 2bec Delete type=2 #9314
+2026/10/21-19:27:55.321 2bec Delete type=2 #9315
+2026/10/21-19:27:55.321 2bec Delete type=2 #9316
+2026/10/21-19:27:55.321 2bec Delete type=3 #9309
+2026/10/21-19:27:55.502 7784 Level-0 table #9326: started
+2026/10/21-19:27:55.506 7784 Level-0 table #9326: 10497 bytes OK
+2026/10/21-19:27:55.510 7784 Delete type=0 #9317
+2026/10/21-19:27:55.511 7784 Manual compaction at level-0 from ' \xb5\x05\x00\x00\x00' @ 72057594037927935 : 1 .. ' \xb6\x05\x00\x00\x00' @ 0 : 0; will stop at ' \xb6\x05\x01\x02\x01\x01\x00k' @ 225075 : 1
+2026/10/21-19:27:55.511 7784 Compacting 1@0 + 5@1 files
+2026/10/21-19:27:55.694 7784 Generated table #9327@0: 2935 keys, 3894903 bytes
+2026/10/21-19:27:55.738 7784 Generated table #9328@0: 23 keys, 407100 bytes
+2026/10/21-19:27:55.780 7784 Generated table #9329@0: 19 keys, 1466627 bytes
+2026/10/21-19:27:55.799 7784 Generated table #9330@0: 22 keys, 1328337 bytes
+2026/10/21-19:27:55.838 7784 Generated table #9331@0: 76 keys, 3071544 bytes
+2026/10/21-19:27:55.838 7784 Compacted 1@0 + 5@1 files => 10168511 bytes
+2026/10/21-19:27:55.840 7784 compacted to: files[ 0 5 28 53 0 0 0 ]
+2026/10/21-19:27:55.841 7784 Delete type=2 #9326
+2026/10/21-19:27:55.841 2bec Manual compaction at level-0 from ' \xb6\x05\x01\x02\x01\x01\x00k' @ 225075 : 1 .. ' \xb6\x05\x00\x00\x00' @ 0 : 0; will stop at (end)
+2026/10/21-19:27:55.844 2bec Level-0 table #9333: started
+2026/10/21-19:27:55.847 2bec Level-0 table #9333: 12854 bytes OK
+2026/10/21-19:27:55.850 2bec Delete type=2 #9319
+2026/10/21-19:27:55.850 2bec Delete type=2 #9320
+2026/10/21-19:27:55.850 2bec Delete type=2 #9321
+2026/10/21-19:27:55.851 2bec Delete type=2 #9322
+2026/10/21-19:27:55.851 2bec Delete type=2 #9323
+2026/10/21-19:27:55.851 2bec Delete type=0 #9325
+2026/10/21-19:27:55.854 2bec Manual compaction at level-0 from ' \xb6\x05\x00\x00\x00' @ 72057594037927935 : 1 .. ' \xb7\x05\x00\x00\x00' @ 0 : 0; will stop at ' \xb6\x05\x01\x02\x01\x01\x00k' @ 225206 : 0
+2026/10/21-19:27:55.855 2bec Compacting 1@0 + 5@1 files
+2026/10/21-19:27:55.928 2bec Generated table #9334@0: 2940 keys, 3899093 bytes
+2026/10/21-19:27:55.936 2bec Generated table #9335@0: 24 keys, 408794 bytes
+2026/10/21-19:27:55.966 2bec Generated table #9336@0: 19 keys, 1466627 bytes
+2026/10/21-19:27:56.020 2bec Generated table #9337@0: 22 keys, 1328337 bytes
+2026/10/21-19:27:56.233 2bec Generated table #9338@0: 64 keys, 3073166 bytes
+2026/10/21-19:27:56.233 2bec Compacted 1@0 + 5@1 files => 10176017 bytes
+2026/10/21-19:27:56.253 2bec compacted to: files[ 0 5 28 53 0 0 0 ]
+2026/10/21-19:27:56.255 2bec Delete type=2 #9333
+2026/10/21-19:27:56.256 2bec Manual compaction at level-0 from ' \xb6\x05\x01\x02\x01\x01\x00k' @ 225206 : 0 .. ' \xb7\x05\x00\x00\x00' @ 0 : 0; will stop at (end)
+2026/10/21-19:28:04.792 2bec Level-0 table #9340: started
+2026/10/21-19:28:04.795 2bec Level-0 table #9340: 3570 bytes OK
+2026/10/21-19:28:04.797 2bec Delete type=2 #9327
+2026/10/21-19:28:04.797 2bec Delete type=2 #9328
+2026/10/21-19:28:04.798 2bec Delete type=2 #9329
+2026/10/21-19:28:04.798 2bec Delete type=2 #9330
+2026/10/21-19:28:04.798 2bec Delete type=2 #9331
+2026/10/21-19:28:04.798 2bec Delete type=0 #9332
+2026/10/21-19:28:04.799 2bec Manual compaction at level-0 from ' \xb7\x05\x00\x00\x00' @ 72057594037927935 : 1 .. ' \xb8\x05\x00\x00\x00' @ 0 : 0; will stop at ' \xb7\x05\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 225265 : 1
+2026/10/21-19:28:04.800 2bec Compacting 1@0 + 5@1 files
+2026/10/21-19:28:04.831 2bec Generated table #9341@0: 2945 keys, 3895315 bytes
+2026/10/21-19:28:04.837 2bec Generated table #9342@0: 24 keys, 408794 bytes
+2026/10/21-19:28:04.850 2bec Generated table #9343@0: 19 keys, 1466627 bytes
+2026/10/21-19:28:04.862 2bec Generated table #9344@0: 22 keys, 1328337 bytes
+2026/10/21-19:28:04.890 2bec Generated table #9345@0: 64 keys, 3073166 bytes
+2026/10/21-19:28:04.890 2bec Compacted 1@0 + 5@1 files => 10172239 bytes
+2026/10/21-19:28:04.892 2bec compacted to: files[ 0 5 28 53 0 0 0 ]
+2026/10/21-19:28:04.892 2bec Delete type=2 #9340
+2026/10/21-19:28:04.892 2bec Manual compaction at level-0 from ' \xb7\x05\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 225265 : 1 .. ' \xb8\x05\x00\x00\x00' @ 0 : 0; will stop at (end)
+2026/10/21-19:28:04.948 2bec Level-0 table #9347: started
+2026/10/21-19:28:04.950 2bec Level-0 table #9347: 5316 bytes OK
+2026/10/21-19:28:04.953 2bec Delete type=2 #9334
+2026/10/21-19:28:04.953 2bec Delete type=2 #9335
+2026/10/21-19:28:04.953 2bec Delete type=2 #9336
+2026/10/21-19:28:04.953 2bec Delete type=2 #9337
+2026/10/21-19:28:04.953 2bec Delete type=2 #9338
+2026/10/21-19:28:04.953 2bec Delete type=0 #9339
+2026/10/21-19:28:04.955 2bec Manual compaction at level-0 from ' \xb8\x05\x00\x00\x00' @ 72057594037927935 : 1 .. ' \xb9\x05\x00\x00\x00' @ 0 : 0; will stop at ' \xb8\x05\x01\x02\x01\x01\x00k' @ 225361 : 1
+2026/10/21-19:28:04.955 2bec Compacting 1@0 + 5@1 files
+2026/10/21-19:28:04.984 2bec Generated table #9348@0: 2958 keys, 3895619 bytes
+2026/10/21-19:28:04.990 2bec Generated table #9349@0: 25 keys, 409563 bytes
+2026/10/21-19:28:05.003 2bec Generated table #9350@0: 19 keys, 1466627 bytes
+2026/10/21-19:28:05.015 2bec Generated table #9351@0: 22 keys, 1328337 bytes
+2026/10/21-19:28:05.037 2bec Generated table #9352@0: 64 keys, 3073166 bytes
+2026/10/21-19:28:05.037 2bec Compacted 1@0 + 5@1 files => 10173312 bytes
+2026/10/21-19:28:05.039 2bec compacted to: files[ 0 5 28 53 0 0 0 ]
+2026/10/21-19:28:05.040 2bec Delete type=2 #9347
+2026/10/21-19:28:05.040 2bec Manual compaction at level-0 from ' \xb8\x05\x01\x02\x01\x01\x00k' @ 225361 : 1 .. ' \xb9\x05\x00\x00\x00' @ 0 : 0; will stop at (end)
+2026/10/21-19:47:48.056 7784 Level-0 table #9354: started
+2026/10/21-19:47:48.062 7784 Level-0 table #9354: 9259 bytes OK
+2026/10/21-19:47:48.066 7784 Delete type=2 #9341
+2026/10/21-19:47:48.066 7784 Delete type=2 #9342
+2026/10/21-19:47:48.066 7784 Delete type=2 #9343
+2026/10/21-19:47:48.066 7784 Delete type=2 #9344
+2026/10/21-19:47:48.066 7784 Delete type=2 #9345
+2026/10/21-19:47:48.066 7784 Delete type=0 #9346
+2026/10/21-19:47:48.070 2bec Manual compaction at level-0 from ' \xb9\x05\x00\x00\x00' @ 72057594037927935 : 1 .. ' \xba\x05\x00\x00\x00' @ 0 : 0; will stop at ' \xb9\x05\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 225502 : 1
+2026/10/21-19:47:48.070 2bec Compacting 1@0 + 5@1 files
+2026/10/21-19:47:48.149 2bec Generated table #9355@0: 2980 keys, 3896994 bytes
+2026/10/21-19:47:48.159 2bec Generated table #9356@0: 25 keys, 409563 bytes
+2026/10/21-19:47:48.207 2bec Generated table #9357@0: 19 keys, 1466627 bytes
+2026/10/21-19:47:48.255 2bec Generated table #9358@0: 22 keys, 1328337 bytes
+2026/10/21-19:47:48.325 2bec Generated table #9359@0: 65 keys, 3073406 bytes
+2026/10/21-19:47:48.325 2bec Compacted 1@0 + 5@1 files => 10174927 bytes
+2026/10/21-19:47:48.331 2bec compacted to: files[ 0 5 28 53 0 0 0 ]
+2026/10/21-19:47:48.333 2bec Delete type=2 #9354
+2026/10/21-19:47:48.336 2bec Manual compaction at level-0 from ' \xb9\x05\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 225502 : 1 .. ' \xba\x05\x00\x00\x00' @ 0 : 0; will stop at (end)
+2026/10/21-19:47:48.572 209c Level-0 table #9361: started
+2026/10/21-19:47:48.575 209c Level-0 table #9361: 5344 bytes OK
+2026/10/21-19:47:48.579 209c Delete type=2 #9348
+2026/10/21-19:47:48.579 209c Delete type=2 #9349
+2026/10/21-19:47:48.579 209c Delete type=2 #9350
+2026/10/21-19:47:48.579 209c Delete type=2 #9351
+2026/10/21-19:47:48.579 209c Delete type=2 #9352
+2026/10/21-19:47:48.579 209c Delete type=0 #9353
+2026/10/21-19:47:48.585 2bec Manual compaction at level-0 from ' \xba\x05\x00\x00\x00' @ 72057594037927935 : 1 .. ' \xbb\x05\x00\x00\x00' @ 0 : 0; will stop at ' \xba\x05\x01\x02\x01\x01\x00k' @ 225610 : 1
+2026/10/21-19:47:48.585 2bec Compacting 1@0 + 5@1 files
+2026/10/21-19:47:48.694 2bec Generated table #9362@0: 2997 keys, 3896498 bytes
+2026/10/21-19:47:48.722 2bec Generated table #9363@0: 25 keys, 409563 bytes
+2026/10/21-19:47:48.755 2bec Generated table #9364@0: 19 keys, 1466627 bytes
+2026/10/21-19:47:48.787 2bec Generated table #9365@0: 22 keys, 1328337 bytes
+2026/10/21-19:47:48.863 2bec Generated table #9366@0: 66 keys, 3074058 bytes
+2026/10/21-19:47:48.863 2bec Compacted 1@0 + 5@1 files => 10175083 bytes
+2026/10/21-19:47:48.865 2bec compacted to: files[ 0 5 28 53 0 0 0 ]
+2026/10/21-19:47:48.867 2bec Delete type=2 #9361
+2026/10/21-19:47:48.869 2bec Manual compaction at level-0 from ' \xba\x05\x01\x02\x01\x01\x00k' @ 225610 : 1 .. ' \xbb\x05\x00\x00\x00' @ 0 : 0; will stop at (end)

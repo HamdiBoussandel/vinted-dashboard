@@ -180,7 +180,7 @@
       "message": "⚡⚡⚡ Standard"
    },
    "actionInterface_executionModeApiTooltip": {
-      "message": "\u003Cb class=\"text-success\">Velocità massima\u003C/b>, \u003Cb class=\"text-danger\">Rischio alto.\u003C/b>\u003Cbr>Ripubblicazione totalmente automatizzata."
+      "message": "\u003Cb class=\"text-success\">Velocità massima\u003C/b>, \u003Cb class=\"text-danger\">Rischio alto.\u003C/b>\u003Cbr>\u003Cspan class=\"text-dark\">(nessun rischio per i PRO)\u003C/span>\u003Cbr>➡️ Ripubblicazione totalmente automatizzata."
    },
    "actionInterface_executionModeBadge": {
       "message": "Nav. umana"
@@ -198,10 +198,10 @@
       "message": "Valid. manuale"
    },
    "actionInterface_executionModeManualValidationTooltip": {
-      "message": "\u003Cb class=\"text-danger\">Velocità molto lenta\u003C/b>, \u003Cb class=\"text-success\">Rischio minimo.\u003C/b>\u003Cbr>Clemz compila il modulo di 1 articolo alla volta. Puoi modificare, poi salvare o pubblicare."
+      "message": "\u003Cb class=\"text-danger\">Velocità molto lenta\u003C/b>, \u003Cb class=\"text-success\">Rischio minimo.\u003C/b>\u003Cbr>➡️ Clemz compila il modulo di 1 articolo alla volta. Puoi modificare, poi salvare o pubblicare."
    },
    "actionInterface_executionModeTooltip": {
-      "message": "\u003Cb class=\"text-warning\">Velocità lenta\u003C/b>, \u003Cb class=\"text-warning\">Rischio ridotto.\u003C/b>\u003Cbr>Clemz apre pagine Vinted vere, come farebbe un umano."
+      "message": "\u003Cb class=\"text-warning\">Velocità lenta\u003C/b>, \u003Cb class=\"text-warning\">Rischio ridotto.\u003C/b>\u003Cbr>\u003Cspan class=\"text-dark\">(nessun rischio per i PRO)\u003C/span>\u003Cbr>➡️ Clemz apre pagine Vinted vere, come farebbe un umano."
    },
    "actionInterface_executionTransportFrame": {
       "message": "stessa scheda"
@@ -240,7 +240,7 @@
       "message": "Armadio amico"
    },
    "actionInterface_getViewsLikes": {
-      "message": "5. Ottieni 👁️ e ❤️ \u003Cspan class=\"btn btn-xs btn-outline-primary ml-3\" data-open-tab=\"exchangeTabLink\" data-open-tab-container=\"currentInterface\" role=\"button\">vedi scheda ➡️\u003C/span>"
+      "message": "4. Ottieni 👁️ e ❤️ \u003Cspan class=\"btn btn-xs btn-outline-primary ml-3\" data-open-tab=\"exchangeTabLink\" data-open-tab-container=\"currentInterface\" role=\"button\">vedi scheda ➡️\u003C/span>"
    },
    "actionInterface_giveFavs": {
       "message": "Dare preferiti"
@@ -361,6 +361,27 @@
    },
    "actionInterface_modifyClipboard": {
       "message": "⚙️ modif/elimina"
+   },
+   "actionInterface_modifyOnRepostLabel": {
+      "message": "Modifica"
+   },
+   "actionInterface_modifyOnRepostModalTitle": {
+      "message": "Modifica ripubblicando"
+   },
+   "actionInterface_modifyOnRepostPhotosLabel": {
+      "message": "Foto"
+   },
+   "actionInterface_modifyOnRepostPricePrefix": {
+      "message": "Prezzo:"
+   },
+   "actionInterface_modifyOnRepostSummaryPhotosActive": {
+      "message": "Foto: 🖼️ del momento"
+   },
+   "actionInterface_modifyOnRepostSummaryPhotosCustom": {
+      "message": "Foto: 🖌️ al volo"
+   },
+   "actionInterface_modifyOnRepostSummaryPhotosNo": {
+      "message": "Foto: 🚫 no"
    },
    "actionInterface_modifyPhotos": {
       "message": "3. Come modificare le foto \u003Ca class=\"text-sm tooltip tooltip-left\" href=\"https://www.clemz.app/documentation/modifier-les-photos\" target=\"_blank\" data-tooltip=\"Clicca qui per capire come funziona la modifica delle foto\">\u003Cimg class=\"font-icon align-middle pb-1 vinz-image ml-1\" data-image-name=\"question-circle-solid.svg\" src=\"\">\u003C/a>"
@@ -1011,6 +1032,9 @@
    },
    "autoComplete_fillFormButton": {
       "message": "📝 Compila il modulo"
+   },
+   "autoComplete_introCorrection": {
+      "message": "Clemz ha appena compilato questo modulo per te. Se serve, può compilarlo di nuovo 👇"
    },
    "autoComplete_introEdit": {
       "message": "Questo articolo è nel tuo backup (\u003Ca href=\"$url$\" target=\"_blank\">\u003Cu>vedi qui\u003C/u>\u003C/a>). Importare il suo contenuto da clemz.app?",
@@ -3248,9 +3272,6 @@
          }
       }
    },
-   "repostArticles_noModificationPreview": {
-      "message": "\u003Cb>🚫 Nessuna modifica foto:\u003C/b> Clemz riporterà le tue foto salvate così come sono"
-   },
    "repostArticles_noPhotoError": {
       "message": "Articolo senza foto: ripubblicazione impossibile"
    },
@@ -3317,6 +3338,22 @@
    },
    "repostArticles_preparingPhotos": {
       "message": "preparazione foto"
+   },
+   "repostArticles_priceChange": {
+      "message": "\u003Cb>Cambio di prezzo:\u003C/b> $priceChange$",
+      "placeholders": {
+         "priceChange": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_priceChangeWarning": {
+      "message": "⚠️ \u003Cb>Cambio di prezzo \u003Cspan class=\"text-danger\">importante\u003C/span>:\u003C/b> $priceChange$",
+      "placeholders": {
+         "priceChange": {
+            "content": "$1"
+         }
+      }
    },
    "repostArticles_promotedArticlesNotProcessed": {
       "message": "\u003Cb>$promotedArticlesCount$ articoli Promossi\u003C/b> nella tua lista non saranno trattati ($processWording$ impossibile)",
@@ -3394,6 +3431,12 @@
    },
    "repostArticles_workerLost": {
       "message": "Il tuo browser ha chiuso la scheda in cui Clemz lavorava."
+   },
+   "repostDayWarning_light": {
+      "message": "⚠️ \u003Cb>$1 ripubblicazioni oggi\u003C/b> ($2 già fatte + $3 in questa lista). Sopra $4, il rischio di restrizione sale."
+   },
+   "repostDayWarning_loud": {
+      "message": "🛑 \u003Cb>$1 ripubblicazioni oggi\u003C/b> ($2 già fatte + $3 in questa lista). Sopra $4, Vinted limita spesso gli armadi che non sono PRO."
    },
    "repostTutorial_howToRepost": {
       "message": "Come ripubblicare con \u003Cimg id=\"tutorialLogo\" src=\"\" style=\"height: 25px; width: auto;\">?"

@@ -9,6 +9,9 @@ export default function RepublishConfirmModal({
     isSubmitting,
     // Réutilisée par la republication assistée (18/10/2026) avec son propre libellé
     titre = 'Confirmer la republication',
+    // Validation manuelle (20/10/2026) : prix appliqué à la republication
+    // (baisse via l'option "Prix" de Clemz, sinon prix inchangé)
+    afficherPrix = false,
 }) {
     return (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-6">
@@ -41,6 +44,15 @@ export default function RepublishConfirmModal({
                                     <p className="text-xs text-slate-400">
                                         {a.dressing} · {a.jours_en_ligne}j depuis dernière republication
                                     </p>
+                                    {afficherPrix && (
+                                        a.prix_republication ? (
+                                            <p className="text-xs font-bold text-orange-600">
+                                                📉 {a.prix_vente} € → {a.prix_republication} € à la republication
+                                            </p>
+                                        ) : (
+                                            <p className="text-xs text-slate-400">Prix inchangé ({a.prix_vente} €)</p>
+                                        )
+                                    )}
                                 </div>
                                 <button
                                     onClick={() => onRemove(a.id)}

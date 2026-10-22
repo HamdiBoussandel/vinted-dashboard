@@ -52,6 +52,16 @@ class SupabaseService:
         # Paramètres Mauvaise Performance
         self.SEUIL_LOW_PERF = 5.0
         self.DELAI_MIN_LOW_PERF = 0
+        # Après une REPUBLICATION (21/10/2026) : pas de "Mauvaise perf" avant ce
+        # délai -- la nouvelle annonce garde jusqu'au scraping suivant les
+        # vues/favoris de l'ancienne, et n'a pas encore eu le temps d'en avoir.
+        # 12 des 37 "baisses en cours" du 21/10 étaient des articles republiés
+        # le jour même.
+        self.DELAI_MIN_LOW_PERF_APRES_REPUBLICATION = 3
+        # Cooldown entre deux baisses (même valeur que run_baisse_prix_auto et
+        # le panier manuel) -- un article baissé il y a moins de 7 jours n'est
+        # plus compté ni proposé dans "Baisse de prix".
+        self.COOLDOWN_BAISSE_JOURS = 7
         # 7 -> 5 le 08/10/2026 ("restons raisonnable"), puis -> 3 le 08/10/2026
         # ("un peu plus agressif pour les mauvaise performance", décision
         # explicite). Stock ≥50€ au score faible trop clairsemé pour mesurer
@@ -276,6 +286,22 @@ class SupabaseService:
         articles = []
         today = datetime.now()
 
+        # Dernière baisse de chaque article dans la fenêtre de cooldown (une
+        # seule requête pour tout l'inventaire) -- cf. COOLDOWN_BAISSE_JOURS.
+        baisses_recentes = {}
+        try:
+            depuis = (today - timedelta(days=self.COOLDOWN_BAISSE_JOURS)).isoformat()
+            lignes = self.db.table("price_drops").select("article_id, created_at") \
+                .gte("created_at", depuis).execute().data or []
+            for ligne in lignes:
+                if not ligne.get("article_id"):
+                    continue
+                quand = datetime.fromisoformat(ligne["created_at"][:19])
+                if quand > baisses_recentes.get(ligne["article_id"], datetime.min):
+                    baisses_recentes[ligne["article_id"]] = quand
+        except Exception as e:
+            print(f"⚠️ [INVENTAIRE] Baisses récentes illisibles ({e}) — cooldown non affiché.")
+
         for item in raw_articles:
             item_name = item.get("nom", "")
             prix_achat = purchase_map.get(item_name.lower(), 0.0)
@@ -355,7 +381,9 @@ class SupabaseService:
 
             is_low_perf   = (prix_vente > 10.0) and (jours_en_ligne >= delai_observation) and \
                             (score < self.SEUIL_LOW_PERF) and (not is_invisible) and \
-                            (v_reel >= self.SEUIL_MIN_VUES_SCORE_FIABLE)
+                            (v_reel >= self.SEUIL_MIN_VUES_SCORE_FIABLE) and \
+                            (is_new or jours_en_ligne >= self.DELAI_MIN_LOW_PERF_APRES_REPUBLICATION)
+            derniere_baisse = baisses_recentes.get(item["id"])
 
             # Même raisonnement que is_liquidation ci-dessous : sans prix d'achat
             # réel (article perso/pour un ami, prix_achat=0), aucune urgence de
@@ -415,6 +443,12 @@ class SupabaseService:
             # du 19/09/2026 ("indiquer visuellement... pour quelle raison").
             pepite_taux_raison = None
             baisse_prix_raison = None
+            # Nouveau prix à saisir PENDANT la republication assistée (19/10/2026) :
+            # renseigné seulement quand la republication s'accompagne d'une baisse
+            # (branche "REPUBLIER avec BAISSE" ou pépite à republier ci-dessous) --
+            # même prix_suggere que celui affiché dans action_label, mais en champ
+            # exploitable plutôt que dans un texte. None = republier au même prix.
+            prix_republication = None
 
             if is_audit:
                 # Correctif : ce cas doit COURT-CIRCUITER toute la chaîne is_invisible/
@@ -451,6 +485,8 @@ class SupabaseService:
                     prix_suggere = max(prix_plancher, round(prix_vente * taux, 2))
                     action_label = f"💎 PÉPITE : Baisse -{pepite_taux_suggere}% ({prix_suggere}€)"
                     display_pepite = True
+                    if prix_suggere < prix_vente:
+                        prix_republication = prix_suggere
                 elif is_liquidation:
                     action_label = f"♻️ REPUBLIER (Liquidation {prix_vente}€)"
                 # CORRIGÉ : elif au lieu de if (bug écrasement labels)
@@ -471,6 +507,8 @@ class SupabaseService:
                     # includes("REPUBLIER avec BAISSE"), inchangé.
                     pct_reel = round((1 - prix_suggere / prix_vente) * 100) if prix_vente > 0 else 0
                     action_label = f"♻️ REPUBLIER avec BAISSE -{pct_reel}% ({prix_suggere}€)"
+                    if prix_suggere < prix_vente:
+                        prix_republication = prix_suggere
                     if pct_reel < 20:
                         baisse_prix_raison = f"Republication avec baisse : -20% visé, ramené à -{pct_reel}% par le plancher de marge ({prix_plancher}€)"
                     else:
@@ -495,6 +533,13 @@ class SupabaseService:
                 prix_suggere = max(prix_plancher, round(prix_vente * taux, 2))
                 action_label = f"💎 PÉPITE : Baisse -{pepite_taux_suggere}% ({prix_suggere}€)"
                 display_pepite = True
+
+            elif is_low_perf and derniere_baisse:
+                # Déjà baissé il y a moins de 7 jours : ni compté ni proposé
+                # (baisse_prix_taux None), seulement signalé sur la carte.
+                prochaine = (derniere_baisse + timedelta(days=self.COOLDOWN_BAISSE_JOURS)).strftime("%d/%m")
+                action_label = f"⏳ MAUVAISE PERF : baisse récente, prochaine possible le {prochaine}"
+                baisse_prix_raison = f"Prix déjà baissé le {derniere_baisse.strftime('%d/%m')} : on laisse {self.COOLDOWN_BAISSE_JOURS} jours au marché pour réagir."
 
             elif is_low_perf:
                 display_low_perf = True
@@ -534,6 +579,7 @@ class SupabaseService:
                 "photo_url":            item.get("url_image", ""),
                 "action_label":         action_label,
                 "baisse_prix_taux":     baisse_prix_taux,
+                "prix_republication":   prix_republication,
                 "pepite_taux_suggere":  pepite_taux_suggere,
                 "pepite_taux_raison":   pepite_taux_raison,
                 "baisse_prix_raison":   baisse_prix_raison,

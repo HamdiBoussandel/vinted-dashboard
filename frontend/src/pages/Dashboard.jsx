@@ -50,12 +50,11 @@ export default function Dashboard() {
     const [excludedFromBaisse, setExcludedFromBaisse] = useState(new Set());
     const [excludedFromRepublish, setExcludedFromRepublish] = useState(new Set());
     const [excludedFromPepitesBaisse, setExcludedFromPepitesBaisse] = useState(new Set());
-    // Override manuel du repos Niveau 2 pour la republication -- test du
-    // 15/09/2026 (nouvelle extension Clemz). Jamais persistant, jamais activé
-    // par défaut : coché explicitement à chaque session si besoin.
-    const [forcerNiveau2, setForcerNiveau2] = useState(false);
+    // Case "Forcer malgré repos (Niveau 2)" retirée le 19/10/2026 (devenue
+    // inutile : baisse de prix sortie du risk guard, republication assistée
+    // sans override).
 
-    
+
 
     // Plafond de la liste "à republier" par dressing -- reflète le plan du jour
     // (niveau convalescence/repos forcé/calendrier ayant tranché, cf. backend
@@ -65,12 +64,6 @@ export default function Dashboard() {
     const calculerVolumeCible = (dressingStatut, fallback = Infinity) => {
         const plan = dressingStatut?.plan_du_jour;
         if (!plan) return fallback; // pas encore généré aujourd'hui -- aucune limite artificielle, on affiche tout
-        // Override manuel et délibéré du repos Niveau 2 (test extension Clemz,
-        // cf. échange du 15/09/2026) -- ne s'applique JAMAIS à une convalescence
-        // (niveau "convalescence", vraie suspension constatée), seulement au
-        // repos statistique "repos_force". Le vrai plafond (quota brut) reste
-        // appliqué côté backend quoi qu'il arrive.
-        if (!plan.actif && plan.niveau === 'repos_force' && forcerNiveau2) return fallback;
         if (!plan.actif) return 0;
         // plan.volume_cible est la cible FIXE tirée à minuit, jamais décrémentée
         // au fil de la journée -- quota_republication_restant retranche déjà ce
@@ -303,8 +296,6 @@ export default function Dashboard() {
     const [autoCompletionModal, setAutoCompletionModal] = useState(null); // {dressing, items}
     // Mode pas à pas : la session s'arrête avant chaque action et attend "Continuer"
     const [pasAPas, setPasAPas] = useState(false);
-    // Étape 0 : sauvegarde + suppression des annonces sur Vinted avant la republication
-    const [suppressionPrealable, setSuppressionPrealable] = useState(true);
 
     const handleContinuerAutoCompletion = async (dressing) => {
         try {
@@ -342,7 +333,13 @@ export default function Dashboard() {
         setAutoCompletionModal(null);
     };
 
+    // remplissage === 'suppression' : bouton "Supprimer les articles du
+    // dressing" (19/10/2026) -- Smart Dressing + sauvegarde clemz.app +
+    // suppression DÉFINITIVE sur Vinted, sans republication.
     const handleLancerAutoCompletion = async (dressing, items, remplissage = null) => {
+        const suppressionSeule = remplissage === 'suppression';
+        // 'validation_manuelle' : mode natif "Validation manuelle" de Clemz (20/10/2026)
+        const validationManuelle = remplissage === 'validation_manuelle';
         if (items.length === 0) {
             toast.error(`Aucun article de ${dressing} à republier.`);
             return;
@@ -355,13 +352,18 @@ export default function Dashboard() {
                     dressing,
                     produits: items.map(p => ({ id: p.id, nom: p.nom, dressing: p.dressing })),
                     ...(pasAPas ? { pas_a_pas: true } : {}),
-                    suppression_prealable: suppressionPrealable,
-                    ...(remplissage ? { remplissage } : {}),
+                    ...(suppressionSeule ? { suppression_seule: true }
+                        : validationManuelle ? { validation_manuelle: true }
+                        : remplissage ? { remplissage } : {}),
                 }),
             });
             const data = await response.json();
             if (!response.ok) throw new Error(data.detail || 'Erreur lors du lancement');
-            toast.success(remplissage
+            toast.success(suppressionSeule
+                ? `Suppression lancée pour ${data.count} article(s) de ${dressing} (sauvegarde clemz.app d'abord).`
+                : validationManuelle
+                ? `Validation manuelle Clemz lancée pour ${data.count} article(s) de ${dressing} (rythme très lent).`
+                : remplissage
                 ? `Remplissage de la liste à traiter (${LIBELLES_REMPLISSAGE[remplissage]}) lancé pour ${data.count} article(s) de ${dressing}.`
                 : `Republication assistée lancée pour ${data.count} article(s) de ${dressing}. Publie chaque annonce dans la fenêtre Vinted.`);
             setAutoCompletion(prev => ({ ...prev, [dressing]: { statut: 'demarrage', dressing, index: 0, total: data.count } }));
@@ -398,10 +400,6 @@ export default function Dashboard() {
                 body: JSON.stringify({
                     task_type: taskType,
                     produits: items.map(p => ({ id: p.id, nom: p.nom, dressing: p.dressing })),
-                    // Étendu à baisse_prix le 26/09/2026 -- override manuel et délibéré,
-                    // exceptionnel, demandé explicitement par l'utilisateur (jusqu'ici
-                    // réservé à la republication depuis le test du 15/09/2026).
-                    ...(forcerNiveau2 ? { forcer_niveau2: true } : {}),
                 })
             });
             if (response.ok) {
@@ -458,8 +456,6 @@ export default function Dashboard() {
                 body: JSON.stringify({
                     task_type: 'baisse_prix',
                     produits: items.map(p => ({ id: p.id, nom: p.nom, dressing: p.dressing, pourcentage: p.pepite_taux_suggere })),
-                    // Même correctif que le panier manuel (cf. échange du 27/09/2026).
-                    ...(forcerNiveau2 ? { forcer_niveau2: true } : {}),
                 })
             });
             if (response.ok) {
@@ -528,10 +524,6 @@ export default function Dashboard() {
                         dressing: p.dressing,
                         pourcentage: manualBaissePourcentages[p.id] ?? 20,
                     })),
-                    // Manquait ici (cf. échange du 27/09/2026) -- seul le bouton "Test
-                    // immédiat" transmettait ce drapeau, pas le panier rempli via le "+"
-                    // sur chaque carte, qui appelle ce handler séparé.
-                    ...(forcerNiveau2 ? { forcer_niveau2: true } : {}),
                 })
             });
             if (response.ok) {
@@ -947,6 +939,22 @@ export default function Dashboard() {
                                 >
                                     ☁️ clemz.app
                                 </button>
+                                <button
+                                    onClick={() => handleOuvrirAutoCompletion(dressing, 'suppression')}
+                                    disabled={nb === 0}
+                                    title="Supprime DÉFINITIVEMENT ces annonces de Vinted : liste remplie par le Smart Dressing, sauvegarde sur clemz.app, puis bouton Supprimer de Clemz. Aucune republication ensuite."
+                                    className="px-2 py-2 bg-white border border-rose-300 text-rose-600 rounded-lg text-[10px] font-black uppercase disabled:opacity-40"
+                                >
+                                    🗑️ Supprimer
+                                </button>
+                                <button
+                                    onClick={() => handleOuvrirAutoCompletion(dressing, 'validation_manuelle')}
+                                    disabled={nb === 0}
+                                    title="Mode « Validation manuelle » de Clemz : liste par le Smart Dressing, rythme très lent (~4 min/article), Go Clemz ; le script clique « Ajouter » à chaque formulaire rempli (pause 1-3 s avant), puis enregistre dans Supabase."
+                                    className="px-2 py-2 bg-white border border-emerald-300 text-emerald-700 rounded-lg text-[10px] font-black uppercase disabled:opacity-40"
+                                >
+                                    🛡️ Valid. manuelle
+                                </button>
                             </div>
                         );
                     })}
@@ -964,44 +972,6 @@ export default function Dashboard() {
                         />
                         Pas à pas
                     </label>
-                    <label
-                        title="Étape 0 de la republication assistée : sauvegarde sur clemz.app puis SUPPRESSION définitive des annonces sur Vinted (Smart Dressing), avant de les republier. Ignorée en « Préparation seule »."
-                        className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-[10px] font-black uppercase cursor-pointer border transition-all ${suppressionPrealable
-                            ? 'bg-rose-100 text-rose-700 border-rose-300'
-                            : 'bg-white text-slate-400 border-slate-200 hover:border-rose-300'}`}
-                    >
-                        <input
-                            type="checkbox"
-                            checked={suppressionPrealable}
-                            onChange={e => setSuppressionPrealable(e.target.checked)}
-                            className="accent-rose-500"
-                        />
-                        Supprimer d'abord
-                    </label>
-                    {/* Étendu le 26/09/2026 (cf. échange) : ne vérifiait QUE le niveau du
-                        plan de republication -- une fois celui-ci réactivé en "continuite",
-                        la case disparaissait complètement, empêchant tout override pour la
-                        baisse de prix (bloquée séparément, jamais reflétée dans ce niveau). */}
-                    {[risqueStatut?.dressing1, risqueStatut?.dressing2].some(
-                        d => (d?.plan_du_jour?.niveau === 'repos_force' && !d?.plan_du_jour?.actif)
-                            || d?.quota_baisse_prix_restant === 0
-                    ) && (
-                        <label
-                            title="Outrepasse le repos Niveau 2 (coupure sur volume glissant) -- jamais la convalescence. Test du 15/09/2026 avec la nouvelle extension Clemz (republication), étendu à la baisse de prix le 26/09/2026 sur demande explicite. Le quota brut reste appliqué."
-                            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-[10px] font-black uppercase cursor-pointer border transition-all ${forcerNiveau2
-                                ? 'bg-amber-100 text-amber-700 border-amber-300'
-                                : 'bg-white text-slate-400 border-slate-200 hover:border-amber-300'
-                                }`}
-                        >
-                            <input
-                                type="checkbox"
-                                checked={forcerNiveau2}
-                                onChange={e => setForcerNiveau2(e.target.checked)}
-                                className="accent-amber-600"
-                            />
-                            ⚠️ Forcer malgré repos (Niveau 2)
-                        </label>
-                    )}
                     <button
                         onClick={() => handleForceRunNow('baisse_prix')}
                         disabled={isForcingBaisse || articlesToBaisse.length === 0}
@@ -1009,23 +979,6 @@ export default function Dashboard() {
                     >
                         {isForcingBaisse ? '...' : `📉 Forcer baisse de prix (${articlesToBaisse.length})`}
                     </button>
-                    {/* Lancement limité à un seul dressing (08/10/2026) -- le backend
-                        (run_baisse_prix_auto) ne traite que les IDs envoyés, l'autre
-                        compte n'est donc jamais ouvert. */}
-                    {['Dressing 1', 'Dressing 2'].map(dressing => {
-                        const items = articlesToBaisse.filter(a => a.dressing === dressing);
-                        return (
-                            <button
-                                key={dressing}
-                                onClick={() => handleForceRunNow('baisse_prix', items)}
-                                disabled={isForcingBaisse || items.length === 0}
-                                title={`Baisse de prix uniquement sur ${dressing}`}
-                                className="px-3 py-2 bg-white text-orange-600 border border-orange-200 rounded-lg text-xs font-black uppercase hover:bg-orange-50 disabled:opacity-40"
-                            >
-                                {isForcingBaisse ? '...' : `📉 ${dressing.replace('Dressing ', 'D')} (${items.length})`}
-                            </button>
-                        );
-                    })}
                     {activeSegment === 'Pépites' && (
                         <button
                             onClick={handleOpenPepitesModal}
@@ -1190,10 +1143,15 @@ export default function Dashboard() {
 
             {autoCompletionModal && (
                 <RepublishConfirmModal
-                    titre={autoCompletionModal.remplissage
+                    titre={autoCompletionModal.remplissage === 'suppression'
+                        ? `🗑️ Supprimer DÉFINITIVEMENT de Vinted — ${autoCompletionModal.dressing}`
+                        : autoCompletionModal.remplissage === 'validation_manuelle'
+                        ? `🛡️ Republication en validation manuelle Clemz — ${autoCompletionModal.dressing}`
+                        : autoCompletionModal.remplissage
                         ? `Remplir la liste à traiter (${LIBELLES_REMPLISSAGE[autoCompletionModal.remplissage]}) — ${autoCompletionModal.dressing}`
                         : `📝 Republication assistée — ${autoCompletionModal.dressing}`}
                     items={autoCompletionModal.items}
+                    afficherPrix={autoCompletionModal.remplissage === 'validation_manuelle'}
                     onRemove={(id) => setAutoCompletionModal(prev => ({
                         ...prev, items: prev.items.filter(a => a.id !== id),
                     }))}

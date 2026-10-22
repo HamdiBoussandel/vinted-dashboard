@@ -585,6 +585,12 @@ class VintedScraper:
                     # de ses articles, donc on ne touche à rien pour lui cette fois.
                     continue
                 if nom_lower not in scraped_names_lower and not data["est_vendu"]:
+                    from services.articles_supprimes import est_protege
+                    if est_protege(nom_lower):
+                        # Supprimé de Vinted par la tâche de suppression Clemz, en
+                        # attente de republication (19/10/2026) -- PAS une vente.
+                        logger.info(f"🛡️ Absent du dressing mais supprimé en attente de republication → non marqué vendu : {nom_lower}")
+                        continue
                     if data.get("erreur_clemz"):
                         # Absent du dressing car son ancienne annonce a été supprimée
                         # suite à une erreur Clemz jamais résolue -- PAS une vraie vente.

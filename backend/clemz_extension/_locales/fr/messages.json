@@ -180,7 +180,7 @@
       "message": "⚡⚡⚡ Standard"
    },
    "actionInterface_executionModeApiTooltip": {
-      "message": "\u003Cb class=\"text-success\">Vitesse maximale\u003C/b>, \u003Cb class=\"text-danger\">Risque important.\u003C/b>\u003Cbr>Republication totalement automatisée."
+      "message": "\u003Cb class=\"text-success\">Vitesse maximale\u003C/b>, \u003Cb class=\"text-danger\">Risque important.\u003C/b>\u003Cbr>\u003Cspan class=\"text-dark\">(aucun risque pour les PROs)\u003C/span>\u003Cbr>➡️ Republication totalement automatisée."
    },
    "actionInterface_executionModeBadge": {
       "message": "Nav. humaine"
@@ -198,10 +198,10 @@
       "message": "Valid. manuelle"
    },
    "actionInterface_executionModeManualValidationTooltip": {
-      "message": "\u003Cb class=\"text-danger\">Vitesse très lente\u003C/b>, \u003Cb class=\"text-success\">Risque minimum.\u003C/b>\u003Cbr>Clemz complète le formulaire 1 article à la fois. Tu peux modifier puis enregistrer ou publier."
+      "message": "\u003Cb class=\"text-danger\">Vitesse très lente\u003C/b>, \u003Cb class=\"text-success\">Risque minimum.\u003C/b>\u003Cbr>➡️ Clemz complète le formulaire 1 article à la fois. Tu peux modifier puis enregistrer ou publier."
    },
    "actionInterface_executionModeTooltip": {
-      "message": "\u003Cb class=\"text-warning\">Vitesse lente\u003C/b>, \u003Cb class=\"text-warning\">Risque réduit.\u003C/b>\u003Cbr>Clemz ouvre de vraies pages Vinted, comme le ferait un humain."
+      "message": "\u003Cb class=\"text-warning\">Vitesse lente\u003C/b>, \u003Cb class=\"text-warning\">Risque réduit.\u003C/b>\u003Cbr>\u003Cspan class=\"text-dark\">(aucun risque pour les PROs)\u003C/span>\u003Cbr>➡️ Clemz ouvre de vraies pages Vinted, comme le ferait un humain."
    },
    "actionInterface_executionTransportFrame": {
       "message": "même onglet"
@@ -240,7 +240,7 @@
       "message": "Dressing ami(e)"
    },
    "actionInterface_getViewsLikes": {
-      "message": "5. Obtenir 👁️ et ❤️ \u003Cspan class=\"btn btn-xs btn-outline-primary ml-3\" data-open-tab=\"exchangeTabLink\" data-open-tab-container=\"currentInterface\" role=\"button\">voir onglet ➡️\u003C/span>"
+      "message": "4. Obtenir 👁️ et ❤️ \u003Cspan class=\"btn btn-xs btn-outline-primary ml-3\" data-open-tab=\"exchangeTabLink\" data-open-tab-container=\"currentInterface\" role=\"button\">voir onglet ➡️\u003C/span>"
    },
    "actionInterface_giveFavs": {
       "message": "Donner des favoris"
@@ -361,6 +361,27 @@
    },
    "actionInterface_modifyClipboard": {
       "message": "⚙️ modif/suppr"
+   },
+   "actionInterface_modifyOnRepostLabel": {
+      "message": "Modifier"
+   },
+   "actionInterface_modifyOnRepostModalTitle": {
+      "message": "Modifier en republiant"
+   },
+   "actionInterface_modifyOnRepostPhotosLabel": {
+      "message": "Photos"
+   },
+   "actionInterface_modifyOnRepostPricePrefix": {
+      "message": "Prix :"
+   },
+   "actionInterface_modifyOnRepostSummaryPhotosActive": {
+      "message": "Photos : 🖼️ du moment"
+   },
+   "actionInterface_modifyOnRepostSummaryPhotosCustom": {
+      "message": "Photos : 🖌️ à la volée"
+   },
+   "actionInterface_modifyOnRepostSummaryPhotosNo": {
+      "message": "Photos : 🚫 non"
    },
    "actionInterface_modifyPhotos": {
       "message": "3. Comment modifier tes photos \u003Ca class=\"text-sm tooltip tooltip-left\" href=\"https://www.clemz.app/documentation/modifier-les-photos\" target=\"_blank\" data-tooltip=\"Clic ici pour apprendre comment fonctionne la modification des photos\">\u003Cimg class=\"font-icon align-middle pb-1 vinz-image ml-1\" data-image-name=\"question-circle-solid.svg\" src=\"\">\u003C/a>"
@@ -1011,6 +1032,9 @@
    },
    "autoComplete_fillFormButton": {
       "message": "📝 Remplir le formulaire"
+   },
+   "autoComplete_introCorrection": {
+      "message": "Clemz vient de compléter ce formulaire pour toi. En cas de besoin, il peut à nouveau le compléter 👇"
    },
    "autoComplete_introEdit": {
       "message": "Cet article a été trouvé dans ta sauvegarde (\u003Ca href=\"$url$\" target=\"_blank\">\u003Cu>voir ici\u003C/u>\u003C/a>). Veux-tu importer de clemz.app son contenu ?",
@@ -3248,9 +3272,6 @@
          }
       }
    },
-   "repostArticles_noModificationPreview": {
-      "message": "\u003Cb>🚫 Aucune modification photo:\u003C/b> Clemz va remettre tes photos sauvées telles quelles"
-   },
    "repostArticles_noPhotoError": {
       "message": "Article sans photo : republication impossible"
    },
@@ -3317,6 +3338,22 @@
    },
    "repostArticles_preparingPhotos": {
       "message": "préparation des photos"
+   },
+   "repostArticles_priceChange": {
+      "message": "\u003Cb>Changement de prix :\u003C/b> $priceChange$",
+      "placeholders": {
+         "priceChange": {
+            "content": "$1"
+         }
+      }
+   },
+   "repostArticles_priceChangeWarning": {
+      "message": "⚠️ \u003Cb>Changement de prix \u003Cspan class=\"text-danger\">important\u003C/span> :\u003C/b> $priceChange$",
+      "placeholders": {
+         "priceChange": {
+            "content": "$1"
+         }
+      }
    },
    "repostArticles_promotedArticlesNotProcessed": {
       "message": "\u003Cb>$promotedArticlesCount$ articles Réservés ou Boostés\u003C/b> de ta liste ne seront pas traités ($processWording$ impossible)",
@@ -3394,6 +3431,12 @@
    },
    "repostArticles_workerLost": {
       "message": "Ton navigateur a stoppé l'onglet où Clemz travaillait."
+   },
+   "repostDayWarning_light": {
+      "message": "⚠️ \u003Cb class=\"text-warning\">Risque de restriction\u003C/b> $1 republications aujourd'hui ($2 déjà faites + $3 dans cette liste). Au-dessus de $4, le risque de restriction augmente."
+   },
+   "repostDayWarning_loud": {
+      "message": "🛑 \u003Cb class=\"text-danger\">Risque élevé de restriction\u003C/b> $1 republications aujourd'hui ($2 déjà faites + $3 dans cette liste). Au-dessus de $4, Vinted restreint souvent les dressings qui ne sont pas PRO."
    },
    "repostTutorial_howToRepost": {
       "message": "Comment republier avec \u003Cimg id=\"tutorialLogo\" src=\"\" style=\"height: 25px; width: auto;\">?"

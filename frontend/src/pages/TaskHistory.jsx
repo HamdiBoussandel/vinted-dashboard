@@ -1,6 +1,6 @@
 // pages/TaskHistory.jsx
 import React, { useState, useEffect } from 'react';
-import { CheckCircle, XCircle, AlertCircle, Clock, RefreshCw, TrendingDown, Loader, ClipboardList, ScanLine, FileText, Flame } from 'lucide-react';
+import { CheckCircle, XCircle, AlertCircle, Clock, RefreshCw, TrendingDown, Loader, ClipboardList, ScanLine, FileText, Flame, Trash2 } from 'lucide-react';
 
 const STATUS_CONFIG = {
     success: {
@@ -49,6 +49,12 @@ const STATUS_CONFIG = {
 };
 
 const TYPE_CONFIG = {
+    // Ajouté le 19/10/2026 : bouton "Supprimer les articles du dressing"
+    suppression: {
+        label: "Suppression",
+        icon: <Trash2 size={12} />,
+        color: "bg-rose-100 text-rose-700 border-rose-200",
+    },
     republication: {
         label: "Republication",
         icon: <RefreshCw size={12} />,
@@ -359,6 +365,7 @@ export default function TaskHistory() {
         { id: 'republication', label: 'Republications' },
         { id: 'baisse_prix', label: 'Baisses de prix' },
         { id: 'liquidation', label: 'Liquidation' },
+        { id: 'suppression', label: 'Suppressions' },
         { id: 'scraping', label: 'Scraping' },
     ];
 

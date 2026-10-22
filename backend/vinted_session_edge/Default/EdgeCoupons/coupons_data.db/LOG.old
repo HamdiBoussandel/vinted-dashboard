@@ -1,15 +1,6 @@
-2026/10/18-00:59:11.506 2d58 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\EdgeCoupons/coupons_data.db/MANIFEST-000001
-2026/10/18-00:59:11.506 2d58 Recovering log #16
-2026/10/18-00:59:11.508 2d58 Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\EdgeCoupons/coupons_data.db/000016.log 
-2026/10/18-00:59:11.646 6ecc Level-0 table #20: started
-2026/10/18-00:59:11.653 6ecc Level-0 table #20: 683376 bytes OK
-2026/10/18-00:59:11.657 6ecc Delete type=0 #16
-2026/10/18-00:59:11.657 6ecc Compacting 4@0 + 1@1 files
-2026/10/18-00:59:11.664 6ecc Generated table #21@0: 4 keys, 683449 bytes
-2026/10/18-00:59:11.664 6ecc Compacted 4@0 + 1@1 files => 683449 bytes
-2026/10/18-00:59:11.668 6ecc compacted to: files[ 0 1 1 0 0 0 0 ]
-2026/10/18-00:59:11.669 6ecc Delete type=2 #8
-2026/10/18-00:59:11.669 6ecc Delete type=2 #11
-2026/10/18-00:59:11.669 6ecc Delete type=2 #14
-2026/10/18-00:59:11.669 6ecc Delete type=2 #17
-2026/10/18-00:59:11.669 6ecc Delete type=2 #20
+2026/10/21-15:38:31.884 9874 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\EdgeCoupons/coupons_data.db/MANIFEST-000001
+2026/10/21-15:38:31.885 9874 Recovering log #26
+2026/10/21-15:38:31.885 9874 Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\EdgeCoupons/coupons_data.db/000026.log 
+2026/10/21-15:38:32.009 acbc Level-0 table #30: started
+2026/10/21-15:38:32.012 acbc Level-0 table #30: 683376 bytes OK
+2026/10/21-15:38:32.013 acbc Delete type=0 #26
