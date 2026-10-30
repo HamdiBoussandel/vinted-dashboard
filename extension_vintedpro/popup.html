@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>VintedPro Sync</title>
+  <style>
+    body { font: 13px system-ui, sans-serif; width: 280px; margin: 0; padding: 14px; color: #1e293b; }
+    h1 { font-size: 15px; margin: 0 0 10px; }
+    .ligne { display: flex; justify-content: space-between; margin: 6px 0; gap: 8px; }
+    .etiquette { color: #64748b; }
+    .ok { color: #059669; font-weight: 600; }
+    .ko { color: #dc2626; font-weight: 600; }
+    .neutre { color: #64748b; }
+    button { width: 100%; margin-top: 10px; padding: 8px; border: 0; border-radius: 8px;
+             font-weight: 700; cursor: pointer; background: #0ea5e9; color: #fff; }
+    button.secondaire { background: #e2e8f0; color: #334155; }
+    button:disabled { opacity: .4; cursor: default; }
+    #message { margin-top: 8px; font-size: 12px; }
+    body:has(#decouverte[open]) { width: 460px; }
+    details { margin-top: 12px; border-top: 1px solid #e2e8f0; padding-top: 8px; }
+    summary { cursor: pointer; font-weight: 700; }
+    .aide { color: #64748b; font-size: 11px; margin: 6px 0; }
+    input { flex: 1; padding: 6px; border: 1px solid #cbd5e1; border-radius: 6px; font: 12px monospace; }
+    button.petit { width: auto; margin: 0; padding: 6px 12px; }
+    textarea { width: 100%; box-sizing: border-box; height: 260px; margin-top: 6px; font: 11px monospace; }
+  </style>
+</head>
+<body>
+  <h1>🔗 VintedPro Sync</h1>
+  <div class="ligne"><span class="etiquette">Compte Vinted</span><span id="compte" class="neutre">—</span></div>
+  <div class="ligne"><span class="etiquette">Dressing</span><span id="dressing" class="neutre">—</span></div>
+  <div class="ligne"><span class="etiquette">Liaison</span><span id="liaison" class="neutre">—</span></div>
+  <button id="lier" disabled>Lier ce dressing</button>
+  <button id="delier" class="secondaire" hidden>Délier</button>
+  <button id="rafraichir" class="secondaire">Redétecter le compte</button>
+  <div id="message"></div>
+
+  <details id="decouverte">
+    <summary>🔍 Découverte API (lecture seule)</summary>
+    <p class="aide">Rien n'est envoyé au backend. Les données personnelles (adresse, e-mail, téléphone…) sont masquées.</p>
+    <button class="secondaire" data-chemin="/api/v2/my_orders?type=sold&status=all&page=1&per_page=20">Ventes (my_orders sold)</button>
+    <button class="secondaire" data-chemin="/api/v2/my_orders?type=purchased&status=all&page=1&per_page=20">Achats (my_orders purchased)</button>
+    <div class="ligne">
+      <input id="chemin" placeholder="/api/v2/…" spellcheck="false">
+      <button id="explorer" class="petit">OK</button>
+    </div>
+    <div id="resultat-statut" class="neutre"></div>
+    <textarea id="resultat" readonly></textarea>
+    <button id="copier" class="secondaire" hidden>Copier le résultat</button>
+  </details>
+  <script src="popup.js"></script>
+</body>
+</html>

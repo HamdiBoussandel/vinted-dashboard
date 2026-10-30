@@ -303,6 +303,23 @@ async def set_routine_pause_route(data: dict = Body(...)):
     return {"pause": pause}
 
 
+@router.get("/sessions")
+async def sessions_vinted():
+    """Expiration de la session Vinted (refresh_token_web, 7 jours glissants)
+    de chaque profil, lue dans ses cookies sans ouvrir de navigateur."""
+    from services.entretien_sessions import etat_sessions
+    return await asyncio.to_thread(etat_sessions)
+
+
+@router.post("/entretien-sessions")
+async def lancer_entretien_sessions(data: dict = Body(default={})):
+    """Lance l'entretien des sessions tout de suite (en arrière-plan) :
+    profils proches de l'expiration, ou tous avec {"forcer": true}."""
+    from services.entretien_sessions import entretenir_sessions
+    _lancer_en_fond(entretenir_sessions(forcer=bool(data.get("forcer"))))
+    return {"status": "started"}
+
+
 @router.post("/open-browser")
 async def open_browser(data: dict = Body(...)):
     """

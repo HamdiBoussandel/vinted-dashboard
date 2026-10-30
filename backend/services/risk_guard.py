@@ -62,8 +62,8 @@ DAILY_THRESHOLDS = {
         # PLAFOND_REPUBLICATION_MAX (15) chaque jour. Gardées comme borne haute
         # de référence et comme fallback pour un dressing hors D1/D2.
         # Borne haute alignée sur PLAFOND_REPUBLICATION_MAX (20 depuis le 19/10/2026).
-        "Dressing 1": 20,
-        "Dressing 2": 20,
+        "Dressing 1": 30,
+        "Dressing 2": 30,
         "_default": 3,
     },
     # "baisse_prix" RETIRÉ le 18/10/2026 (décision explicite de l'utilisateur) :
@@ -78,6 +78,13 @@ DAILY_THRESHOLDS = {
 # get_allowed_quantity, ni comptés dans get_volume_glissant_combine.
 ACTIONS_HORS_GUARD = ("baisse_prix",)
 
+# Plafond SIMPLE des baisses de prix (28/10/2026, décision de l'utilisateur) :
+# 10 par dressing et par jour calendaire -- sans convalescence, ramp-up ni
+# coupure Niveau 2 (une suspension constatée bloque de toute façon tout le
+# compte). Les baisses faites AU MOMENT DE LA REPUBLICATION (option "Prix" de
+# Clemz) n'y comptent pas : elles ne sont pas loggées en "baisse_prix".
+PLAFOND_BAISSES_JOUR = 10
+
 # Plafond BRUT quotidien de republication, tiré au hasard chaque jour (stable
 # pour la journée, indépendant par dressing) -- décidé le 02/10/2026 pour
 # casser encore la prévisibilité mécanique d'un plafond fixe à 15, en plus du
@@ -91,8 +98,10 @@ ACTIONS_HORS_GUARD = ("baisse_prix",)
 # nouvelle méthode -- la republication assistée par auto-complétion Clemz --
 # pour voir si elle évite les restrictions Vinted à ce volume). À redescendre
 # si une restriction survient.
+# 28/10/2026 (décision de l'utilisateur) : plafond tiré au hasard entre 20 et 30
+# par dressing et par jour ; la cible du jour reste tirée sous ce plafond.
 PLAFOND_REPUBLICATION_MIN = 20
-PLAFOND_REPUBLICATION_MAX = 20
+PLAFOND_REPUBLICATION_MAX = 30
 
 
 def _plafond_republication_du_jour(dressing: str) -> int:
@@ -176,7 +185,9 @@ RAMP_POST_CONVALESCENCE_ACTIF = False
 # l'utilisateur pour le test à 20 republications/jour (3 jours x 20) : à 46,
 # le 3e jour consécutif n'aurait plus permis que 6 republications.
 JOURS_FENETRE_VOLUME = 3
-SEUIL_VOLUME_GLISSANT = 60
+# 60 -> 75 le 28/10/2026 avec le plafond 20-30 (décision de l'utilisateur) : à 60,
+# le repos forcé se serait déclenché presque tous les 3 jours.
+SEUIL_VOLUME_GLISSANT = 75
 
 _supabase = SupabaseService()
 
@@ -492,11 +503,19 @@ def get_allowed_quantity(dressing: str, action_type: str, requested_quantity: in
     outrepassé, jamais un vrai signal de restriction Vinted. Le quota brut
     (DAILY_THRESHOLDS) continue lui aussi de s'appliquer normalement.
 
-    Actions de ACTIONS_HORS_GUARD (baisse de prix, 18/10/2026) : jamais
-    limitées, quel que soit l'état du compte (convalescence comprise).
+    Actions de ACTIONS_HORS_GUARD (baisse de prix) : seulement le plafond
+    simple PLAFOND_BAISSES_JOUR (28/10/2026), quel que soit l'état du compte.
     """
     if action_type in ACTIONS_HORS_GUARD:
-        return requested_quantity, False, None
+        deja_faites = get_volume_depuis_minuit(dressing, action_type)
+        allowed = min(requested_quantity, max(0, PLAFOND_BAISSES_JOUR - deja_faites))
+        if allowed < requested_quantity:
+            return allowed, True, (
+                f"Plafond de {PLAFOND_BAISSES_JOUR} baisses de prix par jour pour {dressing} : "
+                f"{deja_faites} déjà faite(s) aujourd'hui, {requested_quantity - allowed} article(s) "
+                f"reporté(s) au lendemain."
+            )
+        return allowed, False, None
 
     thresholds_for_type = DAILY_THRESHOLDS.get(action_type)
     if thresholds_for_type is None:

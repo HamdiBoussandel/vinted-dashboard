@@ -1,17 +1,3 @@
-2026/10/21-20:14:25.086 1814 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\Local Storage\leveldb/MANIFEST-000001
-2026/10/21-20:14:25.086 1814 Recovering log #36
-2026/10/21-20:14:25.087 1814 Level-0 table #39: started
-2026/10/21-20:14:25.090 1814 Level-0 table #39: 238510 bytes OK
-2026/10/21-20:14:25.090 1814 Recovering log #39
-2026/10/21-20:14:25.091 1814 Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\Local Storage\leveldb/000039.log 
-2026/10/21-20:14:25.093 1814 Delete type=0 #36
-2026/10/21-20:14:25.093 1814 Delete type=2 #40
-2026/10/21-20:14:25.094 b85c Compacting 4@0 + 1@1 files
-2026/10/21-20:14:25.098 b85c Generated table #40@0: 38 keys, 240900 bytes
-2026/10/21-20:14:25.098 b85c Compacted 4@0 + 1@1 files => 240900 bytes
-2026/10/21-20:14:25.099 b85c compacted to: files[ 0 1 1 0 0 0 0 ]
-2026/10/21-20:14:25.099 b85c Delete type=2 #29
-2026/10/21-20:14:25.100 b85c Delete type=2 #31
-2026/10/21-20:14:25.100 b85c Delete type=2 #34
-2026/10/21-20:14:25.100 b85c Delete type=2 #37
-2026/10/21-20:14:25.100 b85c Delete type=2 #39
+2026/10/26-14:17:20.843 6548 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\Local Storage\leveldb/MANIFEST-000001
+2026/10/26-14:17:20.843 6548 Recovering log #42
+2026/10/26-14:17:20.845 6548 Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\Local Storage\leveldb/000042.log 

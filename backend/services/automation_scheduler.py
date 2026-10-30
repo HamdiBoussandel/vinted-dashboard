@@ -546,7 +546,12 @@ def finish_task_run(task_id):
             break
 
         _write_json_locked(TASK_HISTORY_FILE, history)
-        return history[0] if history else None
+
+    # Journal par article (28/10/2026) : la tâche terminée est versée dans
+    # article_evenements avant que le plafond de 200 tâches ne l'efface.
+    from services.journal_articles import synchroniser_en_arriere_plan
+    synchroniser_en_arriere_plan()
+    return history[0] if history else None
 
 
 def log_vm_lifecycle_event(event, status, detail=None):

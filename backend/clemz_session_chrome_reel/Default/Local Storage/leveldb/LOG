@@ -1,3 +1,5 @@
-2026/10/21-20:55:05.560 4e98 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\clemz_session_chrome_reel\Default\Local Storage\leveldb/MANIFEST-000001
-2026/10/21-20:55:05.561 4e98 Recovering log #426
-2026/10/21-20:55:05.562 4e98 Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\clemz_session_chrome_reel\Default\Local Storage\leveldb/000426.log 
+2026/10/29-14:59:13.368 aca4 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\clemz_session_chrome_reel\Default\Local Storage\leveldb/MANIFEST-000001
+2026/10/29-14:59:13.369 aca4 Recovering log #434
+2026/10/29-14:59:13.370 aca4 Level-0 table #437: started
+2026/10/29-14:59:13.376 aca4 Level-0 table #437: 26822 bytes OK
+2026/10/29-14:59:13.381 aca4 Delete type=0 #434

@@ -1,34 +1,16 @@
-2026/10/21-20:15:13.874 46ac Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\IndexedDB\https_www.vinted.fr_0.indexeddb.leveldb/MANIFEST-000120
-2026/10/21-20:15:13.874 46ac Recovering log #125
-2026/10/21-20:15:13.874 46ac Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\IndexedDB\https_www.vinted.fr_0.indexeddb.leveldb/000125.log 
-2026/10/21-20:15:13.875 46ac Delete type=2 #123
-2026/10/21-20:15:13.875 46ac Delete type=2 #124
-2026/10/21-20:15:13.882 ae28 Level-0 table #131: started
-2026/10/21-20:15:13.882 ae28 Level-0 table #131: 0 bytes OK
-2026/10/21-20:15:13.884 ae28 Delete type=0 #125
-2026/10/21-20:15:13.884 46ac Manual compaction at level-0 from '\x00(\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00)\x00\x00\x00' @ 0 : 0; will stop at (end)
-2026/10/21-20:15:13.926 46ac Level-0 table #133: started
-2026/10/21-20:15:13.928 46ac Level-0 table #133: 3093 bytes OK
-2026/10/21-20:15:13.929 46ac Delete type=0 #130
-2026/10/21-20:15:13.930 46ac Manual compaction at level-0 from '\x00)\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00*\x00\x00\x00' @ 0 : 0; will stop at '\x00)\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 6141 : 1
-2026/10/21-20:15:13.930 46ac Compacting 1@0 + 2@1 files
-2026/10/21-20:15:13.964 46ac Generated table #134@0: 870 keys, 4547665 bytes
-2026/10/21-20:15:13.991 46ac Generated table #135@0: 159 keys, 3837534 bytes
-2026/10/21-20:15:13.992 46ac Compacted 1@0 + 2@1 files => 8385199 bytes
-2026/10/21-20:15:13.993 46ac compacted to: files[ 0 2 1 0 0 0 0 ]
-2026/10/21-20:15:13.994 46ac Delete type=2 #133
-2026/10/21-20:15:13.994 46ac Manual compaction at level-0 from '\x00)\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 6141 : 1 .. '\x00*\x00\x00\x00' @ 0 : 0; will stop at (end)
-2026/10/21-20:15:14.300 ae28 Level-0 table #137: started
-2026/10/21-20:15:14.302 ae28 Level-0 table #137: 5209 bytes OK
-2026/10/21-20:15:14.304 ae28 Delete type=2 #127
-2026/10/21-20:15:14.304 ae28 Delete type=2 #128
-2026/10/21-20:15:14.304 ae28 Delete type=0 #132
-2026/10/21-20:15:14.305 46ac Manual compaction at level-0 from '\x00*\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00+\x00\x00\x00' @ 0 : 0; will stop at '\x00*\x01\x02\x01\x01\x00k' @ 6249 : 1
-2026/10/21-20:15:14.305 46ac Compacting 1@0 + 2@1 files
-2026/10/21-20:15:14.338 46ac Generated table #138@0: 879 keys, 4549806 bytes
-2026/10/21-20:15:14.371 46ac Generated table #139@0: 159 keys, 3837536 bytes
-2026/10/21-20:15:14.371 46ac Compacted 1@0 + 2@1 files => 8387342 bytes
-2026/10/21-20:15:14.372 46ac compacted to: files[ 0 2 1 0 0 0 0 ]
-2026/10/21-20:15:14.373 46ac Delete type=2 #137
-2026/10/21-20:15:14.373 46ac Manual compaction at level-0 from '\x00*\x01\x02\x01\x01\x00k' @ 6249 : 1 .. '\x00+\x00\x00\x00' @ 0 : 0; will stop at (end)
-2026/10/21-20:15:14.695 ae28 Manual compaction at level-0 from '\x00+\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00,\x00\x00\x00' @ 0 : 0; will stop at (end)
+2026/10/26-14:17:23.982 9560 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\IndexedDB\https_www.vinted.fr_0.indexeddb.leveldb/MANIFEST-000162
+2026/10/26-14:17:23.983 9560 Recovering log #172
+2026/10/26-14:17:23.984 9560 Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\IndexedDB\https_www.vinted.fr_0.indexeddb.leveldb/000172.log 
+2026/10/26-14:17:23.984 9560 Delete type=2 #170
+2026/10/26-14:17:23.984 9560 Delete type=2 #171
+2026/10/26-14:17:24.091 9560 Level-0 table #178: started
+2026/10/26-14:17:24.093 9560 Level-0 table #178: 12077 bytes OK
+2026/10/26-14:17:24.096 9560 Delete type=0 #172
+2026/10/26-14:17:24.096 9560 Manual compaction at level-0 from '\x004\x00\x00\x00' @ 72057594037927935 : 1 .. '\x005\x00\x00\x00' @ 0 : 0; will stop at '\x004\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 7528 : 1
+2026/10/26-14:17:24.096 9560 Compacting 1@0 + 2@1 files
+2026/10/26-14:17:24.138 9560 Generated table #179@0: 950 keys, 4577738 bytes
+2026/10/26-14:17:24.173 9560 Generated table #180@0: 170 keys, 3940531 bytes
+2026/10/26-14:17:24.173 9560 Compacted 1@0 + 2@1 files => 8518269 bytes
+2026/10/26-14:17:24.176 9560 compacted to: files[ 0 2 1 0 0 0 0 ]
+2026/10/26-14:17:24.177 9560 Delete type=2 #178
+2026/10/26-14:17:24.177 9560 Manual compaction at level-0 from '\x004\x01\x03\x03\x00\x00\x00\x00\x00\x00\xf0?' @ 7528 : 1 .. '\x005\x00\x00\x00' @ 0 : 0; will stop at (end)

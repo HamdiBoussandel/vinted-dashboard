@@ -746,6 +746,23 @@ class AutoCompletionSession:
             raise _SerieInterrompue(f"Option « Prix » de Clemz non enregistrée ({libelle}) — lu : {lu}")
         logger.info(f"💶 [AUTO-COMPLÉTION {self.dressing}] Option « Prix » de Clemz réglée : {libelle}.")
 
+    async def _ecrire_protection_stockage(self, context, reglages):
+        """Réglages Protection écrits directement dans le stockage de Clemz,
+        sous les clés qu'utilise son bouton "Enregistrer" (clemz.js :
+        repostPacingMode / repostPacingHumanPreset / repostExecutionMode)."""
+        cles = {"pacingModeSelect": "repostPacingMode", "pacingHumanPresetSelect": "repostPacingHumanPreset",
+                "executionModeSelect": "repostExecutionMode"}
+        a_ecrire = {cles[k]: v for k, v in reglages.items() if k in cles}
+        for sw in context.service_workers:
+            if sw.url.startswith("chrome-extension://") and "clemz_background" in sw.url:
+                await sw.evaluate("(a) => chrome.storage.local.set(a)", a_ecrire)
+                lu = await sw.evaluate("(c) => chrome.storage.local.get(c)", list(a_ecrire))
+                if lu != a_ecrire:
+                    raise RuntimeError(f"relu {lu} au lieu de {a_ecrire}")
+                logger.info(f"🛡️ [AUTO-COMPLÉTION {self.dressing}] Protection Clemz restaurée (stockage) : {a_ecrire}")
+                return
+        raise RuntimeError("service worker Clemz introuvable")
+
     async def _desactiver_prix_republication(self, context):
         """Fin de série : option "Prix" TOUJOURS désactivée dans le stockage de
         Clemz. (Jusqu'au 21/10/2026 elle était "restaurée" à son état de
@@ -898,17 +915,32 @@ class AutoCompletionSession:
                 await self._attendre_finalisation_validation_manuelle(page.context)
         finally:
             # Réglages Clemz d'origine remis, quoi qu'il arrive (arrêt, erreur...)
+            restaures = False
+            a_remettre = {k: reglages_origine[k] for k in REGLAGES_VALIDATION_MANUELLE if reglages_origine.get(k)}
             try:
                 if not page.is_closed():
                     await self._attendre_panneau(cdp, page)
                     nav = await self.bot._navigate_to_repost_tab(cdp, page, self.acc)
                     if nav["status"] == "success":
-                        await self._appliquer_reglages_protection(
-                            cdp, {k: reglages_origine[k] for k in REGLAGES_VALIDATION_MANUELLE if reglages_origine.get(k)},
-                            "restauration")
+                        await self._appliquer_reglages_protection(cdp, a_remettre, "restauration")
+                        restaures = True
+                    else:
+                        logger.warning(f"⚠️ [AUTO-COMPLÉTION {self.dressing}] Onglet Republier inaccessible pour "
+                                       f"restaurer la Protection ({nav['reason']}) — écriture directe dans Clemz.")
             except Exception as e:
-                logger.error(f"⚠️ [AUTO-COMPLÉTION {self.dressing}] Réglages Protection NON restaurés ({e}) — "
-                             f"remets le mode « Standard » à la main dans Clemz : {reglages_origine}")
+                logger.warning(f"⚠️ [AUTO-COMPLÉTION {self.dressing}] Restauration Protection par le panneau "
+                               f"impossible ({e}) — écriture directe dans Clemz.")
+            if not restaures:
+                # Secours (22/10/2026) : après l'erreur Clemz de 22h20, le
+                # panneau était perdu et la restauration a été sautée SANS
+                # message -- D1 restait en validation manuelle "très lent".
+                try:
+                    await self._ecrire_protection_stockage(page.context, a_remettre)
+                except Exception as e:
+                    logger.error(f"⚠️ [AUTO-COMPLÉTION {self.dressing}] Réglages Protection NON restaurés ({e}) — "
+                                 f"remets le mode « Standard » à la main dans Clemz : {reglages_origine}")
+                    await asyncio.to_thread(_send_notification, "⚠️ VintedPro — Clemz à vérifier",
+                                            f"{self.dressing} : Protection Clemz restée en validation manuelle.")
             try:
                 await self._desactiver_prix_republication(page.context)
             except Exception as e:
@@ -1000,7 +1032,18 @@ class AutoCompletionSession:
             # Clemz ne va pas plus loin -- inutile d'attendre la fermeture.
             if not titre_clique and MARQUEUR_ERREUR_CLEMZ in f"{titre} {progression}".lower():
                 motif = etape if etape and MARQUEUR_ERREUR_CLEMZ not in etape.lower() else progression
-                raise _ErreurClemz(motif.replace("\n", " · ").strip()[:200] or "erreur sans détail")
+                motif = motif.replace("\n", " · ").strip()[:200] or "erreur sans détail"
+                # "Action non autorisée" = refus du SERVEUR clemz.app (création
+                # de l'"activité" avant toute action sur Vinted, cf. clemz.js
+                # apiCalls_notAuthorized) ; le vrai motif renvoyé par Clemz est
+                # dans globalUiMessage (22/10/2026 : non relevé jusqu'ici).
+                stockage = await self._stockage_clemz(page.context, ["globalUiMessage"]) or {}
+                detail = (stockage.get("globalUiMessage") or {}).get("content") or ""
+                detail = re.sub(r"<[^>]+>", " ", str(detail))
+                detail = re.sub(r"\s+", " ", detail).strip()
+                logger.error(f"🔬 [AUTO-COMPLÉTION {self.dressing}] Message du serveur Clemz : "
+                             f"{detail[:400] or '(aucun)'} — brut : {stockage.get('globalUiMessage')}")
+                raise _ErreurClemz(f"{motif} — {detail[:150]}" if detail else motif)
 
             # Passation : formulaire rempli dans l'iframe -> clic sur "Ajouter"
             if not titre_clique and "enregistre en brouillon ou publie" in etape.lower() and titre:

@@ -1,0 +1,1047 @@
+[
+  {
+    "id": 1,
+    "date": "2026-10-28",
+    "titre": "Prochaine action sur chaque article",
+    "categorie": "Stratégie de prix",
+    "statut": "En place — affichage à vérifier dans le navigateur",
+    "inspiration": "« Cycle de vie » de Bleam (bleam.app/fr/help/cycle-de-vie)",
+    "resume": "Chaque carte produit du dashboard indique désormais ce que les règles existantes vont faire de l'article, quand, pourquoi, et si la routine s'en charge ou s'il faut agir à la main. Aucune règle de prix n'a été modifiée : la modification rend visible la stratégie déjà appliquée.",
+    "pourquoi": [
+      "Les règles de prix (prix boucher, mauvaise performance, pépites, liquidation, republication) étaient codées en dur et réparties dans plusieurs modules : une carte disait quoi faire maintenant, jamais quand ni ce qui viendrait ensuite.",
+      "Le « Cycle de vie » de Bleam affiche pour chaque annonce sa prochaine action (« action ~ 3 j »). Comparaison faite le 26/10/2026 : nos règles sont plus fines (jugement sur les vrais favoris, plancher basé sur le prix d'achat), mais moins lisibles.",
+      "Point 1 de la feuille de route issue de cette comparaison, choisi en premier parce qu'il ne change aucun prix."
+    ],
+    "visible": [
+      "Sous la ligne « Attirance » de chaque carte, un encadré « PROCHAINE ACTION » : l'action et son résultat (« Baisse −10 % → 17,91 € », « Republier à 21,22 € »).",
+      "L'échéance : « aujourd'hui », « demain (29/10) », « dans 8 j (05/11) » ou « en retard ». L'encadré passe en bleu quand l'action est due.",
+      "Une étiquette « auto » (faite par la routine de 10h40) ou « manuel » (à lancer depuis le dashboard).",
+      "Un avertissement « routine en pause — à lancer à la main » quand l'action est automatique mais que la routine est coupée.",
+      "La raison en italique, par exemple « Prix boucher : 0 vrai favori au jour 7, plancher 14,73 € »."
+    ],
+    "tableaux": [
+      {
+        "titre": "Règles reprises, par ordre de priorité",
+        "colonnes": [
+          "Priorité",
+          "Situation de l'article",
+          "Prochaine action affichée",
+          "Mode"
+        ],
+        "largeurs": [
+          0.09,
+          0.38,
+          0.38,
+          0.15
+        ],
+        "lignes": [
+          [
+            "1",
+            "Erreur Clemz non résolue",
+            "Vérifier l'annonce",
+            "Manuel"
+          ],
+          [
+            "2",
+            "3 republications ou plus sans vente",
+            "À auditer",
+            "Manuel"
+          ],
+          [
+            "3",
+            "90 jours ou plus en vente (urgence sortie)",
+            "Décider : vendre à perte ?",
+            "Manuel"
+          ],
+          [
+            "4",
+            "Liquidation due",
+            "Prix cible, depuis la page Liquidation",
+            "Manuel"
+          ],
+          [
+            "5",
+            "Republication due (fraîcheur, shadow-ban, mauvaise perf forcée)",
+            "Republier au même prix, ou à X € si une baisse l'accompagne",
+            "Manuel (validation manuelle)"
+          ],
+          [
+            "6",
+            "Moins de 15 jours depuis la (re)publication : prix boucher",
+            "1er contrôle à J+3, puis marche −10 % (2 jours d'écart entre deux marches), ou « prix validé » / « plancher atteint »",
+            "Auto"
+          ],
+          [
+            "7",
+            "Mauvaise performance, au-delà de 15 jours",
+            "Baisse du taux prévu, jamais sous le plancher de marge",
+            "Auto"
+          ],
+          [
+            "8",
+            "Baisse reçue il y a moins de 7 jours",
+            "Nouvelle baisse possible le JJ/MM",
+            "—"
+          ],
+          [
+            "9",
+            "Pépite",
+            "Baisse suggérée",
+            "Manuel"
+          ],
+          [
+            "10",
+            "Tous les autres cas",
+            "Bilan et republication à la date prévue (report de republication compris)",
+            "Manuel"
+          ]
+        ]
+      },
+      {
+        "titre": "Photographie de l'inventaire au 28/10/2026 (126 articles)",
+        "colonnes": [
+          "Prochaine action",
+          "Articles",
+          "Commentaire"
+        ],
+        "largeurs": [
+          0.42,
+          0.13,
+          0.45
+        ],
+        "lignes": [
+          [
+            "À auditer",
+            "52",
+            "Republiés 3 fois ou plus sans vente : rien ne les traite automatiquement."
+          ],
+          [
+            "Republication à venir",
+            "32",
+            "Dont 11 dues le jour même."
+          ],
+          [
+            "Baisse automatique due",
+            "23",
+            "Bloquées : routine en pause indéfinie."
+          ],
+          [
+            "Décider « vendre à perte ? »",
+            "8",
+            "Décision manuelle."
+          ],
+          [
+            "Republication avec baisse due",
+            "7",
+            "Via « Valid. manuelle »."
+          ],
+          [
+            "Liquidation",
+            "4",
+            "Depuis la page Liquidation."
+          ]
+        ]
+      }
+    ],
+    "fichiers": [
+      [
+        "backend/services/supabase_service.py",
+        "Calcul : _ajouter_prochaines_actions() et _prochaine_action(), champ prochaine_action ajouté à chaque article de l'inventaire."
+      ],
+      [
+        "frontend/src/components/ProductCard.jsx",
+        "Affichage : composant ProchaineAction sous la ligne « Attirance »."
+      ]
+    ],
+    "champ": {
+      "titre": "Champ prochaine_action renvoyé par l'inventaire",
+      "colonnes": [
+        "Clé",
+        "Contenu"
+      ],
+      "largeurs": [
+        0.25,
+        0.75
+      ],
+      "lignes": [
+        [
+          "type",
+          "baisse, republication, republication_baisse, controle, attente, manuel, aucune"
+        ],
+        [
+          "quand",
+          "Date (AAAA-MM-JJ) à partir de laquelle l'action est due"
+        ],
+        [
+          "en_retard",
+          "Vrai si la date est déjà passée"
+        ],
+        [
+          "libelle",
+          "Texte court affiché sur la carte"
+        ],
+        [
+          "detail",
+          "Raison de l'action"
+        ],
+        [
+          "automatique",
+          "Vrai si la routine de 10h40 s'en charge"
+        ],
+        [
+          "auto_bloquee",
+          "Raison du blocage (routine en pause, baisse auto désactivée), sinon vide"
+        ]
+      ]
+    },
+    "verifie": [
+      "Calcul exécuté sur l'inventaire réel : 126 articles en 1,4 seconde, aucun article en erreur de calcul.",
+      "Les 23 baisses automatiques sont bien signalées comme bloquées par la pause de la routine.",
+      "Le fichier backend compile ; le lint du composant ne signale qu'une erreur antérieure (useState importé sans être utilisé, ligne 2)."
+    ],
+    "a_verifier": [
+      "Affichage dans le navigateur, après redémarrage du backend et rechargement du dashboard."
+    ],
+    "limites": [
+      "La date affichée est la plus tôt possible : un jour de repos du dressing (plan du jour inactif) repousse la baisse automatique au jour actif suivant, ce que l'affichage ne prévoit pas.",
+      "La republication n'est plus automatique depuis le retrait de la republication planifiée : elle est toujours affichée « manuel ».",
+      "Le calcul reprend les règles à la lettre : si une règle change dans la routine ou le prix boucher, l'affichage doit être adapté en même temps."
+    ]
+  },
+  {
+    "id": 2,
+    "date": "2026-10-28",
+    "titre": "Journal par article (fiche « Historique »)",
+    "categorie": "Stratégie de prix",
+    "statut": "En place — fiche à vérifier dans le navigateur",
+    "inspiration": "« Journal » du Cycle de vie de Bleam (bleam.app/fr/help/cycle-de-vie)",
+    "resume": "Chaque article a désormais son historique : publication, baisses (avec leur origine), republications, articles écartés et leur motif, erreurs Clemz, vente. Il est stocké dans une nouvelle table Supabase, alimentée à partir des sources existantes sans toucher aux scripts d'action, et s'ouvre depuis le bouton horloge de la carte produit.",
+    "pourquoi": [
+      "La « prochaine action » (modification n° 1) dit ce qui va arriver à un article ; il manquait ce qui lui est déjà arrivé, et pourquoi.",
+      "L'historique était dispersé : price_drops (Supabase), task_history.json (fichier local plafonné à 200 tâches, qui ne remontait qu'au 14/10), dates de la table articles (dernière republication seulement), ventes.",
+      "Point 2 de la feuille de route issue de la comparaison avec Bleam ; il prépare le point 3 (détecter un prix changé à la main)."
+    ],
+    "visible": [
+      "Un bouton horloge sur chaque carte produit ouvre la fiche « Historique » de l'article.",
+      "La frise des événements, du plus récent au plus ancien : date, type (couleur), origine (« Panier manuel », « À la republication », « Validation manuelle »…) et détail (« −10 % (10,32 € → 9,29 €) », motif d'un écart).",
+      "Les passages où l'article a été écarté (quota, arrêt de série) sont masqués par défaut, affichables d'une case à cocher.",
+      "En tête, l'évolution du prix relevée par le scraping et le dernier relevé de vues et de favoris."
+    ],
+    "tableaux": [
+      {
+        "titre": "Sources versées dans le journal",
+        "colonnes": [
+          "Source",
+          "Événements produits",
+          "Origine"
+        ],
+        "largeurs": [
+          0.22,
+          0.43,
+          0.35
+        ],
+        "lignes": [
+          [
+            "price_drops",
+            "Baisses, avec prix avant/après exacts",
+            "Retrouvée par la tâche qui l'a faite ; « inconnue » avant le 14/10"
+          ],
+          [
+            "task_history.json",
+            "Republications, suppressions, échecs, erreurs Clemz, articles écartés et leur motif",
+            "Sous-type de la tâche (validation manuelle, ancien script, panier manuel…)"
+          ],
+          [
+            "ventes",
+            "Ventes (prix, réduction) — sans données de l'acheteur",
+            "—"
+          ],
+          [
+            "articles",
+            "Première mise en ligne connue",
+            "—"
+          ]
+        ]
+      },
+      {
+        "titre": "Reprise de l'historique au 28/10/2026 : 1 013 événements",
+        "colonnes": [
+          "Type",
+          "Nombre",
+          "Commentaire"
+        ],
+        "largeurs": [
+          0.3,
+          0.13,
+          0.57
+        ],
+        "lignes": [
+          [
+            "Écartés",
+            "257",
+            "Quota anti-détection, arrêts de série…"
+          ],
+          [
+            "Ventes",
+            "220",
+            ""
+          ],
+          [
+            "Publications",
+            "177",
+            "Point de départ de chaque article"
+          ],
+          [
+            "Baisses",
+            "175",
+            "28 panier manuel, 18 à la republication, 129 d'origine inconnue (antérieures au 14/10)"
+          ],
+          [
+            "Republications",
+            "92",
+            "73 validation manuelle, 18 ancien script, 1 assistée"
+          ],
+          [
+            "Échecs",
+            "88",
+            ""
+          ],
+          [
+            "Erreurs Clemz",
+            "3",
+            ""
+          ],
+          [
+            "Suppression",
+            "1",
+            ""
+          ]
+        ]
+      }
+    ],
+    "fichiers": [
+      [
+        "docs/sql/article_evenements.sql",
+        "Création de la table article_evenements (sécurité par ligne activée sans règle : accès backend uniquement)."
+      ],
+      [
+        "backend/services/journal_articles.py",
+        "synchroniser_journal() : verse les sources dans la table, rejouable sans doublon (clé source_ref unique) ; journal_article() : lecture."
+      ],
+      [
+        "backend/services/automation_scheduler.py",
+        "finish_task_run() lance la synchronisation à chaque fin de tâche, avant que le plafond de 200 tâches n'efface l'historique local."
+      ],
+      [
+        "backend/routes/inventory.py",
+        "Routes GET /api/articles/{id}/journal et POST /api/journal/synchroniser ; relevé de score après le scraping manuel."
+      ],
+      [
+        "frontend/src/components/HistoriqueArticleModal.jsx",
+        "Fiche « Historique »."
+      ],
+      [
+        "frontend/src/components/ProductCard.jsx",
+        "Bouton horloge qui ouvre la fiche."
+      ]
+    ],
+    "champ": {
+      "titre": "Correction associée : relevés de score",
+      "colonnes": [
+        "Constat",
+        "Correction"
+      ],
+      "largeurs": [
+        0.5,
+        0.5
+      ],
+      "lignes": [
+        [
+          "Les relevés de prix, vues et favoris (score_snapshots) n'étaient pris qu'après le scraping planifié : plus aucun relevé du 13/10 au 28/10, routine en pause.",
+          "Relevé enregistré aussi après le scraping lancé à la main (upsert par heure, sans doublon). Le trou du 13/10 au 28/10 ne peut pas être rattrapé."
+        ]
+      ]
+    },
+    "verifie": [
+      "Reprise exécutée : 1 013 événements insérés ; une deuxième exécution n'ajoute aucune ligne.",
+      "Route du journal testée sur l'Eau micellaire : 7 événements, dont la double baisse du 21/10 (−20 % à la republication, puis −10 % depuis le panier manuel).",
+      "Frontend compilé (vite build) ; lint sans erreur sur les deux composants."
+    ],
+    "a_verifier": [
+      "Ouverture de la fiche depuis une carte produit dans le navigateur."
+    ],
+    "limites": [
+      "Les 129 baisses antérieures au 14/10 restent d'origine inconnue : le fichier des tâches ne remonte pas plus loin.",
+      "L'heure d'une republication est celle de la fin de la série, pas celle de l'article (écart possible de quelques dizaines de minutes).",
+      "Les baisses ne sont versées qu'à la fin de la tâche suivante ou à une synchronisation manuelle : l'historique n'est pas instantané."
+    ]
+  },
+  {
+    "id": 3,
+    "date": "2026-10-28",
+    "titre": "Détection d'un prix changé à la main",
+    "categorie": "Stratégie de prix",
+    "statut": "En place — se déclenche au prochain scraping",
+    "inspiration": "« Stratégie détachée — prix changé à la main » du Cycle de vie de Bleam",
+    "resume": "Quand le scraping lit sur Vinted un prix qu'aucune de nos baisses n'explique, l'article est noté « prix changé à la main » dans son journal et sort des baisses automatiques (mauvaise performance, prix boucher, baisse à la republication). Un bouton « Remettre sous stratégie » de la fiche Historique le fait revenir.",
+    "pourquoi": [
+      "Sans cette détection, un prix ajusté à la main sur Vinted ou dans Clemz était aussitôt repris par les règles automatiques, qui pouvaient le baisser encore le lendemain.",
+      "Bleam fait de même : un prix qu'il n'a pas posé détache l'annonce de sa stratégie.",
+      "Point 3 de la feuille de route ; il s'appuie sur le journal par article (modification n° 2), qui sait quelles baisses viennent de VintedPro."
+    ],
+    "visible": [
+      "Sur la carte : « ✏️ MAUVAISE PERF : prix changé à la main, baisses auto suspendues », et la prochaine action « Prix changé à la main » avec la date de republication.",
+      "Dans la fiche Historique : un événement « Prix changé à la main » (ancien → nouveau prix) et un encadré violet avec le bouton « Remettre sous stratégie ».",
+      "Un article à republier dont le prix a été changé à la main est proposé « au même prix » : pas de baisse à la republication."
+    ],
+    "tableaux": [
+      {
+        "titre": "Règle de détection (au scraping)",
+        "colonnes": [
+          "Étape",
+          "Règle"
+        ],
+        "largeurs": [
+          0.25,
+          0.75
+        ],
+        "lignes": [
+          [
+            "Déclencheur",
+            "Le prix lu sur Vinted diffère d'au moins 1 centime du prix en base."
+          ],
+          [
+            "Explication par une baisse",
+            "Une baisse enregistrée (price_drops) des 14 derniers jours dont le prix d'après correspond au nouveau prix, à 2 % près (10 centimes minimum)."
+          ],
+          [
+            "Si expliqué",
+            "Rien de plus : la baisse est déjà au journal."
+          ],
+          [
+            "Sinon",
+            "Événement « prix_change » au journal ; l'article sort des baisses automatiques jusqu'à « Remettre sous stratégie »."
+          ],
+          [
+            "Reprise",
+            "Événement « reprise_strategie » ; les baisses reprennent à partir du prix actuel."
+          ]
+        ]
+      },
+      {
+        "titre": "Test de la règle sur l'historique réel (13/08 → 13/10)",
+        "colonnes": [
+          "Changements de prix relevés",
+          "Nombre",
+          "Commentaire"
+        ],
+        "largeurs": [
+          0.4,
+          0.12,
+          0.48
+        ],
+        "lignes": [
+          [
+            "Expliqués par une de nos baisses",
+            "68",
+            "87 % des changements"
+          ],
+          [
+            "Baisses non expliquées",
+            "9",
+            "Dont 8 le 09/10 : probablement manuelles, invérifiable (fichier des tâches postérieur au 14/10)"
+          ],
+          [
+            "Hausses",
+            "1",
+            "Toujours manuelles : VintedPro ne monte jamais un prix"
+          ]
+        ]
+      },
+      {
+        "titre": "Effets sur les automatisations",
+        "colonnes": [
+          "Automatisation",
+          "Article au prix changé à la main"
+        ],
+        "largeurs": [
+          0.35,
+          0.65
+        ],
+        "lignes": [
+          [
+            "Baisse « mauvaise performance » (routine 10h40, Forcer baisse)",
+            "Exclu (aucun taux proposé)"
+          ],
+          [
+            "Prix boucher",
+            "Exclu de l'évaluation"
+          ],
+          [
+            "Baisse à la republication (validation manuelle)",
+            "Aucune : republié au même prix"
+          ],
+          [
+            "Panier de baisse manuelle",
+            "Toujours possible : c'est un choix explicite"
+          ]
+        ]
+      }
+    ],
+    "fichiers": [
+      [
+        "backend/services/vinted_scraper.py",
+        "Comparaison du prix en base et du prix lu, avant mise à jour ; jamais bloquante pour le scraping."
+      ],
+      [
+        "backend/services/journal_articles.py",
+        "noter_changement_prix(), articles_prix_manuel(), reprendre_strategie()."
+      ],
+      [
+        "backend/services/supabase_service.py",
+        "Champs prix_manuel / prix_manuel_detail ; libellés et exclusions ; prochaine action « Prix changé à la main »."
+      ],
+      [
+        "backend/services/prix_boucher.py",
+        "Articles au prix manuel exclus de l'évaluation."
+      ],
+      [
+        "backend/routes/inventory.py",
+        "Route POST /api/articles/{id}/reprendre-strategie."
+      ],
+      [
+        "frontend/src/components/HistoriqueArticleModal.jsx",
+        "Encadré « Prix changé à la main » et bouton « Remettre sous stratégie »."
+      ]
+    ],
+    "verifie": [
+      "Règle rejouée sur l'historique des prix : 68 changements sur 78 expliqués par une baisse enregistrée.",
+      "Détection testée sans écriture en base : la baisse du 21/10 de l'Eau micellaire est reconnue comme une des nôtres ; un changement inexpliqué est attribué à la main.",
+      "Exclusion testée sur l'inventaire réel (article simulé) : plus de taux de baisse, plus de prix de republication, hors prix boucher, prochaine action « Prix changé à la main ».",
+      "Backend compilé ; lint sans erreur sur les composants."
+    ],
+    "a_verifier": [
+      "Premier cas réel au prochain scraping (aucun changement manuel n'a encore été détecté en conditions réelles).",
+      "Bouton « Remettre sous stratégie » dans le navigateur."
+    ],
+    "limites": [
+      "Un changement de prix fait via Clemz en dehors de VintedPro (sans trace dans price_drops) compte comme manuel : c'est voulu.",
+      "La détection n'a lieu qu'au scraping : un prix changé puis remis entre deux scrapings passe inaperçu.",
+      "Les changements antérieurs à cette modification ne sont pas rattrapés : seuls ceux vus à partir du prochain scraping sont notés."
+    ]
+  },
+  {
+    "id": 4,
+    "date": "2026-10-28",
+    "titre": "Nouveaux quotas : 10 baisses, 20 à 30 republications",
+    "categorie": "Anti-détection",
+    "statut": "En place — après redémarrage du backend",
+    "inspiration": "« Rythme » du Cycle de vie de Bleam (changements de prix comptés dans l'activité du jour)",
+    "resume": "Les baisses de prix retrouvent un plafond simple de 10 par jour et par dressing. Le plafond de republication est tiré au hasard entre 20 et 30 chaque jour, et le seuil de repos forcé passe de 60 à 75 republications sur 3 jours. Les baisses faites au moment de la republication ne comptent pas dans les 10 et sortent de la liste « Baisse de prix ».",
+    "pourquoi": [
+      "Depuis le 18/10, plus rien ne limitait les baisses : le Dressing 1 a atteint 31 actions le 21/10 et 33 le 22/10 (baisses + republications).",
+      "Une baisse est une modification d'annonce envoyée à Vinted par Clemz, donc une action automatisée comme une republication ; Bleam compte aussi les changements de prix dans le rythme du compte.",
+      "Le plafond de 10 ne réintroduit pas les blocages d'avant le 18/10 (convalescence, repos de niveau 2) : seul le nombre par jour est limité."
+    ],
+    "visible": [
+      "Au-delà de 10 baisses dans la journée sur un dressing, les articles restants sont reportés au lendemain, avec le motif dans l'historique des tâches.",
+      "L'onglet « Baisse de prix » du dashboard et son compteur n'incluent plus les articles « REPUBLIER avec BAISSE » : leur baisse se fait à la republication.",
+      "Davantage de republications possibles par jour (plafond du jour entre 20 et 30)."
+    ],
+    "tableaux": [
+      {
+        "titre": "Réglages avant / après",
+        "colonnes": [
+          "Réglage",
+          "Avant",
+          "Après"
+        ],
+        "largeurs": [
+          0.46,
+          0.2,
+          0.34
+        ],
+        "lignes": [
+          [
+            "Baisses de prix par jour et par dressing",
+            "Aucune limite (depuis le 18/10)",
+            "10"
+          ],
+          [
+            "Blocage des baisses en convalescence ou repos de niveau 2",
+            "Non",
+            "Non (inchangé)"
+          ],
+          [
+            "Plafond de republication du jour",
+            "20 fixe",
+            "Tiré au hasard entre 20 et 30"
+          ],
+          [
+            "Cible du jour, jours de repos du calendrier",
+            "Tirage au sort",
+            "Tirage au sort (inchangé)"
+          ],
+          [
+            "Repos forcé (niveau 2)",
+            "60 republications sur 3 jours",
+            "75 republications sur 3 jours"
+          ],
+          [
+            "Baisse faite à la republication",
+            "Hors quota",
+            "Hors quota, comptée comme baisse au journal"
+          ]
+        ]
+      },
+      {
+        "titre": "Ce qui compte dans les 10 baisses du jour",
+        "colonnes": [
+          "Baisse",
+          "Compte dans les 10 ?"
+        ],
+        "largeurs": [
+          0.6,
+          0.4
+        ],
+        "lignes": [
+          [
+            "Routine de 10h40 (prix boucher, mauvaise performance)",
+            "Oui"
+          ],
+          [
+            "« Forcer baisse de prix »",
+            "Oui"
+          ],
+          [
+            "Panier de baisse manuelle",
+            "Oui"
+          ],
+          [
+            "Baisse à la republication (option « Prix » de Clemz)",
+            "Non"
+          ],
+          [
+            "Liquidation",
+            "Non (hors quota, comme avant)"
+          ]
+        ]
+      }
+    ],
+    "fichiers": [
+      [
+        "backend/services/risk_guard.py",
+        "PLAFOND_BAISSES_JOUR = 10 (plafond simple dans get_allowed_quantity) ; PLAFOND_REPUBLICATION 20-30 ; SEUIL_VOLUME_GLISSANT = 75."
+      ],
+      [
+        "frontend/src/pages/Dashboard.jsx",
+        "Onglet et compteur « Baisse de prix » sans les « REPUBLIER avec BAISSE »."
+      ]
+    ],
+    "verifie": [
+      "Quota testé sur les données du jour : 15 baisses demandées -> 10 autorisées, 5 reportées avec le motif, pour chaque dressing.",
+      "Plafonds de republication tirés pour aujourd'hui : 23 (D1) et 24 (D2) ; volume sur 3 jours 0 / 75.",
+      "Backend compilé ; lint du dashboard inchangé (8 erreurs antérieures)."
+    ],
+    "a_verifier": [
+      "Premier jour de baisses avec plus de 10 articles dus : report effectif du surplus au lendemain."
+    ],
+    "limites": [
+      "Le plan du jour déjà tiré ce matin reste basé sur l'ancien plafond ; le nouveau tirage s'applique au plan de demain (le contrôle de quota, lui, s'applique tout de suite).",
+      "La « prochaine action » d'un article ne prévoit pas encore le report dû au plafond : elle peut afficher « aujourd'hui » pour un article qui passera le lendemain.",
+      "Une suspension Vinted constatée bloque de toute façon tout le compte : aucune règle de convalescence n'est prévue pour les baisses."
+    ]
+  },
+  {
+    "id": 5,
+    "date": "2026-10-28",
+    "titre": "Rythme de republication calé sur Bleam : tous les 7 jours",
+    "categorie": "Stratégie de prix",
+    "statut": "En place — après redémarrage du backend",
+    "inspiration": "Modèle « Anti-stagnation » du Cycle de vie de Bleam",
+    "resume": "Un article est maintenant republié 7 jours après sa dernière (re)publication, quel que soit son prix, au lieu de 15 jours sous 50 € et 21 jours au-dessus. En rythme de croisière, cela représente environ 10 republications par jour sur le Dressing 1 et 8 sur le Dressing 2, sous le plafond de 20 à 30. La baisse appliquée à la republication d'un article au score faible passe de −20 % à −10 %, pour que le premier cycle reste mesuré.",
+    "pourquoi": [
+      "Comparaison du 28/10 avec le modèle Anti-stagnation de Bleam : republication environ tous les 7 jours, avec toujours une prochaine étape prévue, contre 10 à 21 jours chez nous et des temps morts.",
+      "Décision de l'utilisateur : se caler sur Bleam pour le rythme de republication, en gardant nos déclencheurs (favoris, score) et nos planchers (prix d'achat)."
+    ],
+    "visible": [
+      "La « prochaine action » « Bilan et republication » tombe 7 jours après la dernière (re)publication.",
+      "Plus d'articles « à republier » chaque jour dans l'onglet Republications."
+    ],
+    "tableaux": [
+      {
+        "titre": "Effet mesuré sur l'inventaire du 28/10/2026 (126 articles)",
+        "colonnes": [
+          "",
+          "Dressing 1",
+          "Dressing 2"
+        ],
+        "largeurs": [
+          0.5,
+          0.25,
+          0.25
+        ],
+        "lignes": [
+          [
+            "Articles en ligne",
+            "73",
+            "53"
+          ],
+          [
+            "Republications par jour en rythme de croisière",
+            "≈ 10",
+            "≈ 8"
+          ],
+          [
+            "Republications dues dès maintenant",
+            "44 (dont 18 avec baisse)",
+            "10 (dont 6 avec baisse)"
+          ],
+          [
+            "Bloqués « À auditer » (hors rythme)",
+            "11",
+            "41"
+          ]
+        ]
+      },
+      {
+        "titre": "Délai de republication avant / après",
+        "colonnes": [
+          "Prix de l'article",
+          "Avant",
+          "Après"
+        ],
+        "largeurs": [
+          0.4,
+          0.3,
+          0.3
+        ],
+        "lignes": [
+          [
+            "Moins de 50 €",
+            "15 jours (10 si mauvaise perf.)",
+            "7 jours"
+          ],
+          [
+            "50 € et plus",
+            "21 jours",
+            "7 jours"
+          ]
+        ]
+      },
+      {
+        "titre": "Premier cycle d'un article à 40 € sans favori",
+        "colonnes": [
+          "Jour",
+          "Avant ce réglage (−20 % à la republication)",
+          "Après (−10 %)",
+          "Bleam (Anti-stagnation)"
+        ],
+        "largeurs": [
+          0.13,
+          0.32,
+          0.25,
+          0.3
+        ],
+        "lignes": [
+          [
+            "J+3",
+            "36 € (prix boucher)",
+            "36 €",
+            "40 €"
+          ],
+          [
+            "J+5",
+            "32,40 €",
+            "32,40 €",
+            "40 €"
+          ],
+          [
+            "J+7",
+            "Republié à 25,92 €",
+            "Republié à 29,16 €",
+            "36 €"
+          ],
+          [
+            "J+10",
+            "—",
+            "—",
+            "Republié à 36 €"
+          ]
+        ]
+      }
+    ],
+    "fichiers": [
+      [
+        "backend/services/supabase_service.py",
+        "DELAI_LOW_TICKET et DELAI_HIGH_TICKET à 7 jours ; BAISSE_A_LA_REPUBLICATION = 0,10 (au lieu de −20 % codé en dur)."
+      ]
+    ],
+    "verifie": [
+      "Inventaire recalculé : délai de 7 jours pour les 126 articles ; prochaines actions cohérentes.",
+      "Le stock en retard (44 sur D1, 10 sur D2) passe en 2 jours environ avec le plafond de 20 à 30.",
+      "Baisse à la republication recalculée : 22 articles « REPUBLIER avec BAISSE −10 % » (ex. Blazer Kiabi 19,90 € → 17,91 €)."
+    ],
+    "a_verifier": [
+      "Premières séries de republication au nouveau rythme (volume réel par jour)."
+    ],
+    "limites": [
+      "Les baisses glissent vers la republication : la plupart des articles en mauvaise performance sont maintenant dus à la republication avant leur baisse séparée ; leur baisse se fait à la republication, hors des 10 baisses du jour (baisses séparées dues : 23 avant, 3 après).",
+      "Les 52 articles « À auditer » restent hors rythme : ils ne sont pas republiés automatiquement."
+    ]
+  },
+  {
+    "id": 6,
+    "date": "2026-10-28",
+    "titre": "Plan « Fin de vie » à la place de « À auditer »",
+    "categorie": "Stratégie de prix",
+    "statut": "En place — après redémarrage du backend",
+    "inspiration": "Modèle « Déstockage » et fins de plan du Cycle de vie de Bleam",
+    "resume": "Un article republié 3 fois ou plus sans vente n'est plus bloqué « À auditer » : il entre en fin de vie. Il est republié tous les 14 jours avec −10 % à chaque fois, jusqu'à un plancher de fin de vie (prix d'achat, ou 50 % du prix de départ s'il est inconnu, jamais sous 3 €). Après 3 republications au plancher sans vente, il passe en « Sortie » : retirer, vendre en lot ou donner, à décider à la main.",
+    "pourquoi": [
+      "Comparaison avec Bleam : notre stratégie n'avait pas de fin de plan, les articles s'accumulaient sans plus aucune action (52 au 28/10, dont 41 sur le Dressing 2).",
+      "Profil de ces 52 articles : 172 jours en vente en médiane, 0 vrai favori, 950 € de stock ; 17 seulement ont un prix d'achat connu, déjà proche du coût.",
+      "Republier seul ne suffisait pas (3 à 6 republications sans un favori) : le plan combine republication et baisse jusqu'à un plancher, puis une décision de sortie."
+    ],
+    "visible": [
+      "L'onglet « À auditer » devient « Fin de vie », avec le même nombre d'articles.",
+      "Badge « Fin de vie · plancher X € » sur la carte (raison au survol), ou « Sortie » en rouge.",
+      "Étiquettes : « FIN DE VIE : republier à X € (−10 %) », « republier au plancher (X €), n/3 », « prochaine republication dans N j », « SORTIE : retirer, vendre en lot ou donner ».",
+      "Les articles en fin de vie dus apparaissent dans l'onglet Republications, avec leur prix de republication pour la validation manuelle."
+    ],
+    "tableaux": [
+      {
+        "titre": "Réglages du plan (décisions de l'utilisateur)",
+        "colonnes": [
+          "Réglage",
+          "Valeur"
+        ],
+        "largeurs": [
+          0.45,
+          0.55
+        ],
+        "lignes": [
+          [
+            "Entrée en fin de vie",
+            "3 republications sans vente ou plus"
+          ],
+          [
+            "Rythme",
+            "Tous les 14 jours (règle « invisible » ignorée)"
+          ],
+          [
+            "Baisse",
+            "−10 % à chaque republication (option « Prix » de Clemz, hors des 10 baisses du jour)"
+          ],
+          [
+            "Plancher, prix d'achat connu",
+            "Le prix d'achat (vente au coûtant acceptée)"
+          ],
+          [
+            "Plancher, prix d'achat inconnu",
+            "50 % du prix de départ, jamais sous 3 €"
+          ],
+          [
+            "Sortie",
+            "Après 3 republications au plancher sans vente : décision manuelle"
+          ],
+          [
+            "Prix boucher, mauvaise performance",
+            "Ne s'appliquent plus à ces articles"
+          ]
+        ]
+      },
+      {
+        "titre": "État au 28/10/2026",
+        "colonnes": [
+          "",
+          "Nombre"
+        ],
+        "largeurs": [
+          0.7,
+          0.3
+        ],
+        "lignes": [
+          [
+            "Articles en fin de vie",
+            "52 (41 D2, 11 D1)"
+          ],
+          [
+            "Republications dues aujourd'hui",
+            "9 (8 avec −10 %)"
+          ],
+          [
+            "En sortie",
+            "0"
+          ]
+        ]
+      }
+    ],
+    "fichiers": [
+      [
+        "backend/services/supabase_service.py",
+        "Réglages de fin de vie ; branche « Fin de vie » à la place de « À auditer » ; _contexte_fin_de_vie() (prix de départ, republications depuis la dernière baisse) ; champs fin_de_vie, plancher_fin_de_vie, sortie ; prochaine action."
+      ],
+      [
+        "backend/services/prix_boucher.py",
+        "Articles en fin de vie exclus du prix boucher."
+      ],
+      [
+        "frontend/src/components/ProductCard.jsx",
+        "Badge « Fin de vie » / « Sortie »."
+      ],
+      [
+        "frontend/src/pages/Dashboard.jsx",
+        "Onglet et étape de routine renommés « Fin de vie »."
+      ]
+    ],
+    "verifie": [
+      "Inventaire recalculé : 52 articles en fin de vie, 9 republications dues (8 avec −10 %), planchers cohérents (ex. Blouse Marella 25,22 € → 22,70 €, plancher 14,84 €).",
+      "Frontend compilé (vite build) ; lint de la carte produit sans erreur."
+    ],
+    "a_verifier": [
+      "Première republication d'un article en fin de vie en validation manuelle (prix appliqué par Clemz)."
+    ],
+    "limites": [
+      "Le prix de départ vient des relevés de score (depuis le 13/08) et des baisses enregistrées : pour un article plus ancien, c'est une approximation basse.",
+      "Le compte des republications au plancher s'appuie sur le journal par article, qui ne remonte qu'au 14/10.",
+      "La page Liquidation continue de lister ces articles : à ne pas utiliser en parallèle du plan de fin de vie."
+    ]
+  },
+  {
+    "id": 7,
+    "date": "2026-10-28",
+    "titre": "Stratégie « Déstockage » à la demande",
+    "categorie": "Stratégie de prix",
+    "statut": "En place — après redémarrage du backend",
+    "inspiration": "Modèle « Déstockage » et choix de stratégie par annonce du Cycle de vie de Bleam",
+    "resume": "Un article peut désormais être placé en « Déstockage » depuis sa fiche Historique : il entre tout de suite dans la mécanique de fin de vie (−10 % à chaque republication jusqu'au plancher, puis sortie), au rythme de 7 jours, sans attendre 3 republications sans vente. « Standard » reste la stratégie par défaut.",
+    "pourquoi": [
+      "Bleam permet de choisir une stratégie par annonce ; chez nous, tous les articles suivaient le même parcours.",
+      "La mécanique de déstockage n'existait que pour la fin de vie, après 3 republications sans vente : impossible de faire partir vite une pièce précise (fin de saison, article dont on veut se débarrasser)."
+    ],
+    "visible": [
+      "Dans la fiche Historique : un sélecteur « Stratégie » (Standard / Déstockage) avec la description du plan choisi.",
+      "Sur la carte : badge « Déstockage · plancher X € » et étiquettes « DÉSTOCKAGE : republier à X € (−10 %) » ou « prochaine republication dans N j ».",
+      "Chaque changement de stratégie est noté au journal de l'article."
+    ],
+    "tableaux": [
+      {
+        "titre": "Fin de vie et Déstockage",
+        "colonnes": [
+          "",
+          "Fin de vie (automatique)",
+          "Déstockage (à la demande)"
+        ],
+        "largeurs": [
+          0.2,
+          0.4,
+          0.4
+        ],
+        "lignes": [
+          [
+            "Entrée",
+            "Après 3 republications sans vente",
+            "Dès que la stratégie est posée"
+          ],
+          [
+            "Rythme",
+            "Tous les 14 jours",
+            "Tous les 7 jours"
+          ],
+          [
+            "Baisse",
+            "−10 % à chaque republication",
+            "−10 % à chaque republication"
+          ],
+          [
+            "Plancher",
+            "Prix d'achat, sinon 50 % du prix de départ (3 € minimum)",
+            "Identique"
+          ],
+          [
+            "Sortie",
+            "Après 3 republications au plancher",
+            "Identique"
+          ]
+        ]
+      }
+    ],
+    "fichiers": [
+      [
+        "backend/services/journal_articles.py",
+        "strategies_articles() et poser_strategie() : le choix est un événement « strategie » du journal (pas de nouvelle table)."
+      ],
+      [
+        "backend/services/supabase_service.py",
+        "DELAI_DESTOCKAGE = 7 ; un article en Déstockage suit la branche de fin de vie ; champ strategie."
+      ],
+      [
+        "backend/routes/inventory.py",
+        "Route POST /api/articles/strategie ({ids, strategie}) : un article ou une sélection."
+      ],
+      [
+        "frontend/src/components/HistoriqueArticleModal.jsx",
+        "Sélecteur de stratégie."
+      ],
+      [
+        "frontend/src/components/ProductCard.jsx",
+        "Badge « Déstockage »."
+      ]
+    ],
+    "verifie": [
+      "Simulation sans écriture en base : un article à 19,90 € passé en Déstockage est republié à 17,91 €, plancher 9,95 € (50 % du prix de départ, prix d'achat inconnu).",
+      "Frontend compilé ; lint sans erreur."
+    ],
+    "a_verifier": [
+      "Changement de stratégie depuis la fiche Historique dans le navigateur."
+    ],
+    "limites": [
+      "Le choix se fait article par article dans la fiche ; la route accepte déjà une sélection, mais aucun bouton de sélection multiple n'existe encore dans le dashboard.",
+      "Les stratégies « Prix ferme » et « Intelligent » ne sont pas faites (Intelligent demande d'abord une analyse de marché sur tout l'inventaire)."
+    ]
+  },
+  {
+    "id": 8,
+    "date": "2026-10-30",
+    "titre": "Nouveau design des cartes produit et plancher fiabilisé",
+    "categorie": "Dashboard",
+    "statut": "En place — correction du plancher après redémarrage du backend",
+    "resume": "Les cartes produit passent à un design sombre en deux parties, sur le modèle fourni : informations en haut, montants et actions en bas. En vérifiant le rendu, un bug a été trouvé et corrigé : le prix de départ d'un article pouvait être faux, ce qui abaissait son plancher.",
+    "pourquoi": [
+      "Demande de l'utilisateur : des cartes qui ressemblent à la capture d'exemple, plus lisibles que l'ancienne grille en cinq colonnes.",
+      "Le plancher du Blazer Primark passait de 8,45 € à 4,87 € entre deux chargements : Supabase plafonne une réponse à 1 000 lignes, et un lot de relevés en comptait 1 267."
+    ],
+    "visible": [
+      "Haut de carte : photo, titre coloré selon le statut, dressing et rang, badges, dates, durées, vues, favoris, attirance, action à faire et prochaine action ; pastille « Critique » ou « Stable » en haut à droite.",
+      "Bas de carte : Vente, Achat, Plancher, Optimiste et une nouvelle valeur Marge (vente − achat, sans frais) ; à droite, les actions.",
+      "La case à cocher remplace le bouton ✕/↺ : cochée, l'article est inclus dans le traitement ; décochée, il est exclu.",
+      "Les boutons Historique, Reporter et Baisse manuelle deviennent des icônes, avec leur description au survol."
+    ],
+    "tableaux": [],
+    "fichiers": [
+      [
+        "frontend/src/components/ProductCard.jsx",
+        "Nouvelle mise en page ; fonctions et conditions d'affichage conservées ; modale Historique rendue hors de la carte."
+      ],
+      [
+        "backend/services/prix_boucher.py",
+        "_prix_de_depart() : lecture paginée et triée des relevés, y compris les premiers relevés sans snapshot_hour."
+      ]
+    ],
+    "verifie": [
+      "Captures du vrai dashboard : 126 cartes dans « Tous », 45 dans « Republish », à 1 600 et 1 100 px de large, sans erreur JavaScript.",
+      "Planchers de fin de vie identiques entre deux calculs (52 articles) ; Blazer Primark à 8,45 €.",
+      "Aucune baisse depuis le 28/10 : le bug n'a modifié aucun prix réel.",
+      "Lint de la carte sans erreur ; frontend compilé."
+    ],
+    "a_verifier": [
+      "Cases à cocher et boutons d'action en usage réel (non cliqués pendant les tests, pour ne déclencher aucune action)."
+    ],
+    "limites": [
+      "Seules les cartes sont sombres : le reste du dashboard reste clair.",
+      "La Marge affichée ne tient pas compte des frais de vente ni de la négociation.",
+      "Le prix de départ reste une approximation pour les articles antérieurs au 13/08, date des premiers relevés."
+    ]
+  }
+]

@@ -499,7 +499,7 @@ class VintedScraper:
         try:
             # --- ÉTAPE A : Récupération de l'inventaire Supabase actuel ---
             existing_response = self.db.table("articles") \
-                .select("id, nom, est_vendu, erreur_clemz, dressing") \
+                .select("id, nom, est_vendu, erreur_clemz, dressing, prix_vente") \
                 .execute()
 
             # Dictionnaire nom_lower → {id, est_vendu, erreur_clemz, dressing} pour lookup rapide
@@ -509,6 +509,7 @@ class VintedScraper:
                     "est_vendu": row["est_vendu"],
                     "erreur_clemz": row.get("erreur_clemz", False),
                     "dressing": row.get("dressing"),
+                    "prix_vente": row.get("prix_vente"),
                 }
                 for row in existing_response.data
             }
@@ -521,6 +522,19 @@ class VintedScraper:
                 existing  = supabase_inventory.get(nom_lower)
 
                 if existing:
+                    # Prix changé hors VintedPro (28/10/2026) : un écart entre le
+                    # prix en base et le prix lu sur Vinted qu'aucune de nos baisses
+                    # n'explique est noté au journal -- l'article sort alors des
+                    # baisses automatiques (cf. journal_articles). Jamais bloquant.
+                    if existing.get("prix_vente") is not None and art.get("prix") is not None \
+                            and abs(float(existing["prix_vente"]) - float(art["prix"])) >= 0.01:
+                        try:
+                            from services.journal_articles import noter_changement_prix
+                            noter_changement_prix(existing["id"], art["nom"], art["dressing"],
+                                                  float(existing["prix_vente"]), float(art["prix"]))
+                        except Exception as e:
+                            logger.warning(f"⚠️ Contrôle du prix de '{art['nom']}' impossible : {e}")
+
                     # Article déjà connu → mise à jour des stats. est_vendu: False
                     # -- réinitialisation volontaire : retrouver l'article dans un
                     # scrape réussi est la preuve définitive qu'il est toujours en
