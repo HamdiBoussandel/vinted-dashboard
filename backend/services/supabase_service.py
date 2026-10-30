@@ -577,6 +577,8 @@ class SupabaseService:
                 "needs_agent_decision": locals().get("needs_agent_decision", False),
                 "score":                score,
                 "photo_url":            item.get("url_image", ""),
+                "lien_vinted":          item.get("lien_vinted"),
+                "vinted_item_id":       item.get("vinted_item_id"),
                 "action_label":         action_label,
                 "baisse_prix_taux":     baisse_prix_taux,
                 "prix_republication":   prix_republication,

@@ -12,6 +12,26 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 _BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
+def extraire_vinted_item_id(lien):
+    """ID Vinted de l'annonce, tiré de son lien (".../items/10486130248-chemise-uniqlo")."""
+    match = re.search(r"/items/(\d+)", lien or "")
+    return int(match.group(1)) if match else None
+
+
+def _champs_lien(art):
+    """
+    Lien + ID Vinted de l'annonce à écrire dans Supabase (22/10/2026) -- base
+    de l'estimation des prix (lecture des attributs exacts de la fiche, cf.
+    services/fiche_annonce_vinted.py). Rien si l'ID n'a pas pu être lu, pour
+    ne jamais écraser un lien valide par un lien vide. Une republication Clemz
+    recrée l'annonce (nouvel ID) : le lien est donc réécrit à chaque scrap.
+    """
+    if not art.get("vinted_item_id"):
+        return {}
+    return {"lien_vinted": art["lien"], "vinted_item_id": art["vinted_item_id"]}
+
+
 class VintedScraper:
     def __init__(self):
         self.db = supabase
@@ -445,6 +465,7 @@ class VintedScraper:
 
                     link_el = await item.query_selector('a[href]')
                     href = await link_el.get_attribute("href") if link_el else ""
+                    lien = href if href.startswith('http') else f"https://www.vinted.fr{href}"
 
                     scraped_articles.append({
                         "nom": titre,
@@ -454,7 +475,8 @@ class VintedScraper:
                         "favoris": favoris,
                         "dressing": dressing_name,
                         "url_image": img_url,
-                        "lien": href if href.startswith('http') else f"https://www.vinted.fr{href}",
+                        "lien": lien,
+                        "vinted_item_id": extraire_vinted_item_id(lien),
                     })
 
                 return scraped_articles
@@ -515,6 +537,11 @@ class VintedScraper:
 
             scraped_names_lower = [a["nom"].lower() for a in scraped_articles]
 
+            # Colonnes lien_vinted / vinted_item_id créées à la main dans
+            # Supabase (22/10/2026) : tant qu'elles n'existent pas, on n'écrit
+            # pas le lien plutôt que de faire échouer toute la synchro.
+            liens_actifs = self._colonnes_lien_disponibles()
+
             # --- ÉTAPE B : Upsert des articles scrapés ---
             for art in scraped_articles:
                 nom_lower = art["nom"].lower()
@@ -536,6 +563,7 @@ class VintedScraper:
                         "dressing":    art["dressing"],
                         "est_vendu":   False,
                         "updated_at":  datetime.now().isoformat(),
+                        **(_champs_lien(art) if liens_actifs else {}),
                     }).eq("id", existing["id"]).execute()
 
                     count_updated += 1
@@ -567,6 +595,7 @@ class VintedScraper:
                         "date_publication":  today_str,
                         "est_vendu":         False,
                         "est_traite":        False,
+                        **(_champs_lien(art) if liens_actifs else {}),
                     }).execute()
 
                     count_created += 1
@@ -621,6 +650,15 @@ class VintedScraper:
             self.write_log("Erreur sync_to_supabase", details=str(e))
             traceback.print_exc()
             return 0, 0, {}
+
+    def _colonnes_lien_disponibles(self):
+        try:
+            self.db.table("articles").select("lien_vinted, vinted_item_id").limit(1).execute()
+            return True
+        except Exception as e:
+            logger.warning(f"⚠️ Colonnes lien_vinted / vinted_item_id absentes de Supabase — "
+                           f"liens des annonces non enregistrés ({e})")
+            return False
 
     async def scroll_progressif(self, page):
         """Réplique la logique de scrollProgressif de content.js."""
