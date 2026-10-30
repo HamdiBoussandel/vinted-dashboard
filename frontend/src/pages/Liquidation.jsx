@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { inventoryService } from '../services/api';
 import toast, { Toaster } from 'react-hot-toast';
-import { Flame, Loader, CheckCircle2, Circle, Clock } from 'lucide-react';
+import { AlertTriangle, Flame, Loader, CheckCircle2, Circle, Clock, Snowflake, Tag, Undo2 } from 'lucide-react';
+import { AvecIcone } from '../components/Icones';
 
 const PHASE_LABELS = {
     0: { label: 'Phase 0 — Sous surveillance', color: 'bg-blue-100 text-blue-700 border-blue-200' },
@@ -299,7 +300,7 @@ export default function Liquidation() {
                         onChange={e => setForcerSeuil(e.target.checked)}
                         className="accent-amber-600"
                     />
-                    ⚠️ Forcer même si groupe &lt; {MIN_ARTICLES_PAR_GROUPE}
+                    <AvecIcone Icone={AlertTriangle}>Forcer même si groupe &lt; {MIN_ARTICLES_PAR_GROUPE}</AvecIcone>
                 </label>
                 <button
                     onClick={() => handleLancerLiquidation(null)}
@@ -404,14 +405,14 @@ export default function Liquidation() {
                                                     className="bg-sky-50 text-sky-700 border border-sky-200 px-2 py-1 rounded-lg text-[9px] font-bold uppercase tracking-tighter hover:bg-sky-100 transition-all whitespace-nowrap"
                                                     title="Retirer de la Liquidation -- vêtement hors saison, redeviendra vendable normalement"
                                                 >
-                                                    ❄️ Garder pour la saison
+                                                    <AvecIcone Icone={Snowflake}>Garder pour la saison</AvecIcone>
                                                 </button>
                                                 <button
                                                     onClick={() => handleToggleMarquerPersonnel(a.id, true)}
                                                     className="bg-violet-50 text-violet-700 border border-violet-200 px-2 py-1 rounded-lg text-[9px] font-bold uppercase tracking-tighter hover:bg-violet-100 transition-all whitespace-nowrap"
                                                     title="Article personnel ou vendu pour un ami -- pas un vrai achat, retiré de la Liquidation"
                                                 >
-                                                    🏷️ Perso/ami
+                                                    <AvecIcone Icone={Tag}>Perso/ami</AvecIcone>
                                                 </button>
                                             </div>
                                         </div>
@@ -446,7 +447,7 @@ export default function Liquidation() {
                                     <p className="font-bold text-sm text-slate-800 truncate">{a.nom}</p>
                                     <p className="text-xs text-slate-400">
                                         {a.dressing} · {a.jours_en_vente}j en vente ·{' '}
-                                        {a.exclu_liquidation_saisonnier ? '❄️ Gardé pour la saison' : '🏷️ Perso/ami'}
+                                        {a.exclu_liquidation_saisonnier ? <AvecIcone Icone={Snowflake}>Gardé pour la saison</AvecIcone> : <AvecIcone Icone={Tag}>Perso/ami</AvecIcone>}
                                     </p>
                                 </div>
                                 <button
@@ -456,7 +457,7 @@ export default function Liquidation() {
                                     className="bg-slate-100 text-slate-500 border border-slate-200 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-tighter hover:bg-slate-200 transition-all whitespace-nowrap"
                                     title="Réintégrer cet article dans la liste Liquidation"
                                 >
-                                    ↩️ Réintégrer
+                                    <AvecIcone Icone={Undo2}>Réintégrer</AvecIcone>
                                 </button>
                             </div>
                         ))}

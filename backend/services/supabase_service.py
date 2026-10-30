@@ -803,7 +803,8 @@ class SupabaseService:
                 "quand": quand.isoformat() if quand else None,
                 "en_retard": bool(quand and quand < jour),
                 "libelle": libelle,
-                "detail": detail,
+                # Toute action proposée affiche sa raison (décision du 30/10/2026)
+                "detail": detail or (None if type_ == "aucune" else "Raison non disponible."),
                 "automatique": automatique,
                 # action automatique qui ne partira pas tant que la routine est coupée
                 "auto_bloquee": raison_auto_off if automatique and not auto_baisse else None,
@@ -811,6 +812,20 @@ class SupabaseService:
 
         def euros(x):
             return f"{x:.2f}".replace(".", ",").replace(",00", "") + " €"
+
+        def pourquoi_republier():
+            raisons = []
+            if a["is_invisible"]:
+                raisons.append(f"Invisible : {a['v_reel']} vue(s) réelle(s) après {a['jours_en_ligne']} j en ligne "
+                               "(zone morte Vinted ou aucune statistique).")
+            if a["needs_time_republish"]:
+                raisons.append(f"{a['jours_en_ligne']} j en ligne : rythme de {a['delai_max']} j atteint.")
+            return " ".join(raisons) or (f"Mauvaise performance : score de {a['score']} % "
+                                         f"après {a['jours_en_ligne']} j en ligne.")
+
+        def pourquoi_ce_prix():
+            raison = a.get("pepite_taux_raison") or a.get("baisse_prix_raison")
+            return f"{raison.rstrip('.')}." if raison else ""
 
         prix = a["prix_vente"]
         date_republication = jour + timedelta(days=a["jours_restants"])
@@ -824,7 +839,8 @@ class SupabaseService:
         if a["is_vendu"]:
             return action("aucune", None, "Vendu")
         if a.get("erreur_clemz"):
-            return action("manuel", jour, "Vérifier l'annonce (erreur Clemz)", a.get("erreur_clemz_reason"))
+            return action("manuel", jour, "Vérifier l'annonce (erreur Clemz)",
+                          a.get("erreur_clemz_reason") or "Clemz a signalé une erreur sur cette annonce, sans détail enregistré.")
         if a.get("sortie"):
             return action("manuel", jour, "Sortie : retirer, vendre en lot ou donner", a.get("baisse_prix_raison"))
         if a.get("fin_de_vie"):
@@ -836,17 +852,22 @@ class SupabaseService:
             plan = "déstockage" if a.get("strategie") == "destockage" else "fin de vie"
             return action("republication", date_republication, f"Republication ({plan})", a.get("baisse_prix_raison"))
         if a["is_very_old"]:
-            return action("manuel", jour, "Décider : vendre à perte ?", a["action_label"])
+            return action("manuel", jour, "Décider : vendre à perte ?",
+                          f"{a['jours_en_vente']} j en vente, seuil de sortie de {self.DELAI_SORTIE_FINALE} j atteint : "
+                          f"descendre sous le prix d'achat ({euros(a['prix_achat'])}) se décide à la main.")
         if a["liquidation_needs_action"] and not a.get("exclu_liquidation_saisonnier"):
             return action("manuel", jour, f"Liquidation : prix cible {euros(a['liquidation_prix_cible'])}",
-                          f"Phase {a['liquidation_phase']} — depuis la page Liquidation.")
+                          f"{a['jours_en_vente']} j en vente sans acheteur (liquidation dès {self.DELAI_LIQUIDATION} j), "
+                          f"phase {a['liquidation_phase']} — depuis la page Liquidation.")
 
         # Republication due (fraîcheur dépassée, shadow-ban, mauvaise perf forcée)
         if a["needs_republish_action"] and date_republication <= jour:
             if a.get("prix_republication"):
                 return action("republication_baisse", jour, f"Republier à {euros(a['prix_republication'])}",
-                              f"{euros(prix)} → {euros(a['prix_republication'])} à la republication (validation manuelle).")
-            return action("republication", jour, "Republier au même prix", "Validation manuelle.")
+                              " ".join(filter(None, [pourquoi_republier(), pourquoi_ce_prix(),
+                                                     f"{euros(prix)} → {euros(a['prix_republication'])} à la republication (validation manuelle)."])))
+            return action("republication", jour, "Republier au même prix",
+                          " ".join(filter(None, [pourquoi_republier(), pourquoi_ce_prix(), "Validation manuelle."])))
 
         if a.get("prix_manuel"):
             return action("manuel", jour, "Prix changé à la main",
@@ -879,15 +900,18 @@ class SupabaseService:
         if a["is_low_perf"] and a["baisse_prix_taux"] is not None and not a["is_done"]:
             nouveau = max(round(prix * (1 - a["baisse_prix_taux"] / 100), 2), a["prix_plancher"])
             return action("baisse", jour, f"Baisse −{a['baisse_prix_taux']} % → {euros(nouveau)}",
-                          a.get("baisse_prix_raison"), automatique=True)
+                          a.get("baisse_prix_raison") or (f"Mauvaise performance : score de {a['score']} % "
+                                                          f"(seuil {self.SEUIL_LOW_PERF} %)."), automatique=True)
         if derniere_baisse and a["action_label"].startswith("⏳"):
             quand = derniere_baisse.date() + timedelta(days=self.COOLDOWN_BAISSE_JOURS)
-            return action("attente", quand, "Nouvelle baisse possible", a.get("baisse_prix_raison"))
+            return action("attente", quand, "Nouvelle baisse possible",
+                          a.get("baisse_prix_raison") or f"Baisse récente : {self.COOLDOWN_BAISSE_JOURS} jours laissés au marché pour réagir.")
         if a["is_stuck"] and a.get("pepite_taux_suggere"):
             return action("manuel", jour, f"Pépite : baisse −{a['pepite_taux_suggere']} % suggérée",
-                          a.get("pepite_taux_raison"))
+                          a.get("pepite_taux_raison") or f"Pépite : score de {a['score']} % avec {a['v_reel']} vues réelles.")
 
-        detail = "Baisse déjà appliquée : rien d'ici la republication." if a["is_done"] else None
+        detail = ("Baisse déjà appliquée : rien d'ici la republication." if a["is_done"]
+                  else f"{a['jours_en_ligne']} j en ligne : republication prévue au rythme de {a['delai_max']} j.")
         return action("republication", date_republication, "Bilan et republication", detail)
 
     # ------------------------------------------------------------------

@@ -1,6 +1,0 @@
-2026/10/23-07:44:49.148 638 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\EdgeCoupons/coupons_data.db/MANIFEST-000001
-2026/10/23-07:44:49.149 638 Recovering log #39
-2026/10/23-07:44:49.150 638 Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\EdgeCoupons/coupons_data.db/000039.log 
-2026/10/23-07:44:49.323 1f74 Level-0 table #43: started
-2026/10/23-07:44:49.327 1f74 Level-0 table #43: 683376 bytes OK
-2026/10/23-07:44:49.330 1f74 Delete type=0 #39

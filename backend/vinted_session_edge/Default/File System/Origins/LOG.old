@@ -1,3 +1,2 @@
-2026/10/26-14:17:21.289 af5c Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\File System\Origins/MANIFEST-000001
-2026/10/26-14:17:21.289 af5c Recovering log #3
-2026/10/26-14:17:21.290 af5c Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\File System\Origins/000003.log 
+2026/10/30-16:35:09.481 4574 Archiving C:\Users\Hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\File System\Origins/MANIFEST-000001: OK
+2026/10/30-16:35:09.488 4574 **** Repaired leveldb C:\Users\Hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\File System\Origins; recovered 0 files; 0 bytes. Some data may have been lost. ****

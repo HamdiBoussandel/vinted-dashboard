@@ -1,6 +1,8 @@
 // pages/TaskHistory.jsx
 import React, { useState, useEffect } from 'react';
-import { CheckCircle, XCircle, AlertCircle, Clock, RefreshCw, TrendingDown, Loader, ClipboardList, ScanLine, FileText, Flame, Trash2 } from 'lucide-react';
+import { CheckCircle, XCircle, AlertCircle, Clock, Eye, Heart, RefreshCw, Shirt, TrendingDown, Loader, ClipboardList, ScanLine, FileText, Flame, Trash2 } from 'lucide-react';
+import { AvecIcone, TexteIcone } from '../components/Icones';
+import { retirerEmojis } from '../utils/emojis';
 
 const STATUS_CONFIG = {
     success: {
@@ -142,7 +144,7 @@ function TaskResultRow({ result }) {
                     ? <CheckCircle size={12} className="text-emerald-500 shrink-0" />
                     : <XCircle size={12} className="text-red-500 shrink-0" />
                 }
-                <span className="font-medium line-clamp-1">{result.nom || result.id}</span>
+                <span className="font-medium line-clamp-1"><TexteIcone texte={result.nom || result.id} /></span>
                 {dressingLabel && (
                     <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 shrink-0">
                         {dressingLabel}
@@ -166,10 +168,10 @@ function TaskResultRow({ result }) {
                 // visuellement les lignes voisines, faute de largeur plafonnée --
                 // "title" garde le texte complet accessible au survol.
                 <span
-                    title={result.reason}
+                    title={retirerEmojis(result.reason)}
                     className={`text-[10px] font-medium ml-4 max-w-[45%] truncate ${isSuccess ? 'text-slate-400' : 'text-red-500'}`}
                 >
-                    {result.reason}
+                    <TexteIcone texte={result.reason} />
                 </span>
             )}
         </div>
@@ -199,7 +201,7 @@ function SubStatusChip({ label, sub }) {
                 <span className={cfg.text}>{cfg.label}</span>
             </div>
             {sub?.reason && (
-                <span className="text-[10px] text-red-500 font-medium ml-2">{sub.reason}</span>
+                <span className="text-[10px] text-red-500 font-medium ml-2"><TexteIcone texte={sub.reason} /></span>
             )}
         </div>
     );
@@ -208,10 +210,10 @@ function SubStatusChip({ label, sub }) {
 function PartageResultRow({ result }) {
     return (
         <div className="px-3 py-2 rounded-lg text-xs border bg-white border-slate-100 text-slate-600">
-            <div className="font-bold mb-1.5">👗 {result.account}</div>
+            <div className="font-bold mb-1.5"><AvecIcone Icone={Shirt}>{result.account}</AvecIcone></div>
             <div className="flex flex-col gap-1">
-                <SubStatusChip label="👀 Vues" sub={result.vues} />
-                <SubStatusChip label="💞 Favoris" sub={result.favoris} />
+                <SubStatusChip label={<AvecIcone Icone={Eye}>Vues</AvecIcone>} sub={result.vues} />
+                <SubStatusChip label={<AvecIcone Icone={Heart}>Favoris</AvecIcone>} sub={result.favoris} />
             </div>
         </div>
     );
@@ -275,7 +277,7 @@ function TaskCard({ task }) {
                             key={d}
                             className="flex items-center gap-1 text-[10px] font-black uppercase px-2 py-1 rounded-md border bg-slate-100 text-slate-600 border-slate-200"
                         >
-                            👗 {d}
+                            <AvecIcone Icone={Shirt}>{d}</AvecIcone>
                         </span>
                     ))}
 

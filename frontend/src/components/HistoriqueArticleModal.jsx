@@ -1,22 +1,25 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { X, Loader } from 'lucide-react';
+import {
+    Banknote, Circle, Compass, Loader, OctagonX, Package, Pencil, Recycle, SkipForward, Sparkles, Trash2, TrendingDown, Undo2, X, XCircle,
+} from 'lucide-react';
+import { AvecIcone, TexteIcone } from './Icones';
 
 const API_URL = 'http://localhost:8000/api';
 
 // Journal par article (28/10/2026, inspiré du "Journal" de Bleam) : lit la
 // table article_evenements via GET /api/articles/{id}/journal.
 const TYPES = {
-    publication: { icone: '🆕', libelle: 'Publication', couleur: 'bg-blue-50 text-blue-700 border-blue-200' },
-    baisse: { icone: '📉', libelle: 'Baisse de prix', couleur: 'bg-rose-50 text-rose-700 border-rose-200' },
-    republication: { icone: '♻️', libelle: 'Republication', couleur: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-    suppression: { icone: '🗑️', libelle: 'Suppression', couleur: 'bg-slate-100 text-slate-700 border-slate-200' },
-    vente: { icone: '💶', libelle: 'Vente', couleur: 'bg-amber-50 text-amber-700 border-amber-200' },
-    erreur_clemz: { icone: '🛑', libelle: 'Erreur Clemz', couleur: 'bg-red-100 text-red-700 border-red-300' },
-    echec: { icone: '❌', libelle: 'Échec', couleur: 'bg-red-50 text-red-600 border-red-200' },
-    ecarte: { icone: '⏭️', libelle: 'Écarté', couleur: 'bg-slate-50 text-slate-500 border-slate-200' },
-    prix_change: { icone: '✏️', libelle: 'Prix changé à la main', couleur: 'bg-violet-50 text-violet-700 border-violet-200' },
-    reprise_strategie: { icone: '↩️', libelle: 'Remis sous stratégie', couleur: 'bg-teal-50 text-teal-700 border-teal-200' },
-    strategie: { icone: '🧭', libelle: 'Changement de stratégie', couleur: 'bg-sky-50 text-sky-700 border-sky-200' },
+    publication: { Icone: Sparkles, libelle: 'Publication', couleur: 'bg-blue-50 text-blue-700 border-blue-200' },
+    baisse: { Icone: TrendingDown, libelle: 'Baisse de prix', couleur: 'bg-rose-50 text-rose-700 border-rose-200' },
+    republication: { Icone: Recycle, libelle: 'Republication', couleur: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+    suppression: { Icone: Trash2, libelle: 'Suppression', couleur: 'bg-slate-100 text-slate-700 border-slate-200' },
+    vente: { Icone: Banknote, libelle: 'Vente', couleur: 'bg-amber-50 text-amber-700 border-amber-200' },
+    erreur_clemz: { Icone: OctagonX, libelle: 'Erreur Clemz', couleur: 'bg-red-100 text-red-700 border-red-300' },
+    echec: { Icone: XCircle, libelle: 'Échec', couleur: 'bg-red-50 text-red-600 border-red-200' },
+    ecarte: { Icone: SkipForward, libelle: 'Écarté', couleur: 'bg-slate-50 text-slate-500 border-slate-200' },
+    prix_change: { Icone: Pencil, libelle: 'Prix changé à la main', couleur: 'bg-violet-50 text-violet-700 border-violet-200' },
+    reprise_strategie: { Icone: Undo2, libelle: 'Remis sous stratégie', couleur: 'bg-teal-50 text-teal-700 border-teal-200' },
+    strategie: { Icone: Compass, libelle: 'Changement de stratégie', couleur: 'bg-sky-50 text-sky-700 border-sky-200' },
 };
 
 const ORIGINES = {
@@ -43,7 +46,7 @@ const STRATEGIES = [
         description: "Parcours par défaut : prix boucher les 15 premiers jours, republication tous les 7 jours, fin de vie après 3 republications sans vente.",
     },
     {
-        id: 'destockage', libelle: '📦 Déstockage',
+        id: 'destockage', libelle: <AvecIcone Icone={Package}>Déstockage</AvecIcone>,
         description: "Pour qu'il parte vite : republication tous les 7 jours avec −10 % à chaque fois, jusqu'au prix d'achat (ou 50 % du prix de départ, 3 € minimum), puis sortie après 3 republications au plancher.",
     },
 ];
@@ -164,7 +167,7 @@ export default function HistoriqueArticleModal({ article, onClose }) {
                     {prixManuel && (
                         <div className="mb-4 p-3 rounded-xl bg-violet-50 border border-violet-200 flex items-center justify-between gap-3">
                             <div>
-                                <p className="text-xs font-black text-violet-800">✏️ Prix changé à la main</p>
+                                <p className="text-xs font-black text-violet-800"><AvecIcone Icone={Pencil}>Prix changé à la main</AvecIcone></p>
                                 <p className="text-[11px] text-violet-700">
                                     {article.prix_manuel_detail || 'Baisses automatiques suspendues pour cet article.'}
                                 </p>
@@ -217,14 +220,14 @@ export default function HistoriqueArticleModal({ article, onClose }) {
                             ) : (
                                 <ol className="relative border-l-2 border-slate-100 ml-2 space-y-3">
                                     {evenements.map((e) => {
-                                        const t = TYPES[e.type] || { icone: '•', libelle: e.type, couleur: 'bg-slate-50 text-slate-600 border-slate-200' };
+                                        const t = TYPES[e.type] || { Icone: Circle, libelle: e.type, couleur: 'bg-slate-50 text-slate-600 border-slate-200' };
                                         return (
                                             <li key={e.id} className="ml-4">
                                                 <span className="absolute -left-[9px] mt-1.5 h-4 w-4 rounded-full bg-white border-2 border-slate-200" />
                                                 <div className="flex flex-wrap items-center gap-2">
                                                     <span className="text-[11px] font-mono text-slate-400">{dateHeure(e.survenu_le)}</span>
                                                     <span className={`px-2 py-0.5 rounded-md border text-[10px] font-black uppercase tracking-wide ${t.couleur}`}>
-                                                        {t.icone} {t.libelle}
+                                                        <AvecIcone Icone={t.Icone}>{t.libelle}</AvecIcone>
                                                     </span>
                                                     {e.origine && (
                                                         <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-1.5 rounded">
@@ -232,7 +235,7 @@ export default function HistoriqueArticleModal({ article, onClose }) {
                                                         </span>
                                                     )}
                                                 </div>
-                                                {e.detail && <p className="text-xs text-slate-600 mt-0.5">{e.detail}</p>}
+                                                {e.detail && <p className="text-xs text-slate-600 mt-0.5"><TexteIcone texte={e.detail} /></p>}
                                             </li>
                                         );
                                     })}

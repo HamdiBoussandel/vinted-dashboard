@@ -1,5 +1,6 @@
 import React from 'react';
-import { X, Trash2, RefreshCw } from 'lucide-react';
+import { X, Trash2, RefreshCw, TrendingDown } from 'lucide-react';
+import { AvecIcone } from './Icones';
 
 export default function RepublishConfirmModal({
     items,
@@ -47,7 +48,7 @@ export default function RepublishConfirmModal({
                                     {afficherPrix && (
                                         a.prix_republication ? (
                                             <p className="text-xs font-bold text-orange-600">
-                                                📉 {a.prix_vente} € → {a.prix_republication} € à la republication
+                                                <AvecIcone Icone={TrendingDown}>{a.prix_vente} € → {a.prix_republication} € à la republication</AvecIcone>
                                             </p>
                                         ) : (
                                             <p className="text-xs text-slate-400">Prix inchangé ({a.prix_vente} €)</p>

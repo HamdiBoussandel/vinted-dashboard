@@ -10,7 +10,8 @@ import RepublishConfirmModal from '../components/RepublishConfirmModal';
 import PepitesBaisseConfirmModal from '../components/PepitesBaisseConfirmModal';
 import ManualBaisseCart from '../components/ManualBaisseCart'; // NOUVEAU
 import RoutineTunnel from '../components/RoutineTunnel';
-import { Sparkles, Search, XCircle, PlayCircle, Heart } from 'lucide-react';
+import { Cloud, FilePen, FlaskConical, FolderOpen, Gem, Ghost, Leaf, Recycle, RefreshCw, ShieldCheck, Sparkles, Search, Trash2, TrendingDown, XCircle, PlayCircle, Heart } from 'lucide-react';
+import { AvecIcone } from '../components/Icones';
 
 // Variable persistante qui survit au changement d'onglet mais pas au F5
 let isInitialLoad = true;
@@ -712,29 +713,29 @@ export default function Dashboard() {
     };
 
     const segments = [
-        { id: 'Tous', label: `📂 Tous (${inventory.filter(a => !a.is_vendu).length})`, count: inventory.filter(a => !a.is_vendu).length },
+        { id: 'Tous', label: <AvecIcone Icone={FolderOpen}>Tous ({inventory.filter(a => !a.is_vendu).length})</AvecIcone>, count: inventory.filter(a => !a.is_vendu).length },
         // Regroupe TOUT ce qui nécessite une baisse de prix -- Mauvaise Performance
         // pure, et les articles qui doivent aussi être republiés/partagés (routine :
         // baisse de prix systématique avant republication/partage vues-favoris).
         // Même critère qu'avant (is_low_perf), seul le libellé change -- la
         // séparation visuelle en deux sous-sections se fait à l'affichage, pas ici.
-        { id: 'Baisse de prix', label: `📉 Baisse de prix (${inventory.filter(a => a.is_low_perf && !a.is_done && !a.is_vendu).length})`, count: inventory.filter(a => a.is_low_perf && !a.is_done && !a.is_vendu).length },
+        { id: 'Baisse de prix', label: <AvecIcone Icone={TrendingDown}>Baisse de prix ({inventory.filter(a => a.is_low_perf && !a.is_done && !a.is_vendu).length})</AvecIcone>, count: inventory.filter(a => a.is_low_perf && !a.is_done && !a.is_vendu).length },
         {
             id: 'Republications',
-            label: `♻️ Republish (${articlesToRepublish.length})`,
+            label: <AvecIcone Icone={Recycle}>Republish ({articlesToRepublish.length})</AvecIcone>,
             count: inventory.filter(a => a.needs_republish_action && !a.is_vendu).length
         },
-        { id: 'Pépites', label: `💎 Pépites (${articlesPepites.length})`, count: articlesPepites.length },
+        { id: 'Pépites', label: <AvecIcone Icone={Gem}>Pépites ({articlesPepites.length})</AvecIcone>, count: articlesPepites.length },
         // "À auditer" -> plan "Fin de vie" (28/10/2026) : même population (3 republications sans vente ou plus)
-        { id: 'Audit', label: `🍂 Fin de vie (${articlesAudit.length})`, count: articlesAudit.length }
+        { id: 'Audit', label: <AvecIcone Icone={Leaf}>Fin de vie ({articlesAudit.length})</AvecIcone>, count: articlesAudit.length }
     ];
 
     // Étapes de la Routine du jour -- même 3 listes que les onglets ci-dessus,
     // aucune logique de filtrage dupliquée.
     const etapesRoutine = [
-        { id: 'Baisse de prix', titre: '📉 Baisses de prix à faire', articles: articlesToBaisse, emptyLabel: 'Aucune baisse de prix en attente 🎉' },
-        { id: 'Pépites', titre: '💎 Pépites à analyser', articles: articlesPepites, emptyLabel: "Aucune pépite à analyser pour l'instant." },
-        { id: 'Audit', titre: '🍂 Articles en fin de vie', articles: articlesAudit, emptyLabel: 'Aucun article en fin de vie.' },
+        { id: 'Baisse de prix', titre: <AvecIcone Icone={TrendingDown}>Baisses de prix à faire</AvecIcone>, articles: articlesToBaisse, emptyLabel: 'Aucune baisse de prix en attente !' },
+        { id: 'Pépites', titre: <AvecIcone Icone={Gem}>Pépites à analyser</AvecIcone>, articles: articlesPepites, emptyLabel: "Aucune pépite à analyser pour l'instant." },
+        { id: 'Audit', titre: <AvecIcone Icone={Leaf}>Articles en fin de vie</AvecIcone>, articles: articlesAudit, emptyLabel: 'Aucun article en fin de vie.' },
     ];
 
     // Carte produit réutilisée PARTOUT (liste normale, split Baisse de prix,
@@ -880,13 +881,13 @@ export default function Dashboard() {
 
                 {/* 🧪 ZONE DE TEST — déclenchement immédiat, hors routine automatique */}
                 <div className="flex items-center gap-3 mt-3 mb-3 p-3 bg-slate-50 border border-dashed border-slate-300 rounded-xl">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">🧪 Test immédiat :</span>
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider"><AvecIcone Icone={FlaskConical}>Test immédiat :</AvecIcone></span>
                     <button
                         onClick={handleOpenRepublishModal}
                         disabled={isForcingRepublish || articlesToRepublish.length === 0}
                         className="px-4 py-2 bg-blue-500 text-white rounded-lg text-xs font-black uppercase disabled:opacity-40"
                     >
-                        {isForcingRepublish ? '...' : `♻️ Forcer republication (${articlesToRepublish.length})`}
+                        {isForcingRepublish ? '...' : <AvecIcone Icone={Recycle}>Forcer republication ({articlesToRepublish.length})</AvecIcone>}
                     </button>
                     {['Dressing 1', 'Dressing 2'].map(dressing => {
                         const nb = articlesToRepublish.filter(a => a.dressing === dressing).length;
@@ -897,7 +898,7 @@ export default function Dashboard() {
                                 ? 'bg-amber-50 border-amber-300 text-amber-800'
                                 : 'bg-indigo-50 border-indigo-200 text-indigo-700'}`}>
                                 <span>
-                                    📝 {dressing.replace('Dressing ', 'D')} {s.index || 0}/{s.total || 0}
+                                    <AvecIcone Icone={FilePen}>{dressing.replace('Dressing ', 'D')} {s.index || 0}/{s.total || 0}</AvecIcone>
                                     {s.statut === 'attente_validation' ? ' — à toi de publier' : ` — ${s.message || 'en cours'}`}
                                 </span>
                                 {s.statut === 'pause' && (
@@ -923,7 +924,7 @@ export default function Dashboard() {
                                     title={s?.message ? `Dernière session : ${s.message}` : "Clemz remplit chaque annonce dans le formulaire Vinted, tu la publies, le script passe à la suivante."}
                                     className="px-4 py-2 bg-indigo-500 text-white rounded-lg text-xs font-black uppercase disabled:opacity-40"
                                 >
-                                    📝 Republication assistée {dressing.replace('Dressing ', 'D')} ({nb})
+                                    <AvecIcone Icone={FilePen}>Republication assistée {dressing.replace('Dressing ', 'D')} ({nb})</AvecIcone>
                                 </button>
                                 {/* Remplissage SEUL de la liste à traiter de Clemz, par une source (19/10/2026) */}
                                 <button
@@ -932,7 +933,7 @@ export default function Dashboard() {
                                     title="Remplit seulement la liste « à traiter » de Clemz par le Smart Dressing (comme la republication classique). Rien n'est supprimé ni publié."
                                     className="px-2 py-2 bg-white border border-indigo-300 text-indigo-600 rounded-lg text-[10px] font-black uppercase disabled:opacity-40"
                                 >
-                                    🔍 Smart Dressing
+                                    <AvecIcone Icone={Search}>Smart Dressing</AvecIcone>
                                 </button>
                                 <button
                                     onClick={() => handleOuvrirAutoCompletion(dressing, 'clemz_app')}
@@ -940,7 +941,7 @@ export default function Dashboard() {
                                     title="Remplit seulement la liste « à traiter » de Clemz depuis les sauvegardes clemz.app (utilisée par l'auto-complétion). Rien n'est supprimé ni publié."
                                     className="px-2 py-2 bg-white border border-indigo-300 text-indigo-600 rounded-lg text-[10px] font-black uppercase disabled:opacity-40"
                                 >
-                                    ☁️ clemz.app
+                                    <AvecIcone Icone={Cloud}>clemz.app</AvecIcone>
                                 </button>
                                 <button
                                     onClick={() => handleOuvrirAutoCompletion(dressing, 'suppression')}
@@ -948,7 +949,7 @@ export default function Dashboard() {
                                     title="Supprime DÉFINITIVEMENT ces annonces de Vinted : liste remplie par le Smart Dressing, sauvegarde sur clemz.app, puis bouton Supprimer de Clemz. Aucune republication ensuite."
                                     className="px-2 py-2 bg-white border border-rose-300 text-rose-600 rounded-lg text-[10px] font-black uppercase disabled:opacity-40"
                                 >
-                                    🗑️ Supprimer
+                                    <AvecIcone Icone={Trash2}>Supprimer</AvecIcone>
                                 </button>
                                 <button
                                     onClick={() => handleOuvrirAutoCompletion(dressing, 'validation_manuelle')}
@@ -956,7 +957,7 @@ export default function Dashboard() {
                                     title="Mode « Validation manuelle » de Clemz : liste par le Smart Dressing, rythme très lent (~4 min/article), Go Clemz ; le script clique « Ajouter » à chaque formulaire rempli (pause 1-3 s avant), puis enregistre dans Supabase."
                                     className="px-2 py-2 bg-white border border-emerald-300 text-emerald-700 rounded-lg text-[10px] font-black uppercase disabled:opacity-40"
                                 >
-                                    🛡️ Valid. manuelle
+                                    <AvecIcone Icone={ShieldCheck}>Valid. manuelle</AvecIcone>
                                 </button>
                             </div>
                         );
@@ -980,7 +981,7 @@ export default function Dashboard() {
                         disabled={isForcingBaisse || articlesToBaisse.length === 0}
                         className="px-4 py-2 bg-orange-500 text-white rounded-lg text-xs font-black uppercase disabled:opacity-40"
                     >
-                        {isForcingBaisse ? '...' : `📉 Forcer baisse de prix (${articlesToBaisse.length})`}
+                        {isForcingBaisse ? '...' : <AvecIcone Icone={TrendingDown}>Forcer baisse de prix ({articlesToBaisse.length})</AvecIcone>}
                     </button>
                     {activeSegment === 'Pépites' && (
                         <button
@@ -989,7 +990,7 @@ export default function Dashboard() {
                             title="Applique à chaque pépite son propre pourcentage suggéré (tranche de prix), pas un taux unique pour tout le lot"
                             className="px-4 py-2 bg-cyan-600 text-white rounded-lg text-xs font-black uppercase disabled:opacity-40"
                         >
-                            {isForcingPepites ? '...' : `💎 Forcer baisse (pépites) (${articlesPepites.length})`}
+                            {isForcingPepites ? '...' : <AvecIcone Icone={Gem}>Forcer baisse (pépites) ({articlesPepites.length})</AvecIcone>}
                         </button>
                     )}
                 </div>
@@ -1014,9 +1015,9 @@ export default function Dashboard() {
                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 mr-4">Filtrer par urgence :</span>
                     {[
                         { id: 'Tous', label: 'Tout', color: 'bg-slate-200 text-slate-700' },
-                        { id: 'Invisible', label: '👻 Invisible', color: 'bg-purple-100 text-purple-700 border-purple-200' },
-                        { id: 'Baisse', label: '📉 Republication + Baisse', color: 'bg-orange-100 text-orange-700 border-orange-200' },
-                        { id: 'Standard', label: '♻️ Republication Simple', color: 'bg-blue-100 text-blue-700 border-blue-200' },
+                        { id: 'Invisible', label: <AvecIcone Icone={Ghost}>Invisible</AvecIcone>, color: 'bg-purple-100 text-purple-700 border-purple-200' },
+                        { id: 'Baisse', label: <AvecIcone Icone={TrendingDown}>Republication + Baisse</AvecIcone>, color: 'bg-orange-100 text-orange-700 border-orange-200' },
+                        { id: 'Standard', label: <AvecIcone Icone={Recycle}>Republication Simple</AvecIcone>, color: 'bg-blue-100 text-blue-700 border-blue-200' },
                     ].map(tag => (
                         <button
                             key={tag.id}
@@ -1105,7 +1106,7 @@ export default function Dashboard() {
                         <>
                             <div className="flex items-center gap-3 mb-3">
                                 <span className="text-[11px] font-black text-slate-500 uppercase tracking-wide whitespace-nowrap">
-                                    📉 Mauvaise Performance ({mauvaisePerf.length})
+                                    <AvecIcone Icone={TrendingDown}>Mauvaise Performance ({mauvaisePerf.length})</AvecIcone>
                                 </span>
                                 <div className="flex-1 h-px bg-slate-200" />
                             </div>
@@ -1115,7 +1116,7 @@ export default function Dashboard() {
 
                             <div className="flex items-center gap-3 mb-3 mt-6">
                                 <span className="text-[11px] font-black text-slate-500 uppercase tracking-wide whitespace-nowrap">
-                                    🔄 Avant Republication ({avantRepublication.length})
+                                    <AvecIcone Icone={RefreshCw}>Avant Republication ({avantRepublication.length})</AvecIcone>
                                 </span>
                                 <div className="flex-1 h-px bg-slate-200" />
                             </div>
@@ -1147,12 +1148,12 @@ export default function Dashboard() {
             {autoCompletionModal && (
                 <RepublishConfirmModal
                     titre={autoCompletionModal.remplissage === 'suppression'
-                        ? `🗑️ Supprimer DÉFINITIVEMENT de Vinted — ${autoCompletionModal.dressing}`
+                        ? <AvecIcone Icone={Trash2}>Supprimer DÉFINITIVEMENT de Vinted — {autoCompletionModal.dressing}</AvecIcone>
                         : autoCompletionModal.remplissage === 'validation_manuelle'
-                        ? `🛡️ Republication en validation manuelle Clemz — ${autoCompletionModal.dressing}`
+                        ? <AvecIcone Icone={ShieldCheck}>Republication en validation manuelle Clemz — {autoCompletionModal.dressing}</AvecIcone>
                         : autoCompletionModal.remplissage
                         ? `Remplir la liste à traiter (${LIBELLES_REMPLISSAGE[autoCompletionModal.remplissage]}) — ${autoCompletionModal.dressing}`
-                        : `📝 Republication assistée — ${autoCompletionModal.dressing}`}
+                        : <AvecIcone Icone={FilePen}>Republication assistée — {autoCompletionModal.dressing}</AvecIcone>}
                     items={autoCompletionModal.items}
                     afficherPrix={autoCompletionModal.remplissage === 'validation_manuelle'}
                     onRemove={(id) => setAutoCompletionModal(prev => ({

@@ -1,3 +1,2 @@
-2026/10/26-14:17:20.843 6548 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\Local Storage\leveldb/MANIFEST-000001
-2026/10/26-14:17:20.843 6548 Recovering log #42
-2026/10/26-14:17:20.845 6548 Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\Local Storage\leveldb/000042.log 
+2026/10/30-16:35:00.709 3638 Creating DB C:\Users\Hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\Local Storage\leveldb since it was missing.
+2026/10/30-16:35:00.720 3638 Reusing MANIFEST C:\Users\Hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\Local Storage\leveldb/MANIFEST-000001

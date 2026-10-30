@@ -1,4 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
+import { Package } from 'lucide-react';
+import { AvecIcone } from './components/Icones';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import Liquidation from './pages/Liquidation';
@@ -14,7 +16,7 @@ import Ventes from './pages/Ventes';
 
 
 // Pages temporaires pour le test
-const Inventory = () => <div className="p-10"><h2 className="text-2xl font-bold">📦 Inventaire Complet</h2></div>;
+const Inventory = () => <div className="p-10"><h2 className="text-2xl font-bold"><AvecIcone Icone={Package}>Inventaire Complet</AvecIcone></h2></div>;
 
 function App() {
   return (

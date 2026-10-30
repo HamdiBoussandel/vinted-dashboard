@@ -20,9 +20,21 @@ REM arriere-plan dans CETTE console (start /b, -u = sortie non bufferisee),
 REM toujours redirige vers logs\demarrage.log, et surveiller_backend.ps1
 REM affiche ce fichier en direct + l'etat EN LIGNE/HORS LIGNE dans le titre
 REM de la fenetre. Fermer la fenetre arrete le serveur, comme avant.
+REM
+REM Relance automatique apres un crash de Python : sans cette boucle, le serveur
+REM restait mort jusqu'a la prochaine connexion Windows. Jamais de relance si le
+REM port 8000 est deja pris -- uvicorn execute le startup (rattrapage de routine)
+REM AVANT d'echouer sur le port, donc une 2e instance agirait sur les profils.
 
 cd /d "%~dp0"
 if not exist "logs" mkdir "logs"
 title VintedPro Backend - demarrage...
-start "" /b "%~dp0venv\Scripts\python.exe" -u "%~dp0run.py" > "%~dp0logs\demarrage.log" 2>&1
-powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0surveiller_backend.ps1" -LogPath "%~dp0logs\demarrage.log"
+start "" /b powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0surveiller_backend.ps1" -LogPath "%~dp0logs\demarrage.log"
+
+:boucle
+netstat -ano | findstr /r /c:":8000 .*LISTENING" >nul
+if not errorlevel 1 goto attente
+"%~dp0venv\Scripts\python.exe" -u "%~dp0run.py" > "%~dp0logs\demarrage.log" 2>&1
+:attente
+timeout /t 30 /nobreak >nul
+goto boucle

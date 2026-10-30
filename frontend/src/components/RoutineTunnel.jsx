@@ -17,7 +17,7 @@ export default function RoutineTunnel({ etapes, renderCard, onClose }) {
                 <PartyPopper className="text-brand-500 mb-4" size={48} />
                 <h2 className="text-xl font-black text-slate-800 mb-2">Routine du jour terminée !</h2>
                 <p className="text-sm text-slate-500 mb-8 max-w-md">
-                    Tu as passé en revue les baisses de prix, les pépites et l'audit du jour. Le stock est à jour, bravo 🎉
+                    Tu as passé en revue les baisses de prix, les pépites et l'audit du jour. Le stock est à jour, bravo !
                 </p>
                 <button
                     onClick={onClose}

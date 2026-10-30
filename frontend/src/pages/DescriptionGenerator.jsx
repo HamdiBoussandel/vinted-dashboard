@@ -159,7 +159,7 @@ export default function DescriptionGenerator() {
                                                         <AlertTriangle size={16} className="text-amber-600" />
                                                         <span className="text-[10px] font-black uppercase tracking-widest">Alerte Expert</span>
                                                     </div>
-                                                    <p className="text-xs font-medium italic">⚠️ POINTS DE VIGILANCE {vigilance.trim()}</p>
+                                                    <p className="text-xs font-medium italic">POINTS DE VIGILANCE {vigilance.trim()}</p>
                                                 </div>
                                             )}
                                         </div>

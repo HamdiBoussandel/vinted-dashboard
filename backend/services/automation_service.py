@@ -1021,6 +1021,14 @@ async def _verifier_plan_du_jour_cron():
     rafraichir_pause_si_necessaire("Dressing 1")
     rafraichir_pause_si_necessaire("Dressing 2")
 
+    # Cron de 10h30/10h40 manqué sans redémarrage du backend (PC sorti de veille
+    # après l'horaire, boucle asyncio occupée au moment du déclenchement) :
+    # jusqu'ici rattrapé uniquement au démarrage (main.py). Mêmes règles : seules
+    # les étapes JAMAIS commencées aujourd'hui partent, un échec attend "Reprendre
+    # la routine". Verrou déjà pris = une étape tourne, on repassera au prochain contrôle.
+    if not _verrou_routine.locked():
+        await rattraper_routine(reprendre_echecs=False)
+
 
 scheduler.add_job(
     _verifier_plan_du_jour_cron,
@@ -1095,4 +1103,7 @@ scheduler.add_job(
     CronTrigger(hour=14, minute=0, jitter=3600),
     id="entretien_sessions",
     replace_existing=True,
+    # Défaut APScheduler = 1 s : une sortie de veille après l'horaire tiré ferait
+    # sauter l'entretien du jour, et ce job n'a pas d'autre rattrapage.
+    misfire_grace_time=3600,
 )

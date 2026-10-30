@@ -1,6 +1,7 @@
 // components/SystemControlBar.jsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { AlertCircle, CheckCircle2, Shirt, TrendingDown } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Hourglass, RefreshCw, Shirt, TrendingDown } from 'lucide-react';
+import { AvecIcone } from './Icones';
 import { riskGuardService } from '../services/api';
 
 const INTERVALLE_RISK_GUARD_MS = 60000;
@@ -305,7 +306,7 @@ export default function SystemControlBar({
                                     title="Réessayer de contacter le serveur"
                                     className="text-[10px] font-black px-2 py-1 rounded-lg transition-all bg-amber-500 text-white hover:scale-105"
                                 >
-                                    🔄 Reconnecter
+                                    <AvecIcone Icone={RefreshCw}>Reconnecter</AvecIcone>
                                 </button>
                             </div>
                         )}
@@ -363,7 +364,7 @@ export default function SystemControlBar({
                                                 : 'bg-amber-500 text-white hover:scale-105'
                                         }`}
                                     >
-                                        {isReconnecting ? '⏳ ...' : '🔄 Reconnecter'}
+                                        {isReconnecting ? <AvecIcone Icone={Hourglass}>...</AvecIcone> : <AvecIcone Icone={RefreshCw}>Reconnecter</AvecIcone>}
                                     </button>
                                     <LedAntiDetection label={label} convalescence={convalescence} planDuJour={planDuJour} />
                                     <ObjectifDuJourBadge planDuJour={planDuJour} quotaBaissePrix={quotaBaissePrix} quotaRepublication={quotaRepublication} />

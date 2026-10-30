@@ -1,3 +1,2 @@
-2026/10/26-14:17:20.795 3938 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\Site Characteristics Database/MANIFEST-000001
-2026/10/26-14:17:20.796 3938 Recovering log #3
-2026/10/26-14:17:20.796 3938 Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\Site Characteristics Database/000003.log 
+2026/10/30-16:35:00.664 5bfc Creating DB C:\Users\Hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\Site Characteristics Database since it was missing.
+2026/10/30-16:35:00.673 5bfc Reusing MANIFEST C:\Users\Hamdi\Documents\vinted-dashboard\backend\vinted_session_edge\Default\Site Characteristics Database/MANIFEST-000001

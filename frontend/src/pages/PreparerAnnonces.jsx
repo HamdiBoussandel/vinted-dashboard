@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Camera, Loader2, CheckCircle2, XCircle, HelpCircle, Scissors, Check, Trash2, Sparkles, Eye, CheckSquare, X,RefreshCw, LayoutGrid  } from 'lucide-react';
+import { AlertTriangle, Camera, CircleDot, Droplets, Folder, Hourglass, Loader2, CheckCircle2, MapPin, Palette, Ruler, Search, Spool, Tag, XCircle, HelpCircle, Scissors, Check, Trash2, Sparkles, Eye, CheckSquare, X,RefreshCw, LayoutGrid  } from 'lucide-react';
+import { AvecIcone } from '../components/Icones';
 import { preparerAnnoncesService } from '../services/api';
 
 const INTERVALLE_POLLING_MS = 4000;
@@ -86,16 +87,16 @@ function ToggleSwitch({ actif, onToggle, disabled }) {
 }
 
 const OPTIONS_ETAT_DEFAUT = [
-  { value: 'neuf', label: '✨ Neuf / Jamais porté' },
-  { value: 'tache_legere', label: '🟡 Tache légère' },
-  { value: 'decoloration', label: '🧴 Décoloration / Javel' },
-  { value: 'retouche', label: '✂️ Vêtement retouché' },
+  { value: 'neuf', label: <AvecIcone Icone={Sparkles}>Neuf / Jamais porté</AvecIcone> },
+  { value: 'tache_legere', label: <AvecIcone Icone={CircleDot}>Tache légère</AvecIcone> },
+  { value: 'decoloration', label: <AvecIcone Icone={Droplets}>Décoloration / Javel</AvecIcone> },
+  { value: 'retouche', label: <AvecIcone Icone={Scissors}>Vêtement retouché</AvecIcone> },
 ];
 
 const OPTIONS_FABRICATION = [
-  { value: 'italie', label: '🇮🇹 Made in Italy' },
-  { value: 'portugal', label: '🇵🇹 Made in Portugal' },
-  { value: 'france', label: '🇫🇷 Made in France' },
+  { value: 'italie', label: <AvecIcone Icone={MapPin}>Made in Italy</AvecIcone> },
+  { value: 'portugal', label: <AvecIcone Icone={MapPin}>Made in Portugal</AvecIcone> },
+  { value: 'france', label: <AvecIcone Icone={MapPin}>Made in France</AvecIcone> },
 ];
 
 function BoutonToggleRadio({ label, actif, onClick, disabled }) {
@@ -548,29 +549,29 @@ function LotCard({ lot, allLots, onRefresh, statutBrouillons, onRafraichirStatut
             <div className="flex flex-wrap gap-2 mt-3">
               {(resolution?.marque_nom || raw.marque_brute) && raw.marque_brute !== 'Non précisé' && (
                 <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-lg">
-                  🏷️ {resolution?.marque_nom || raw.marque_brute}
+                  <AvecIcone Icone={Tag}>{resolution?.marque_nom || raw.marque_brute}</AvecIcone>
                 </span>
               )}
               {categorieAffichee && (
-                <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-lg">📁 {categorieAffichee}</span>
+                <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-lg"><AvecIcone Icone={Folder}>{categorieAffichee}</AvecIcone></span>
               )}
               {(raw.couleurs || []).map((c) => (
-                <span key={c} className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-lg">🎨 {c}</span>
+                <span key={c} className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-lg"><AvecIcone Icone={Palette}>{c}</AvecIcone></span>
               ))}
               {raw.etat && (
-                <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-lg">✨ {raw.etat}</span>
+                <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-lg"><AvecIcone Icone={Sparkles}>{raw.etat}</AvecIcone></span>
               )}
               {(raw.matieres || []).map((m) => (
-                <span key={m} className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-lg">🧵 {m}</span>
+                <span key={m} className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-lg"><AvecIcone Icone={Spool}>{m}</AvecIcone></span>
               ))}
               {raw.taille_brute && raw.taille_brute !== 'Non précisé' && (
-                <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-lg">📏 {raw.taille_brute}</span>
+                <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-lg"><AvecIcone Icone={Ruler}>{raw.taille_brute}</AvecIcone></span>
               )}
             </div>
 
             {raw.points_vigilance && (
               <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1.5 mt-2">
-                ⚠️ {raw.points_vigilance}
+                <AvecIcone Icone={AlertTriangle}>{raw.points_vigilance}</AvecIcone>
               </p>
             )}
 
@@ -940,7 +941,7 @@ export default function PreparerAnnonces() {
               className="flex items-center gap-1.5 text-xs font-semibold text-white bg-slate-500 hover:bg-slate-600 disabled:opacity-50 px-3 py-2 rounded-lg transition-colors"
             >
               {statutBrouillons.en_cours
-                ? `⏳ Lot ${statutBrouillons.lot_actuel}/${statutBrouillons.total_lots}...`
+                ? <AvecIcone Icone={Hourglass}>Lot {statutBrouillons.lot_actuel}/{statutBrouillons.total_lots}...</AvecIcone>
                 : 'Créer les brouillons'}
             </button>
           )}
@@ -973,7 +974,7 @@ export default function PreparerAnnonces() {
               Écouteur {watcherActif ? 'actif' : 'inactif'}
             </p>
             {scanInitialEnCours && (
-              <p className="text-xs text-cyan-600 font-medium">🔍 Analyse des photos en cours...</p>
+              <p className="text-xs text-cyan-600 font-medium"><AvecIcone Icone={Search}>Analyse des photos en cours...</AvecIcone></p>
             )}
             {watcherActif && !scanInitialEnCours && (
               <p className="text-xs text-slate-400">{photosEnAttente} photo(s) en attente</p>

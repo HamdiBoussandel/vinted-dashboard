@@ -33,6 +33,13 @@ while ($true) {
         continue
     }
 
+    # Fichier ecrase par une relance de Python : on repart de son debut.
+    if ($flux.Length -lt $flux.Position) {
+        $flux.Seek(0, [IO.SeekOrigin]::Begin) | Out-Null
+        $lecteur.DiscardBufferedData()
+        continue
+    }
+
     if (((Get-Date) - $dernierControle).TotalSeconds -ge $IntervalleControleSecondes) {
         $dernierControle = Get-Date
         try {
