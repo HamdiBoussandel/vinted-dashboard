@@ -676,7 +676,9 @@ export default function Dashboard() {
         if (art.is_done) return false;
         // 5. Distribution stricte dans les autres onglets
         if (activeSegment === 'Pépites') return art.is_stuck && !excludedFromPepitesBaisse.has(art.id);
-        if (activeSegment === 'Baisse de prix') return art.is_low_perf || art.action_label?.includes("REPUBLIER avec BAISSE");
+        // Sans les "REPUBLIER avec BAISSE" (28/10/2026) : leur baisse se fait à la
+        // republication (option "Prix" de Clemz), hors des 10 baisses du jour.
+        if (activeSegment === 'Baisse de prix') return art.is_low_perf;
 
         // SÉCURITÉ MAXIMALE : On cache tout ce qui ne rentre pas dans les cases au-dessus
         return false;
@@ -716,14 +718,15 @@ export default function Dashboard() {
         // baisse de prix systématique avant republication/partage vues-favoris).
         // Même critère qu'avant (is_low_perf), seul le libellé change -- la
         // séparation visuelle en deux sous-sections se fait à l'affichage, pas ici.
-        { id: 'Baisse de prix', label: `📉 Baisse de prix (${inventory.filter(a => (a.is_low_perf || a.action_label?.includes("REPUBLIER avec BAISSE")) && !a.is_done && !a.is_vendu).length})`, count: inventory.filter(a => (a.is_low_perf || a.action_label?.includes("REPUBLIER avec BAISSE")) && !a.is_done && !a.is_vendu).length },
+        { id: 'Baisse de prix', label: `📉 Baisse de prix (${inventory.filter(a => a.is_low_perf && !a.is_done && !a.is_vendu).length})`, count: inventory.filter(a => a.is_low_perf && !a.is_done && !a.is_vendu).length },
         {
             id: 'Republications',
             label: `♻️ Republish (${articlesToRepublish.length})`,
             count: inventory.filter(a => a.needs_republish_action && !a.is_vendu).length
         },
         { id: 'Pépites', label: `💎 Pépites (${articlesPepites.length})`, count: articlesPepites.length },
-        { id: 'Audit', label: `🔍 À auditer (${articlesAudit.length})`, count: articlesAudit.length }
+        // "À auditer" -> plan "Fin de vie" (28/10/2026) : même population (3 republications sans vente ou plus)
+        { id: 'Audit', label: `🍂 Fin de vie (${articlesAudit.length})`, count: articlesAudit.length }
     ];
 
     // Étapes de la Routine du jour -- même 3 listes que les onglets ci-dessus,
@@ -731,7 +734,7 @@ export default function Dashboard() {
     const etapesRoutine = [
         { id: 'Baisse de prix', titre: '📉 Baisses de prix à faire', articles: articlesToBaisse, emptyLabel: 'Aucune baisse de prix en attente 🎉' },
         { id: 'Pépites', titre: '💎 Pépites à analyser', articles: articlesPepites, emptyLabel: "Aucune pépite à analyser pour l'instant." },
-        { id: 'Audit', titre: '🔍 Produits à auditer', articles: articlesAudit, emptyLabel: 'Rien à auditer -- tout est propre !' },
+        { id: 'Audit', titre: '🍂 Articles en fin de vie', articles: articlesAudit, emptyLabel: 'Aucun article en fin de vie.' },
     ];
 
     // Carte produit réutilisée PARTOUT (liste normale, split Baisse de prix,

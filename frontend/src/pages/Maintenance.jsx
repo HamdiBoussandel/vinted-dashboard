@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Chrome, Globe, Wrench, ExternalLink, RefreshCw, PackageCheck, Zap, MessageSquare, Eye, TrendingDown, Heart, Eraser, Trash2, Repeat } from 'lucide-react';
 import { maintenanceService } from '../services/api';
 import SyncDatesCard from '../components/SyncDatesCard';
+import SessionsVintedCard from '../components/SessionsVintedCard';
 
 const STATUS_LABEL = {
   ferme: 'Fermé',
@@ -620,6 +621,8 @@ export default function Maintenance() {
           />
         ))}
       </div>
+
+      <SessionsVintedCard />
 
       <div className="flex items-center gap-3 mt-12 mb-4">
         <Zap size={18} className="text-slate-400" />

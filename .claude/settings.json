@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -m 10 \"http://127.0.0.1:8000/api/risk-guard/statut\")",
+      "Bash(python -c ' *)",
+      "Bash(backend/venv/Scripts/python.exe -c ' *)"
+    ]
+  }
+}

@@ -98,8 +98,29 @@ class SupabaseService:
 
         # Seuils de prix
         self.LIMITE_LOW_TICKET = 50.0
-        self.DELAI_LOW_TICKET = 15
-        self.DELAI_HIGH_TICKET = 21
+        # Rythme de republication calé sur Bleam (28/10/2026, décision de
+        # l'utilisateur) : tous les 7 jours quel que soit le prix -- 15 j sous
+        # 50 € et 21 j au-dessus jusqu'ici. ~10/jour sur D1, ~8/jour sur D2.
+        self.DELAI_LOW_TICKET = 7
+        self.DELAI_HIGH_TICKET = 7
+        # Baisse appliquée à la republication d'un article au score faible
+        # ("REPUBLIER avec BAISSE") : -20 % jusqu'au 28/10/2026, -10 % depuis.
+        self.BAISSE_A_LA_REPUBLICATION = 0.10
+        # Plan "Fin de vie" (28/10/2026, décisions de l'utilisateur) pour les
+        # articles republiés 3 fois ou plus sans vente -- remplace l'impasse
+        # "À auditer" : republication tous les 14 jours, -10 % à chaque fois
+        # jusqu'au plancher de fin de vie (prix d'achat, ou 50 % du prix de
+        # départ s'il est inconnu, jamais sous 3 €), puis "Sortie" (décision
+        # manuelle) après 3 republications au plancher sans vente.
+        self.SEUIL_FIN_DE_VIE = 3
+        self.DELAI_FIN_DE_VIE = 14
+        self.PLANCHER_FIN_DE_VIE_SANS_ACHAT = 0.50
+        self.PRIX_MIN_FIN_DE_VIE = 3.0
+        self.REPUBLICATIONS_AU_PLANCHER_AVANT_SORTIE = 3
+        # Stratégie "Déstockage" posée à la main (28/10/2026, inspirée de Bleam) :
+        # même mécanique que la fin de vie, mais dès qu'elle est posée et au
+        # rythme standard (7 j) -- pour un article qu'on veut voir partir vite.
+        self.DELAI_DESTOCKAGE = 7
 
     def strip_accents(self, s):
         return ''.join(
@@ -302,6 +323,14 @@ class SupabaseService:
         except Exception as e:
             print(f"⚠️ [INVENTAIRE] Baisses récentes illisibles ({e}) — cooldown non affiché.")
 
+        # Prix changé hors VintedPro (28/10/2026, cf. journal_articles) : ces
+        # articles sortent des baisses automatiques jusqu'à reprise de stratégie.
+        from services.journal_articles import articles_prix_manuel
+        prix_manuels = articles_prix_manuel()
+        from services.journal_articles import strategies_articles
+        strategies = strategies_articles()
+        departs_fdv, reps_depuis_baisse = self._contexte_fin_de_vie(raw_articles, strategies)
+
         for item in raw_articles:
             item_name = item.get("nom", "")
             prix_achat = purchase_map.get(item_name.lower(), 0.0)
@@ -384,6 +413,7 @@ class SupabaseService:
                             (v_reel >= self.SEUIL_MIN_VUES_SCORE_FIABLE) and \
                             (is_new or jours_en_ligne >= self.DELAI_MIN_LOW_PERF_APRES_REPUBLICATION)
             derniere_baisse = baisses_recentes.get(item["id"])
+            prix_manuel = prix_manuels.get(item["id"])
 
             # Même raisonnement que is_liquidation ci-dessous : sans prix d'achat
             # réel (article perso/pour un ami, prix_achat=0), aucune urgence de
@@ -406,6 +436,18 @@ class SupabaseService:
             # délibérément is_very_old, qui est une alerte de décision de prix
             # (vendre à perte ?), pas un signal "il faut republier cet article".
             needs_republish_action = is_invisible or needs_time_republish or should_force_republish
+
+            # Fin de vie : rythme propre de 14 jours, et SEUL ce rythme compte --
+            # peu de vues par nature, la règle "invisible" les relancerait tous
+            # les 2 jours.
+            strategie = strategies.get(item["id"], "standard")
+            en_destockage = strategie == "destockage"
+            fin_de_vie = en_destockage or (item.get("nb_republications_sans_vente") or 0) >= self.SEUIL_FIN_DE_VIE
+            if fin_de_vie:
+                delai_max = self.DELAI_DESTOCKAGE if en_destockage else self.DELAI_FIN_DE_VIE
+                needs_time_republish = jours_en_ligne >= delai_max
+                should_force_republish = False
+                needs_republish_action = needs_time_republish
 
             # --- DIAGNOSTIC ---
             if jours_en_ligne >= delai_max:
@@ -450,14 +492,45 @@ class SupabaseService:
             # exploitable plutôt que dans un texte. None = republier au même prix.
             prix_republication = None
 
-            if is_audit:
-                # Correctif : ce cas doit COURT-CIRCUITER toute la chaîne is_invisible/
-                # is_pepite/is_low_perf/... ci-dessous, sinon l'article est quand même
-                # évalué normalement et peut ressortir "Mauvaise Perf" malgré le flag
-                # d'audit -- exactement le bug qu'on vient de trouver.
-                action_label = "À auditer"
-                is_critical = False
+            plancher_fin_de_vie = None
+            sortie = False
+            if fin_de_vie:
+                # Plan "Fin de vie" (28/10/2026), ou stratégie "Déstockage" posée à la main -- court-circuite toujours toute la
+                # chaîne is_invisible/is_pepite/is_low_perf/... ci-dessous.
                 display_pepite = display_low_perf = False
+                etiquette = "📦 DÉSTOCKAGE" if en_destockage else "🍂 FIN DE VIE"
+                prix_depart = max(departs_fdv.get(item["id"], prix_vente), prix_vente)
+                if prix_achat > 0:
+                    plancher_fin_de_vie, base_plancher = round(prix_achat, 2), "prix d'achat"
+                else:
+                    plancher_fin_de_vie = max(self.PRIX_MIN_FIN_DE_VIE,
+                                              round(prix_depart * self.PLANCHER_FIN_DE_VIE_SANS_ACHAT, 2))
+                    base_plancher = f"50 % du prix de départ ({prix_depart}€)"
+                au_plancher = prix_vente <= plancher_fin_de_vie + 0.01
+                reps_au_plancher = reps_depuis_baisse.get(item["id"], 0) if au_plancher else 0
+                sortie = au_plancher and reps_au_plancher >= self.REPUBLICATIONS_AU_PLANCHER_AVANT_SORTIE
+                nom_plan = "Déstockage :" if en_destockage else f"Fin de vie : {nb_repub} republications sans vente."
+                baisse_prix_raison = (f"{nom_plan} Republication tous les "
+                                      f"{delai_max} j avec -10 % jusqu'à {plancher_fin_de_vie}€ ({base_plancher}), "
+                                      f"puis sortie après {self.REPUBLICATIONS_AU_PLANCHER_AVANT_SORTIE} republications au plancher.")
+                if sortie:
+                    action_label = "🚪 SORTIE : retirer, vendre en lot ou donner"
+                    baisse_prix_raison = (f"{reps_au_plancher} republications au plancher ({plancher_fin_de_vie}€) "
+                                          f"sans vente : décision manuelle.")
+                    needs_republish_action = False
+                    is_critical = False
+                elif needs_republish_action:
+                    is_critical = True
+                    nouveau = max(plancher_fin_de_vie, round(prix_vente * (1 - self.BAISSE_A_LA_REPUBLICATION), 2))
+                    if not au_plancher and not prix_manuel and nouveau < prix_vente - 0.01:
+                        prix_republication = nouveau
+                        action_label = f"{etiquette} : republier à {nouveau}€ (-10 %)"
+                    else:
+                        action_label = (f"{etiquette} : republier au plancher ({plancher_fin_de_vie}€), "
+                                        f"{reps_au_plancher}/{self.REPUBLICATIONS_AU_PLANCHER_AVANT_SORTIE}")
+                else:
+                    is_critical = False
+                    action_label = f"{etiquette} : prochaine republication dans {max(0, delai_max - jours_en_ligne)} j"
 
             elif is_invisible:
                 action_label = "♻️ REPUBLIER (Shadow Ban)"
@@ -485,10 +558,14 @@ class SupabaseService:
                     prix_suggere = max(prix_plancher, round(prix_vente * taux, 2))
                     action_label = f"💎 PÉPITE : Baisse -{pepite_taux_suggere}% ({prix_suggere}€)"
                     display_pepite = True
-                    if prix_suggere < prix_vente:
+                    if prix_suggere < prix_vente and not prix_manuel:
                         prix_republication = prix_suggere
                 elif is_liquidation:
                     action_label = f"♻️ REPUBLIER (Liquidation {prix_vente}€)"
+                elif score < self.SEUIL_LOW_PERF and prix_manuel:
+                    # Prix changé à la main : republier, mais sans baisse automatique.
+                    action_label = "♻️ REPUBLIER (Même prix -- prix changé à la main)"
+                    baisse_prix_raison = "Prix changé hors VintedPro : pas de baisse automatique tant que l'article n'est pas remis sous stratégie."
                 # CORRIGÉ : elif au lieu de if (bug écrasement labels)
                 elif score < self.SEUIL_LOW_PERF and item.get("est_traite"):
                     # Baisse déjà appliquée et pas encore republié depuis (une
@@ -499,9 +576,12 @@ class SupabaseService:
                     action_label = "♻️ REPUBLIER (Même prix -- baisse déjà appliquée)"
                     baisse_prix_raison = "Une baisse a déjà été appliquée et l'annonce n'a pas été republiée depuis : pas de nouvelle baisse avant la republication."
                 elif score < self.SEUIL_LOW_PERF:
-                    prix_suggere = max(prix_plancher, round(prix_vente * 0.80, 2))
+                    # -10 % (au lieu de -20 %) depuis le 28/10/2026 : avec la
+                    # republication tous les 7 jours, le prix boucher (J+3, J+5)
+                    # puis -20 % à J+7 faisait perdre ~35 % en une semaine.
+                    prix_suggere = max(prix_plancher, round(prix_vente * (1 - self.BAISSE_A_LA_REPUBLICATION), 2))
                     # Pourcentage RÉEL à saisir pour atteindre prix_suggere (cf. échange
-                    # du 20/09/2026) : peut être inférieur à -20% si le plancher de marge
+                    # du 20/09/2026) : peut être inférieur au taux visé si le plancher de marge
                     # écrête le prix cible -- toujours afficher le vrai écart, pas le
                     # taux théorique. Les consommateurs testent seulement
                     # includes("REPUBLIER avec BAISSE"), inchangé.
@@ -509,10 +589,11 @@ class SupabaseService:
                     action_label = f"♻️ REPUBLIER avec BAISSE -{pct_reel}% ({prix_suggere}€)"
                     if prix_suggere < prix_vente:
                         prix_republication = prix_suggere
-                    if pct_reel < 20:
-                        baisse_prix_raison = f"Republication avec baisse : -20% visé, ramené à -{pct_reel}% par le plancher de marge ({prix_plancher}€)"
+                    taux_vise = round(self.BAISSE_A_LA_REPUBLICATION * 100)
+                    if pct_reel < taux_vise:
+                        baisse_prix_raison = f"Republication avec baisse : -{taux_vise}% visé, ramené à -{pct_reel}% par le plancher de marge ({prix_plancher}€)"
                     else:
-                        baisse_prix_raison = "Republication avec baisse : score < 5%, -20% pour relancer l'annonce"
+                        baisse_prix_raison = f"Republication avec baisse : score < 5%, -{taux_vise}% pour relancer l'annonce"
                 else:
                     action_label = "♻️ REPUBLIER (Même prix)"
 
@@ -533,6 +614,10 @@ class SupabaseService:
                 prix_suggere = max(prix_plancher, round(prix_vente * taux, 2))
                 action_label = f"💎 PÉPITE : Baisse -{pepite_taux_suggere}% ({prix_suggere}€)"
                 display_pepite = True
+
+            elif is_low_perf and prix_manuel:
+                action_label = "✏️ MAUVAISE PERF : prix changé à la main, baisses auto suspendues"
+                baisse_prix_raison = prix_manuel.get("detail")
 
             elif is_low_perf and derniere_baisse:
                 # Déjà baissé il y a moins de 7 jours : ni compté ni proposé
@@ -618,10 +703,192 @@ class SupabaseService:
                 "exclu_liquidation_saisonnier": item.get("exclu_liquidation_saisonnier", False),
                 "est_personnel_ou_ami": item.get("est_personnel_ou_ami", False),
                 "report_republication_jusqu_au": item.get("report_republication_jusqu_au"),
+                "_derniere_baisse":     derniere_baisse,
+                "prix_manuel":          bool(prix_manuel),
+                "fin_de_vie":           fin_de_vie,
+                "strategie":            strategie,
+                "plancher_fin_de_vie":  plancher_fin_de_vie,
+                "sortie":               sortie,
+                "prix_manuel_detail":   (prix_manuel or {}).get("detail"),
             })
 
+        self._ajouter_prochaines_actions(articles, today)
         articles.sort(key=lambda x: x["nom"].lower())
         return articles
+
+    def _contexte_fin_de_vie(self, raw_articles, strategies=None):
+        """Pour les articles en fin de vie : prix de départ (même source que le
+        prix boucher) et nombre de republications depuis la dernière baisse
+        (journal article_evenements) -- au plancher, ce sont les republications
+        "au plancher" qui décident de la sortie."""
+        from services import prix_boucher
+        ids = [a["id"] for a in raw_articles
+               if (a.get("nb_republications_sans_vente") or 0) >= self.SEUIL_FIN_DE_VIE
+               or (strategies or {}).get(a["id"]) == "destockage"]
+        if not ids:
+            return {}, {}
+        try:
+            departs = prix_boucher._prix_de_depart(self.db, ids)
+        except Exception as e:
+            print(f"⚠️ [INVENTAIRE] Prix de départ fin de vie illisibles ({e}).")
+            departs = {}
+        reps = {}
+        try:
+            evenements = []
+            for i in range(0, len(ids), 50):
+                evenements += self.db.table("article_evenements").select("article_id, type, survenu_le") \
+                    .in_("article_id", ids[i:i + 50]).in_("type", ["republication", "baisse"]).execute().data or []
+            derniere_baisse = {}
+            for e in evenements:
+                if e["type"] == "baisse":
+                    quand = datetime.fromisoformat(e["survenu_le"])
+                    if e["article_id"] not in derniere_baisse or quand > derniere_baisse[e["article_id"]]:
+                        derniere_baisse[e["article_id"]] = quand
+            for e in evenements:
+                if e["type"] != "republication":
+                    continue
+                limite = derniere_baisse.get(e["article_id"])
+                # +2 h : la republication qui APPLIQUE la dernière baisse ne compte
+                # pas comme "republication au plancher"
+                if limite is None or datetime.fromisoformat(e["survenu_le"]) > limite + timedelta(hours=2):
+                    reps[e["article_id"]] = reps.get(e["article_id"], 0) + 1
+        except Exception as e:
+            print(f"⚠️ [INVENTAIRE] Journal illisible pour la fin de vie ({e}) — sortie non évaluée.")
+        return departs, reps
+
+    # ------------------------------------------------------------------
+    # PROCHAINE ACTION PAR ARTICLE (28/10/2026, inspiré du "Cycle de vie" de
+    # Bleam) : rend visible ce que les règles existantes vont faire de chaque
+    # article, et quand -- calculé à la volée, AUCUNE règle de prix modifiée.
+    # Reprend exactement les critères de la routine (run_baisse_prix_auto,
+    # prix_boucher) : un écart ici serait un mensonge de l'affichage.
+    # ------------------------------------------------------------------
+    def _ajouter_prochaines_actions(self, articles, today):
+        from services import prix_boucher
+
+        # Les baisses automatiques ne partent que si la routine tourne et que
+        # la baisse quotidienne (10h40) est activée -- sinon : à la main.
+        try:
+            from services.automation_scheduler import get_pause_routine
+            from services.maintenance_service import maintenance_service
+            pause = get_pause_routine()
+            auto_baisse = not pause and maintenance_service.get_baisse_prix_auto_status().get("active", True)
+            raison_auto_off = None if auto_baisse else ("routine en pause" if pause else "baisse auto désactivée")
+        except Exception:
+            auto_baisse, raison_auto_off = False, "état de la routine illisible"
+
+        try:
+            evaluations = {e["id"]: e for e in prix_boucher.evaluer_articles(articles)}
+        except Exception as e:
+            print(f"⚠️ [INVENTAIRE] Prix boucher non évalué ({e}) — prochaines actions incomplètes.")
+            evaluations = {}
+
+        jour = today.date()
+        for a in articles:
+            derniere_baisse = a.pop("_derniere_baisse", None)
+            try:
+                a["prochaine_action"] = self._prochaine_action(a, evaluations.get(a["id"]), derniere_baisse,
+                                                               jour, auto_baisse, raison_auto_off)
+            except Exception as e:
+                a["prochaine_action"] = {"type": "inconnue", "quand": None, "en_retard": False,
+                                         "libelle": "Non calculée", "detail": str(e)[:120],
+                                         "automatique": False, "auto_bloquee": None}
+
+    def _prochaine_action(self, a, ev, derniere_baisse, jour, auto_baisse, raison_auto_off):
+        from services import prix_boucher
+
+        def action(type_, quand, libelle, detail=None, automatique=False):
+            return {
+                "type": type_,
+                "quand": quand.isoformat() if quand else None,
+                "en_retard": bool(quand and quand < jour),
+                "libelle": libelle,
+                "detail": detail,
+                "automatique": automatique,
+                # action automatique qui ne partira pas tant que la routine est coupée
+                "auto_bloquee": raison_auto_off if automatique and not auto_baisse else None,
+            }
+
+        def euros(x):
+            return f"{x:.2f}".replace(".", ",").replace(",00", "") + " €"
+
+        prix = a["prix_vente"]
+        date_republication = jour + timedelta(days=a["jours_restants"])
+        report = a.get("report_republication_jusqu_au")
+        if report:
+            try:
+                date_republication = max(date_republication, datetime.strptime(report[:10], "%Y-%m-%d").date())
+            except ValueError:
+                pass
+
+        if a["is_vendu"]:
+            return action("aucune", None, "Vendu")
+        if a.get("erreur_clemz"):
+            return action("manuel", jour, "Vérifier l'annonce (erreur Clemz)", a.get("erreur_clemz_reason"))
+        if a.get("sortie"):
+            return action("manuel", jour, "Sortie : retirer, vendre en lot ou donner", a.get("baisse_prix_raison"))
+        if a.get("fin_de_vie"):
+            if a["needs_republish_action"]:
+                if a.get("prix_republication"):
+                    return action("republication_baisse", jour, f"Republier à {euros(a['prix_republication'])}",
+                                  a.get("baisse_prix_raison"))
+                return action("republication", jour, "Republier au plancher", a.get("baisse_prix_raison"))
+            plan = "déstockage" if a.get("strategie") == "destockage" else "fin de vie"
+            return action("republication", date_republication, f"Republication ({plan})", a.get("baisse_prix_raison"))
+        if a["is_very_old"]:
+            return action("manuel", jour, "Décider : vendre à perte ?", a["action_label"])
+        if a["liquidation_needs_action"] and not a.get("exclu_liquidation_saisonnier"):
+            return action("manuel", jour, f"Liquidation : prix cible {euros(a['liquidation_prix_cible'])}",
+                          f"Phase {a['liquidation_phase']} — depuis la page Liquidation.")
+
+        # Republication due (fraîcheur dépassée, shadow-ban, mauvaise perf forcée)
+        if a["needs_republish_action"] and date_republication <= jour:
+            if a.get("prix_republication"):
+                return action("republication_baisse", jour, f"Republier à {euros(a['prix_republication'])}",
+                              f"{euros(prix)} → {euros(a['prix_republication'])} à la republication (validation manuelle).")
+            return action("republication", jour, "Republier au même prix", "Validation manuelle.")
+
+        if a.get("prix_manuel"):
+            return action("manuel", jour, "Prix changé à la main",
+                          "Baisses automatiques suspendues — « Remettre sous stratégie » depuis la fiche Historique. "
+                          f"Republication prévue le {date_republication.strftime('%d/%m')}.")
+
+        # Fenêtre du prix boucher (≤ 15 j depuis la (re)publication) : seule
+        # logique de baisse pour ces articles (exclus de la mauvaise perf auto)
+        if ev:
+            plancher = euros(ev["plancher"])
+            if ev["statut"] == "trop_tot":
+                quand = jour + timedelta(days=prix_boucher.JOUR_PREMIER_CONTROLE - ev["jours"])
+                return action("controle", quand, "1er contrôle du prix",
+                              f"Prix boucher : si moins de {prix_boucher.SEUIL_FAVORIS_REELS} vrais favoris, "
+                              f"−10 % (plancher {plancher}).")
+            if ev["statut"] == "ne_fonctionne_pas":
+                quand = jour
+                if derniere_baisse:
+                    quand = max(jour, derniere_baisse.date() + timedelta(days=prix_boucher.COOLDOWN_MARCHE_JOURS + 1))
+                return action("baisse", quand, f"Baisse −10 % → {euros(ev['prix_conseille'])}",
+                              f"Prix boucher : {ev['favoris_reels']} vrai(s) favori(s) au jour {ev['jours']}, "
+                              f"plancher {plancher}.", automatique=True)
+            # "fonctionne" / "plancher_atteint" : plus rien avant la republication
+            raison = (f"Prix validé ({ev['favoris_reels']} vrais favoris)" if ev["statut"] == "fonctionne"
+                      else f"Plancher atteint ({plancher})")
+            return action("republication", date_republication, "Bilan et republication",
+                          f"{raison} — plus de baisse d'ici là.")
+
+        # Mauvaise performance (au-delà de la fenêtre boucher)
+        if a["is_low_perf"] and a["baisse_prix_taux"] is not None and not a["is_done"]:
+            nouveau = max(round(prix * (1 - a["baisse_prix_taux"] / 100), 2), a["prix_plancher"])
+            return action("baisse", jour, f"Baisse −{a['baisse_prix_taux']} % → {euros(nouveau)}",
+                          a.get("baisse_prix_raison"), automatique=True)
+        if derniere_baisse and a["action_label"].startswith("⏳"):
+            quand = derniere_baisse.date() + timedelta(days=self.COOLDOWN_BAISSE_JOURS)
+            return action("attente", quand, "Nouvelle baisse possible", a.get("baisse_prix_raison"))
+        if a["is_stuck"] and a.get("pepite_taux_suggere"):
+            return action("manuel", jour, f"Pépite : baisse −{a['pepite_taux_suggere']} % suggérée",
+                          a.get("pepite_taux_raison"))
+
+        detail = "Baisse déjà appliquée : rien d'ici la republication." if a["is_done"] else None
+        return action("republication", date_republication, "Bilan et republication", detail)
 
     # ------------------------------------------------------------------
     # ARTICLES — MISE À JOUR

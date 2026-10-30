@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "VintedPro Sync",
+  "version": "0.1.0",
+  "description": "Lie le dressing Vinted connecté au dashboard VintedPro (backend local).",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://www.vinted.fr/*",
+    "http://localhost:8000/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.vinted.fr/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "VintedPro Sync",
+    "default_popup": "popup.html"
+  }
+}

@@ -58,7 +58,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # Imports des routes
-from routes import inventory, sourcing, price_estimation, preparer_annonces, maintenance, risk_guard, prix_boucher
+from routes import inventory, sourcing, price_estimation, preparer_annonces, maintenance, risk_guard, prix_boucher, extension
 # On importe l'état global et le config depuis database pour la cohérence
 from database import app_state 
 # On importe le scheduler pour le piloter au démarrage
@@ -234,6 +234,7 @@ app.include_router(preparer_annonces.router)
 app.include_router(maintenance.router)
 app.include_router(risk_guard.router)
 app.include_router(prix_boucher.router)
+app.include_router(extension.router)  # extension Chrome VintedPro Sync (26/10/2026)
 # app.include_router(price_estimation.router)  # TODO: routeur pas encore implémenté (price_estimation.py n'expose que des fonctions, pas d'APIRouter)
 
 if __name__ == "__main__":

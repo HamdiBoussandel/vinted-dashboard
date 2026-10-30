@@ -89,11 +89,22 @@ def _prix_de_depart(db_client, ids):
     departs = {}
     for i in range(0, len(ids), 50):
         lot = ids[i:i + 50]
-        lignes = db_client.table("score_snapshots").select("article_id, snapshot_hour, prix") \
-            .in_("article_id", lot).execute().data or []
-        for ligne in sorted(lignes, key=lambda l: l.get("snapshot_hour") or ""):
-            if ligne.get("prix") is not None and ligne.get("snapshot_hour"):
-                departs.setdefault(ligne["article_id"], float(ligne["prix"]))
+        # Paginé et trié (30/10/2026) : Supabase plafonne une réponse à 1 000
+        # lignes -- un lot en dépassait (1 267), des articles perdaient leurs
+        # relevés et leur prix ACTUEL devenait leur "prix de départ", d'où des
+        # planchers trop bas (Blazer Primark : 4,87 € au lieu de 8,45 €). Trié
+        # sur captured_at : les premiers relevés n'ont pas de snapshot_hour.
+        debut = 0
+        while True:
+            page = db_client.table("score_snapshots").select("article_id, prix") \
+                .in_("article_id", lot).order("captured_at").order("id") \
+                .range(debut, debut + 999).execute().data or []
+            for ligne in page:
+                if ligne.get("prix") is not None:
+                    departs.setdefault(ligne["article_id"], float(ligne["prix"]))
+            if len(page) < 1000:
+                break
+            debut += 1000
         baisses = db_client.table("price_drops").select("article_id, prix_avant") \
             .in_("article_id", lot).execute().data or []
         for baisse in baisses:
@@ -108,7 +119,7 @@ def evaluer_articles(inventaire):
 
     candidats = [
         a for a in inventaire
-        if not a.get("is_vendu") and not a.get("liquidation_phase")
+        if not a.get("is_vendu") and not a.get("liquidation_phase") and not a.get("prix_manuel") and not a.get("fin_de_vie")
         and (a.get("jours_en_ligne") or 0) <= FENETRE_JOURS
     ]
     departs = _prix_de_depart(db_client, [a["id"] for a in candidats])

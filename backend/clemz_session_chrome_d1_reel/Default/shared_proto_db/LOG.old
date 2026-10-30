@@ -1,6 +1,3 @@
-2026/10/21-19:27:52.909 4314 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\clemz_session_chrome_d1_reel\Default\shared_proto_db/MANIFEST-000001
-2026/10/21-19:27:52.909 4314 Recovering log #3
-2026/10/21-19:27:52.911 4314 Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\clemz_session_chrome_d1_reel\Default\shared_proto_db/000003.log 
-2026/10/21-19:27:52.926 7784 Level-0 table #5: started
-2026/10/21-19:27:52.931 7784 Level-0 table #5: 70595 bytes OK
-2026/10/21-19:27:52.935 7784 Delete type=0 #3
+2026/10/26-14:16:10.294 614 Reusing MANIFEST C:\Users\hamdi\Documents\vinted-dashboard\backend\clemz_session_chrome_d1_reel\Default\shared_proto_db/MANIFEST-000001
+2026/10/26-14:16:10.294 614 Recovering log #4
+2026/10/26-14:16:10.299 614 Reusing old log C:\Users\hamdi\Documents\vinted-dashboard\backend\clemz_session_chrome_d1_reel\Default\shared_proto_db/000004.log 

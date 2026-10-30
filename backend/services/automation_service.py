@@ -1079,3 +1079,20 @@ scheduler.add_job(
     id="generer_plans_du_jour",
     replace_existing=True,
 )
+
+
+# Entretien des sessions Vinted (26/10/2026, cf. services/entretien_sessions.py) :
+# une fois par jour entre 13h et 15h (heure tirée au hasard), renouvelle les
+# profils dont le refresh_token (7 jours) expire bientôt. Indépendant de la
+# pause de routine -- c'est pendant cette pause que les sessions expiraient.
+async def _cron_entretien_sessions():
+    from services.entretien_sessions import entretenir_sessions
+    await entretenir_sessions()
+
+
+scheduler.add_job(
+    _cron_entretien_sessions,
+    CronTrigger(hour=14, minute=0, jitter=3600),
+    id="entretien_sessions",
+    replace_existing=True,
+)

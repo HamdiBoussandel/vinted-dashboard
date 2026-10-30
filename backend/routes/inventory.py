@@ -168,7 +168,15 @@ async def test_script_python(background_tasks: BackgroundTasks):
             
             # On lance la procédure complète
             await scraper.run_full_sync() #
-            
+
+            # Relevé de score aussi après le scraping MANUEL (28/10/2026) : il
+            # n'était pris qu'après le scraping planifié -- avec la routine en
+            # pause, plus aucun relevé depuis le 13/10 (historique des prix,
+            # prix de départ du prix boucher). Upsert par heure : pas de doublon.
+            import asyncio
+            nb = await asyncio.to_thread(supabase_svc.capture_score_snapshots)
+            logger.info(f"📸 {nb} snapshots de score enregistrés après le scraping manuel.")
+
             # Pour l'affichage sur le Dashboard
             database.app_state["status_TEST"] = "Synchronisation Réussie"
             database.app_state["has_error"] = False
@@ -280,6 +288,69 @@ async def import_ventes_csv_route(file: UploadFile = File(...)):
 async def get_ventes_route():
     """Retourne l'historique complet des ventes."""
     return {"ventes": supabase_svc.get_ventes()}
+
+
+@router.get("/articles/{article_id}/journal")
+async def get_journal_article(article_id: str):
+    """Journal d'un article (table article_evenements) + relevés de prix,
+    vues et favoris -- fiche "Historique" du dashboard (28/10/2026)."""
+    from services.journal_articles import journal_article
+    import asyncio
+    try:
+        return await asyncio.to_thread(journal_article, article_id)
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Journal indisponible : {str(e)[:150]}")
+
+
+@router.post("/articles/{article_id}/reprendre-strategie")
+async def reprendre_strategie_route(article_id: str):
+    """Remet sous stratégie un article dont le prix a été changé à la main :
+    les baisses automatiques reprennent à partir de son prix actuel."""
+    from services.journal_articles import reprendre_strategie, articles_prix_manuel
+    import asyncio
+    article = supabase_svc.db.table("articles").select("id, nom, dressing").eq("id", article_id).execute().data
+    if not article:
+        raise HTTPException(status_code=404, detail="Article introuvable.")
+    if article_id not in await asyncio.to_thread(articles_prix_manuel):
+        raise HTTPException(status_code=409, detail="Cet article n'est pas sorti de la stratégie.")
+    await asyncio.to_thread(reprendre_strategie, article_id, article[0]["nom"], article[0].get("dressing"))
+    return {"status": "repris"}
+
+
+@router.post("/articles/strategie")
+async def poser_strategie_route(payload: dict = Body(...)):
+    """Pose une stratégie ("destockage" ou "standard") sur un ou plusieurs
+    articles : {"ids": [...], "strategie": "destockage"} (28/10/2026)."""
+    from services.journal_articles import STRATEGIES, poser_strategie, strategies_articles
+    import asyncio
+    strategie = payload.get("strategie")
+    ids = [i for i in payload.get("ids", []) if isinstance(i, str)]
+    if strategie not in STRATEGIES:
+        raise HTTPException(status_code=400, detail=f"Stratégie inconnue : {strategie}.")
+    if not ids:
+        raise HTTPException(status_code=400, detail="Aucun article.")
+    actuelles = await asyncio.to_thread(strategies_articles)
+    articles = supabase_svc.db.table("articles").select("id, nom, dressing").in_("id", ids).execute().data or []
+    modifies = 0
+    for a in articles:
+        ancienne = actuelles.get(a["id"], "standard")
+        if ancienne != strategie:
+            await asyncio.to_thread(poser_strategie, a["id"], a["nom"], a.get("dressing"), strategie, ancienne)
+            modifies += 1
+    return {"strategie": strategie, "modifies": modifies, "inchanges": len(articles) - modifies}
+
+
+@router.post("/journal/synchroniser")
+async def synchroniser_journal_route():
+    """Verse les sources existantes (baisses, tâches, ventes) dans
+    article_evenements -- rejouable sans doublon."""
+    from services.journal_articles import synchroniser_journal
+    import asyncio
+    n = await asyncio.to_thread(synchroniser_journal)
+    if n is None:
+        raise HTTPException(status_code=503, detail="Table article_evenements absente ou inaccessible — "
+                                                    "exécute docs/sql/article_evenements.sql dans Supabase.")
+    return {"evenements_verifies": n}
 
 
 @router.get("/price-intelligence/{article_id}")
